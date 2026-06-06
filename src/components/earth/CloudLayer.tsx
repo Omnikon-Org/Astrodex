@@ -6,15 +6,21 @@ import * as THREE from "three"
 import { createProceduralCloudTexture } from "./textures"
 
 const vertexShader = `
+uniform sampler2D cloudTexture;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
+varying float vCloudDensity;
 
 void main() {
   vUv = uv;
   vNormal = normalize(normalMatrix * normal);
-  vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  float cloudDensity = texture2D(cloudTexture, uv).r;
+  vCloudDensity = cloudDensity;
+  float displacement = cloudDensity * 0.018;
+  vec3 newPosition = position + normal * displacement;
+  vPosition = (modelViewMatrix * vec4(newPosition, 1.0)).xyz;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
 }
 `
 
@@ -25,10 +31,11 @@ uniform vec3 sunDirection;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
+varying float vCloudDensity;
 
 void main() {
   vec4 cloudColor = texture2D(cloudTexture, vUv);
-  float alpha = cloudColor.r * 0.6;
+  float alpha = cloudColor.r * 0.65;
 
   vec3 normal = normalize(vNormal);
   vec3 sunDir = normalize(sunDirection);
@@ -67,7 +74,7 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[1.85, 32, 32]} />
+      <sphereGeometry args={[1.85, 48, 48]} />
       <shaderMaterial
         uniforms={uniformsRef.current}
         vertexShader={vertexShader}
