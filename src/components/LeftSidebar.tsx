@@ -15,6 +15,12 @@ export function LeftSidebar() {
     addConjunctionAlert,
   } = useAppState()
   const [searchId, setSearchId] = useState("")
+  const [riskFilter, setRiskFilter] = useState<"ALL" | "HIGH" | "MEDIUM" | "LOW">("ALL") 
+
+  const filteredConjunctions = useMemo(() => {
+  if (riskFilter === "ALL") return conjunctions
+  return conjunctions.filter((c) => c.risk === riskFilter)
+  }, [conjunctions, riskFilter])
 
   // Pre-seed some conjunctions at start if empty
   useEffect(() => {
@@ -219,12 +225,41 @@ export function LeftSidebar() {
 
             {/* Conjunction Feed */}
             <div className="panel-section" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                 <div className="panel-section-title" style={{ marginBottom: 0 }}>Conjunction Alerter</div>
-                <div style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}>
-                  {conjunctions.length} Active alerts
-                </div>
-              </div>
+                  <div
+                    style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}
+                    title={riskFilter !== "ALL" ? `${filteredConjunctions.length} of ${conjunctions.length} total` : undefined}
+                  >
+                   {filteredConjunctions.length} Active alerts
+                 </div>
+            </div>
+
+            {/* Risk filter — mirrors the Filter Catalog tab pattern */}
+            <div style={{ display: "flex", background: "var(--bg-input)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: 2, marginBottom: 8 }}>
+              {(["ALL", "HIGH", "MEDIUM", "LOW"] as const).map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setRiskFilter(level)}
+                  style={{
+                    flex: 1,
+                    padding: "5px 0",
+                    fontSize: 9,
+                    fontWeight: 700,
+                    letterSpacing: "0.04em",
+                    borderRadius: 4,
+                    background: riskFilter === level ? "rgba(56, 189, 248, 0.15)" : "transparent",
+                    border: riskFilter === level ? "1px solid rgba(56, 189, 248, 0.25)" : "1px solid transparent",
+                    color: riskFilter === level ? "var(--accent-cyan)" : "var(--text-secondary)",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+
               <div style={{ flex: 1, overflowY: "auto" }}>
                 <table className="data-table">
                   <thead>
@@ -235,7 +270,7 @@ export function LeftSidebar() {
                     </tr>
                   </thead>
                   <tbody>
-                    {conjunctions.map((c) => (
+                    {filteredConjunctions.map((c) => (
                       <tr key={c.id}>
                         <td>
                           <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{c.satelliteName}</div>
