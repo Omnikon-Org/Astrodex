@@ -1,0 +1,46 @@
+name: Auto Label
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto Label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue || context.payload.pull_request;
+            const title = issue.title.toLowerCase();
+            const body = (issue.body || "").toLowerCase();
+            const text = title + " " + body;
+            const labels = [];
+
+            const rules = {
+              "bug":           /bug|error|crash|broken|exception/,
+              "feature":       /feature|enhancement|request/,
+              "documentation": /docs|documentation|readme/,
+              "question":      /question|how to|help/,
+              "security":      /security|vulnerability|cve/,
+              "performance":   /performance|slow|optimize/,
+            };
+
+            for (const [label, regex] of Object.entries(rules)) {
+              if (regex.test(text)) {
+                labels.push(label);
+              }
+            }
+
+            // Won't duplicate labels already added by template
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: labels
+              });
+            }
