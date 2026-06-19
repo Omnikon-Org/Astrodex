@@ -9,15 +9,16 @@ Thank you for taking the time to contribute to **AstroDex**! This guide covers e
 ## Table of Contents
 
 1. [Getting Started](#getting-started)
-2. [Project Structure](#project-structure)
-3. [Code Style](#code-style)
-4. [Project Conventions](#project-conventions)
-5. [Commit Message Guidelines](#commit-message-guidelines)
-6. [Pull Request Process](#pull-request-process)
-7. [Adding Real Textures](#adding-real-textures)
-8. [Future Supabase Setup](#future-supabase-setup)
-9. [Reporting Bugs](#reporting-bugs)
-10. [Code of Conduct](#code-of-conduct)
+2. [Claiming an Issue](#claiming-an-issue)
+3. [Project Structure](#project-structure)
+4. [Code Style](#code-style)
+5. [Project Conventions](#project-conventions)
+6. [Commit Message Guidelines](#commit-message-guidelines)
+7. [Pull Request Process](#pull-request-process)
+8. [Adding Real Textures](#adding-real-textures)
+9. [Future Supabase Setup](#future-supabase-setup)
+10. [Reporting Bugs](#reporting-bugs)
+11. [Code of Conduct](#code-of-conduct)
 
 ---
 
@@ -59,6 +60,24 @@ git fetch upstream
 git checkout main
 git merge upstream/main
 ```
+
+---
+
+## Claiming an Issue
+
+- **Comment on the issue** expressing interest
+- **We'll assign it within 24-48 hours**
+- If multiple people are interested, preference order:
+  1. Collaboration (joint PR encouraged)
+  2. Experience level (we prioritize helping new contributors)
+  3. First-comment basis (if tied)
+
+- **Timeline:** Once assigned, you have:
+  - **3-5 days** for `easy` labeled issues
+  - **5-7 days** for `intermediate` labeled issues
+  - *Contact us if you need an extension — we're here to support you!*
+
+- **Next step:** Open a **draft PR** to let us know you're working on it. This helps prevent duplicate efforts.
 
 ---
 
@@ -355,7 +374,7 @@ If you have a fix ready, feel free to open a PR directly — just reference the 
 
 ## Code of Conduct
 
-This project follows the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you agree to uphold a welcoming and respectful environment for everyone.
+This project follows the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you agree to uphold a welcoming and respectful environment.
 
 If you witness or experience unacceptable behavior, please report it by opening a private issue or contacting the maintainer directly via GitHub.
 
