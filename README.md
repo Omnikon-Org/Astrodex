@@ -251,22 +251,19 @@ astrodex/
 
 ---
 
-<!-- 
-  ============================================================
-  SECTIONS BELOW ARE ASSIGNED TO @CodeSparks45
-  ============================================================
-  
-  ## 🤝 Contributing Guidelines
-  (How to claim issues, open PRs, PR checklist)
-  → See CONTRIBUTING.md for the full guide
-  
-  ## 🎨 Coding Style / Linting / Formatting
-  (TypeScript strict mode, ESLint rules, naming conventions)
-  
-  ## 📄 License & Attribution
-  
-  ============================================================
--->
+## 🤝 Contributing
+
+We welcome contributions! For the full process and guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md). In short: comment on an issue to claim it, open a focused branch for your work, and submit a PR with a clear description and testing steps. Helpful quick rules:
+- Comment on the issue expressing interest so maintainers can assign it.
+- Create a focused branch with a descriptive name (e.g., `feat/…`, `fix/…`, `docs/…`).
+- Keep PRs small and include steps to reproduce or test.
+
+## 🎨 Coding style / Linting / Formatting
+
+AstroDex uses TypeScript (strict mode), ESLint, and Tailwind. Follow the conventions in [CONTRIBUTING.md#code-style](./CONTRIBUTING.md#code-style) (use `@/` path alias, add `"use client"` for client components, avoid `any`, remove unused imports). Run these commands before opening a PR:
+- `npm run lint`
+- `npx tsc --noEmit`
+- `npm run build`
 
 ## 📄 License
 
@@ -275,5 +272,5 @@ This project is licensed under the [MIT License](LICENSE).
 ---
 
 <p align="center">
-  Made with 🚀 by the <a href="https://github.com/SourabhX16/astrodex/graphs/contributors">AstroDex contributors</a>
+  Made with ❤️ by the <a href="https://github.com/SourabhX16/astrodex/graphs/contributors">AstroDex contributors</a>
 </p>
