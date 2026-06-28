@@ -128,7 +128,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     updateColors(debrisMeshRef.current, ASTEROID_COUNT, DEBRIS_COUNT, DEBRIS_COLORS)
   }, [])
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     const asteroidMesh = asteroidMeshRef.current
     const debrisMesh = debrisMeshRef.current
     if (!asteroidMesh || !debrisMesh) return
@@ -136,8 +136,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     const selectedIdx = getSelectedIndex()
     const t = state.clock.getElapsedTime()
     const prevAtRisk = prevAtRiskRef.current
-    const deltaScaled = delta * SCENE_TIME_SCALE
-
     for (let i = 0; i < TOTAL_COUNT; i++) {
       const ad = dataRef.current[i]
       const isDebris = ad.type === "debris"
@@ -146,7 +144,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       // 1. Keplerian propagation: M = n·t + M0  →  solve Kepler for E
       if (selectedIdx !== i && simulationRunning) {
         const n = meanMotion(ad.orbitRadius)
-        anglesRef.current[i] = solveKepler(n * t * deltaScaled + ad.meanAnomaly0, ad.eccentricity)
+        anglesRef.current[i] = solveKepler(n * t * SCENE_TIME_SCALE + ad.meanAnomaly0, ad.eccentricity)
       }
 
       const E = anglesRef.current[i]
