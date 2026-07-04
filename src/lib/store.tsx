@@ -148,14 +148,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const addConjunctionAlert = useCallback((alert: Omit<ConjunctionAlert, "id">) => {
     setConjunctions((prev) => {
-      // Check if this combination of satellite and secondary ID is already in the list
-      const exists = prev.some(
+      const existing = prev.find(
         (c) => c.satelliteName === alert.satelliteName && c.secondaryId === alert.secondaryId
       )
-      if (exists) return prev
-
-      const newAlert = { ...alert, id: nextAlertId.current++ }
-      const updated = [newAlert, ...prev].slice(0, 15) // Keep last 15 alerts
+      const newAlert = { ...alert, id: existing?.id ?? nextAlertId.current++ }
+      const withoutExisting = prev.filter((c) => c.id !== newAlert.id)
+      const updated = [newAlert, ...withoutExisting].slice(0, 15) // Keep last 15 alerts
 
       // Update global risk level based on the highest risk in the feed
       const hasHigh = updated.some((c) => c.risk === "HIGH")
