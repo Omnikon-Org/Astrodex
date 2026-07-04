@@ -136,7 +136,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     const selectedIdx = getSelectedIndex()
     const t = state.clock.getElapsedTime()
     const prevAtRisk = prevAtRiskRef.current
-    const deltaScaled = delta * SCENE_TIME_SCALE
+    const elapsedSceneTime = t * SCENE_TIME_SCALE
 
     for (let i = 0; i < TOTAL_COUNT; i++) {
       const ad = dataRef.current[i]
@@ -146,7 +146,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       // 1. Keplerian propagation: M = n·t + M0  →  solve Kepler for E
       if (selectedIdx !== i && simulationRunning) {
         const n = meanMotion(ad.orbitRadius)
-        anglesRef.current[i] = solveKepler(n * t * deltaScaled + ad.meanAnomaly0, ad.eccentricity)
+        anglesRef.current[i] = solveKepler(n * elapsedSceneTime + ad.meanAnomaly0, ad.eccentricity)
       }
 
       const E = anglesRef.current[i]
