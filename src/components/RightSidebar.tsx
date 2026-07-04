@@ -86,7 +86,7 @@ export function RightSidebar() {
   const handleBoost = () => {
     const burnKm = 50
     boostBurn(burnKm)
-    setBoostStatus(`Boost burn executed: +${burnKm} km @ ${displaySpeedKmS.toFixed(0)} m/s Δv`)
+    setBoostStatus(`Boost burn executed: +${burnKm} km @ ${displaySpeedKmS.toFixed(2)} km/s`)
     setTimeout(() => setBoostStatus(""), 3000)
   }
 
