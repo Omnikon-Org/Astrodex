@@ -72,9 +72,17 @@ export function RightSidebar() {
     const incVal = parseFloat(inclination) || 0
     const raanVal = parseFloat(raan) || 0
     const eVal = parseFloat(eccentricity) || 0
+    const clampedAltitude = Math.min(LEO_LIMITS.CEILING, Math.max(LEO_LIMITS.FLOOR, altVal))
+    const normalizedInclination = ((incVal % 360) + 360) % 360
+    const normalizedRaan = ((raanVal % 360) + 360) % 360
+    const clampedEccentricity = Math.max(0, Math.min(0.9, eVal))
 
     updateSatelliteParams(altVal, incVal, raanVal)
     updateSatelliteEccentricity(eVal)
+    setAltitude(String(clampedAltitude))
+    setInclination(String(normalizedInclination))
+    setRaan(String(normalizedRaan))
+    setEccentricity(clampedEccentricity.toFixed(4))
 
     setSatStatusText(
       "ISS Trajectory Uploaded: " +
