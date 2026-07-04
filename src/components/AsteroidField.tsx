@@ -80,30 +80,31 @@ interface AsteroidFieldProps {
 export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFieldProps) {
   const asteroidMeshRef = useRef<THREE.InstancedMesh>(null)
   const debrisMeshRef = useRef<THREE.InstancedMesh>(null)
-  const anglesRef = useRef<number[]>([])
-
-  // Cached "at risk" state per object — colors are only re-pushed on transitions
-  const prevAtRiskRef = useRef<boolean[]>([])
 
   const { registerAsteroidData, simulationRunning, filterType, addConjunctionAlert } = useAppState()
 
   // Track alert timestamps per object index to avoid spamming the feed
   const lastAlertTimesRef = useRef<Record<number, number>>({})
 
-  const data = useMemo(() => {
+  const generated = useMemo(() => {
     const d: AsteroidData[] = []
     const a: number[] = []
     for (let i = 0; i < TOTAL_COUNT; i++) {
       d.push(generateOrbitalObjectData(i))
       a.push(0) // placeholder; first frame resolves it via Kepler
     }
-    anglesRef.current = a
-    prevAtRiskRef.current = new Array(TOTAL_COUNT).fill(false)
-    return d
+    return {
+      data: d,
+      angles: a,
+      previousRiskStates: new Array<boolean>(TOTAL_COUNT).fill(false),
+    }
   }, [])
 
+  const data = generated.data
+  const anglesRef = useRef(generated.angles)
+  // Cached "at risk" state per object — colors are only re-pushed on transitions
+  const prevAtRiskRef = useRef(generated.previousRiskStates)
   const dataRef = useRef(data)
-  dataRef.current = data
 
   // Register data in the store on mount
   useEffect(() => {
