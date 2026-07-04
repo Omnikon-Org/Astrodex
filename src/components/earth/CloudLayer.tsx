@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { createProceduralCloudTexture } from "./textures"
@@ -55,16 +55,16 @@ interface CloudLayerProps {
 export function CloudLayer({ sunDirection }: CloudLayerProps) {
   const meshRef = useRef<THREE.Mesh>(null)
 
-  const uniformsRef = useRef({
+  const uniforms = useMemo(() => ({
     cloudTexture: { value: null as unknown as THREE.Texture },
     sunDirection: { value: sunDirection.clone() },
-  })
+  }), [sunDirection])
 
   useEffect(() => {
     const tex = new THREE.CanvasTexture(createProceduralCloudTexture())
-    uniformsRef.current.cloudTexture.value = tex
-    uniformsRef.current.sunDirection.value.copy(sunDirection)
-  }, [sunDirection])
+    uniforms.cloudTexture.value = tex
+    uniforms.sunDirection.value.copy(sunDirection)
+  }, [sunDirection, uniforms])
 
   useFrame((_, delta) => {
     if (meshRef.current) {
@@ -76,7 +76,7 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     <mesh ref={meshRef}>
       <sphereGeometry args={[1.85, 48, 48]} />
       <shaderMaterial
-        uniforms={uniformsRef.current}
+        uniforms={uniforms}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
         transparent
