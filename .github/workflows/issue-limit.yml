@@ -2,7 +2,7 @@ name: Issue Limit
 
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened]
 
 permissions:
   issues: write
@@ -10,19 +10,96 @@ permissions:
 
 jobs:
   limit:
+    name: Enforce open issue limit
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Close issues above contributor limit
+        uses: actions/github-script@v7
         with:
-          node-version: 20
+          script: |
+            const { owner, repo } = context.repo;
+            const issue = context.payload.issue;
+            const actor = issue.user.login;
+            const MAX_OPEN_ISSUES = 5;
+            const MAINTAINER_PERMISSIONS = new Set(["admin", "maintain", "write"]);
 
-      - run: npm install @actions/github @actions/core
+            if (issue.pull_request) {
+              core.info("Ignoring pull request event.");
+              return;
+            }
 
-      - run: node .github/scripts/issueLimit.js
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+            if (issue.user.type === "Bot") {
+              core.info(`Ignoring bot-created issue from ${actor}.`);
+              return;
+            }
+
+            async function getPermission(login) {
+              try {
+                const response = await github.rest.repos.getCollaboratorPermissionLevel({
+                  owner,
+                  repo,
+                  username: login,
+                });
+                return response.data.permission;
+              } catch (error) {
+                if (error.status === 404) {
+                  return "none";
+                }
+                core.warning(`Could not determine permission for ${login}: ${error.message}`);
+                return "none";
+              }
+            }
+
+            const permission = await getPermission(actor);
+            if (MAINTAINER_PERMISSIONS.has(permission)) {
+              core.info(`${actor} has ${permission} permission and bypasses issue limits.`);
+              return;
+            }
+
+            const authoredItems = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              creator: actor,
+              per_page: 100,
+            });
+
+            const openIssueCount = authoredItems.filter((item) => !item.pull_request).length;
+            core.info(`${actor} currently has ${openIssueCount} open issue(s).`);
+
+            if (openIssueCount <= MAX_OPEN_ISSUES) {
+              return;
+            }
+
+            const limitComment = "You already have 5 open issues.\n\nPlease wait until one is resolved before opening another.";
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: issue.number,
+              per_page: 100,
+            });
+
+            const alreadyCommented = comments.some((comment) => {
+              return comment.user?.type === "Bot" && comment.body?.includes("You already have 5 open issues.");
+            });
+
+            if (!alreadyCommented) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body: limitComment,
+              });
+            }
+
+            if (issue.state !== "closed") {
+              await github.rest.issues.update({
+                owner,
+                repo,
+                issue_number: issue.number,
+                state: "closed",
+                state_reason: "not_planned",
+              });
+            }

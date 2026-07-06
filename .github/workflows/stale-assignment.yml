@@ -3,7 +3,6 @@ name: Remove Stale Assignments
 on:
   schedule:
     - cron: "0 0 * * *"
-
   workflow_dispatch:
 
 permissions:
@@ -13,18 +12,363 @@ permissions:
 
 jobs:
   stale:
+    name: Expire inactive assignments
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - name: Remove assignments without linked pull requests
+        uses: actions/github-script@v7
         with:
-          node-version: 20
+          script: |
+            const { owner, repo } = context.repo;
+            const ASSIGNMENT_WINDOW_DAYS = 5;
+            const ASSIGNMENT_WINDOW_MS = ASSIGNMENT_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const pullRequestCache = new Map();
 
-      - run: npm install @actions/github @actions/core
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (error) {
+                if (error.status !== 404) {
+                  core.warning(`Could not read label "${name}": ${error.message}`);
+                  return;
+                }
 
-      - run: node .github/scripts/staleAssignment.js
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
+                try {
+                  await github.rest.issues.createLabel({ owner, repo, name, color, description });
+                  core.info(`Created missing label "${name}".`);
+                } catch (createError) {
+                  if (createError.status === 422) {
+                    core.info(`Label "${name}" already exists.`);
+                  } else {
+                    core.warning(`Could not create label "${name}": ${createError.message}`);
+                  }
+                }
+              }
+            }
+
+            async function listTimeline(issueNumber) {
+              return github.paginate(github.rest.issues.listEventsForTimeline, {
+                owner,
+                repo,
+                issue_number: issueNumber,
+                per_page: 100,
+              });
+            }
+
+            function currentAssigneeLogins(issue) {
+              return new Set(issue.assignees.map((assignee) => assignee.login));
+            }
+
+            function latestAssignmentDates(issue, timelineEvents) {
+              const currentAssignees = currentAssigneeLogins(issue);
+              const datesByLogin = new Map();
+
+              for (const assignee of currentAssignees) {
+                datesByLogin.set(assignee, null);
+              }
+
+              for (const event of timelineEvents) {
+                const assignee = event.assignee?.login;
+                if (!assignee || !currentAssignees.has(assignee)) {
+                  continue;
+                }
+
+                if (event.event === "assigned") {
+                  datesByLogin.set(assignee, new Date(event.created_at));
+                }
+
+                if (event.event === "unassigned") {
+                  datesByLogin.set(assignee, null);
+                }
+              }
+
+              for (const [login, assignedAt] of datesByLogin) {
+                if (!assignedAt) {
+                  core.warning(`No assignment event found for @${login} on #${issue.number}; using issue creation time as a conservative fallback.`);
+                  datesByLogin.set(login, new Date(issue.created_at));
+                }
+              }
+
+              return datesByLogin;
+            }
+
+            function extractPullRequestNumber(event) {
+              const linkedIssue = event.source?.issue || event.source?.pull_request || event.subject?.issue;
+              if (linkedIssue?.pull_request && linkedIssue.number) {
+                return linkedIssue.number;
+              }
+
+              if (event.source?.type === "pull_request" && event.source?.issue?.number) {
+                return event.source.issue.number;
+              }
+
+              return null;
+            }
+
+            async function isActiveOrMergedPullRequest(number) {
+              if (pullRequestCache.has(number)) {
+                return pullRequestCache.get(number);
+              }
+
+              try {
+                const response = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: number,
+                });
+
+                const pull = response.data;
+                const isActive = pull.state === "open" || pull.merged === true;
+                pullRequestCache.set(number, isActive);
+                return isActive;
+              } catch (error) {
+                core.warning(`Could not inspect pull request #${number}: ${error.message}`);
+                pullRequestCache.set(number, false);
+                return false;
+              }
+            }
+
+            async function hasGraphqlLinkedPullRequest(issueNumber) {
+              const linkedPullRequests = new Map();
+              let cursor = null;
+
+              const query = `
+                query LinkedPullRequests($owner: String!, $repo: String!, $issueNumber: Int!, $cursor: String) {
+                  repository(owner: $owner, name: $repo) {
+                    issue(number: $issueNumber) {
+                      timelineItems(first: 100, after: $cursor, itemTypes: [CONNECTED_EVENT, DISCONNECTED_EVENT, CROSS_REFERENCED_EVENT]) {
+                        nodes {
+                          __typename
+                          ... on ConnectedEvent {
+                            subject {
+                              __typename
+                              ... on PullRequest {
+                                number
+                                state
+                              }
+                            }
+                          }
+                          ... on DisconnectedEvent {
+                            subject {
+                              __typename
+                              ... on PullRequest {
+                                number
+                                state
+                              }
+                            }
+                          }
+                          ... on CrossReferencedEvent {
+                            source {
+                              __typename
+                              ... on PullRequest {
+                                number
+                                state
+                              }
+                            }
+                          }
+                        }
+                        pageInfo {
+                          hasNextPage
+                          endCursor
+                        }
+                      }
+                    }
+                  }
+                }
+              `;
+
+              do {
+                const response = await github.graphql(query, {
+                  owner,
+                  repo,
+                  issueNumber,
+                  cursor,
+                });
+
+                const timelineItems = response.repository.issue.timelineItems;
+                for (const node of timelineItems.nodes) {
+                  if (node.__typename === "ConnectedEvent" && node.subject?.__typename === "PullRequest") {
+                    linkedPullRequests.set(node.subject.number, node.subject.state);
+                  }
+
+                  if (node.__typename === "DisconnectedEvent" && node.subject?.__typename === "PullRequest") {
+                    linkedPullRequests.delete(node.subject.number);
+                  }
+
+                  if (node.__typename === "CrossReferencedEvent" && node.source?.__typename === "PullRequest") {
+                    linkedPullRequests.set(node.source.number, node.source.state);
+                  }
+                }
+
+                cursor = timelineItems.pageInfo.hasNextPage ? timelineItems.pageInfo.endCursor : null;
+              } while (cursor);
+
+              for (const [pullRequestNumber, state] of linkedPullRequests) {
+                if (state === "OPEN" || state === "MERGED") {
+                  core.info(`#${issueNumber} is protected by GraphQL-linked pull request #${pullRequestNumber}.`);
+                  return true;
+                }
+              }
+
+              return false;
+            }
+
+            async function hasActiveLinkedPullRequest(issueNumber, timelineEvents) {
+              try {
+                if (await hasGraphqlLinkedPullRequest(issueNumber)) {
+                  return true;
+                }
+              } catch (error) {
+                core.warning(`GraphQL linked pull request lookup failed for #${issueNumber}: ${error.message}`);
+              }
+
+              const timelinePullRequests = new Set();
+
+              for (const event of timelineEvents) {
+                if (!["cross-referenced", "connected"].includes(event.event)) {
+                  continue;
+                }
+
+                const pullRequestNumber = extractPullRequestNumber(event);
+                if (pullRequestNumber) {
+                  timelinePullRequests.add(pullRequestNumber);
+                }
+              }
+
+              for (const pullRequestNumber of timelinePullRequests) {
+                if (await isActiveOrMergedPullRequest(pullRequestNumber)) {
+                  core.info(`#${issueNumber} is protected by linked pull request #${pullRequestNumber}.`);
+                  return true;
+                }
+              }
+
+              const closingKeywords = ["fix", "fixes", "fixed", "close", "closes", "closed", "resolve", "resolves", "resolved"];
+              for (const keyword of closingKeywords) {
+                const query = `repo:${owner}/${repo} is:pr in:body "${keyword} #${issueNumber}"`;
+                try {
+                  const results = await github.paginate(github.rest.search.issuesAndPullRequests, {
+                    q: query,
+                    per_page: 100,
+                  });
+
+                  for (const result of results) {
+                    if (!result.pull_request) {
+                      continue;
+                    }
+
+                    if (await isActiveOrMergedPullRequest(result.number)) {
+                      core.info(`#${issueNumber} is protected by pull request #${result.number} found with closing keyword search.`);
+                      return true;
+                    }
+                  }
+                } catch (error) {
+                  core.warning(`Search failed for #${issueNumber} using keyword "${keyword}": ${error.message}`);
+                }
+              }
+
+              return false;
+            }
+
+            async function hasExistingExpirationComment(issueNumber) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: issueNumber,
+                per_page: 100,
+              });
+
+              return comments.some((comment) => {
+                return comment.user?.type === "Bot" && comment.body?.includes("Your assignment has expired because no linked pull request was opened within 5 days.");
+              });
+            }
+
+            await ensureLabel("waiting-for-pr", "FBCA04", "Assigned issue waiting for a linked pull request.");
+            await ensureLabel("stale-assignment", "B60205", "Assignment expired because no linked pull request was opened in time.");
+
+            const assignedItems = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              assignee: "*",
+              per_page: 100,
+            });
+
+            const assignedIssues = assignedItems.filter((item) => !item.pull_request && item.assignees.length > 0);
+            core.info(`Inspecting ${assignedIssues.length} assigned open issue(s).`);
+
+            for (const issue of assignedIssues) {
+              let timelineEvents;
+              try {
+                timelineEvents = await listTimeline(issue.number);
+              } catch (error) {
+                core.warning(`Skipping #${issue.number}; could not load timeline: ${error.message}`);
+                continue;
+              }
+
+              const hasLinkedPullRequest = await hasActiveLinkedPullRequest(issue.number, timelineEvents);
+              if (hasLinkedPullRequest) {
+                continue;
+              }
+
+              const assignmentDates = latestAssignmentDates(issue, timelineEvents);
+              const expiredAssignees = [];
+
+              for (const [login, assignedAt] of assignmentDates) {
+                const ageMs = now - assignedAt.getTime();
+                core.info(`#${issue.number}: @${login} has been assigned for ${Math.floor(ageMs / (24 * 60 * 60 * 1000))} day(s).`);
+                if (ageMs >= ASSIGNMENT_WINDOW_MS) {
+                  expiredAssignees.push(login);
+                }
+              }
+
+              if (expiredAssignees.length === 0) {
+                continue;
+              }
+
+              try {
+                await github.rest.issues.removeAssignees({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  assignees: expiredAssignees,
+                });
+              } catch (error) {
+                core.warning(`Could not remove expired assignees from #${issue.number}: ${error.message}`);
+                continue;
+              }
+
+              try {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  labels: ["stale-assignment"],
+                });
+              } catch (error) {
+                core.warning(`Could not add stale-assignment label to #${issue.number}: ${error.message}`);
+              }
+
+              try {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  name: "waiting-for-pr",
+                });
+              } catch (error) {
+                if (error.status !== 404) {
+                  core.warning(`Could not remove waiting-for-pr label from #${issue.number}: ${error.message}`);
+                }
+              }
+
+              if (!(await hasExistingExpirationComment(issue.number))) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: "Your assignment has expired because no linked pull request was opened within 5 days.\n\nThe issue is now available for other contributors.",
+                });
+              }
+            }
