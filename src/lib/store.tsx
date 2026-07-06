@@ -36,7 +36,6 @@ interface AppState {
   // Search by ID
   searchAsteroidById: (id: number) => void
   registerAsteroidData: (data: AsteroidData[]) => void
-
   // Space Debris Filters & Satellite Parameters
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
   setFilterType: (f: "ALL" | "ASTEROIDS" | "DEBRIS") => void
@@ -55,6 +54,15 @@ interface AppState {
   /** Increments every time a Δv budget is computed — AgentTerminal watches this. */
   deltaVCount: number
   triggerDeltaVLog: () => void
+  // Cinematic settings
+  cinematicMode: boolean
+  toggleCinematicMode: () => void
+  cameraFov: number
+  setCameraFov: (fov: number) => void
+  autoRotate: boolean
+  toggleAutoRotate: () => void
+  bloomIntensity: number
+  setBloomIntensity: (intensity: number) => void
   conjunctions: ConjunctionAlert[]
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   clearConjunctions: () => void
@@ -79,14 +87,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Space Debris Filters & Satellite Parameters
   const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
-  const [satAltitude, setSatAltitude] = useState(400) // km, LEO default
-  const [satInclination, setSatInclination] = useState(51.63) // degrees — ISS historical value
-  const [satRaan, setSatRaan] = useState(0) // degrees
-  const [satEccentricity, setSatEccentricity] = useState(0.0006) // ≈ circular LEO
+  const [satAltitude, setSatAltitude] = useState(400)
+  const [satInclination, setSatInclination] = useState(51.63)
+  const [satRaan, setSatRaan] = useState(0)
+  const [satEccentricity, setSatEccentricity] = useState(0.0006)
   const [boostCount, setBoostCount] = useState(0)
   const [deltaVCount, setDeltaVCount] = useState(0)
   const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
   const nextAlertId = useRef(1)
+
+  // Cinematic state
+  const [cinematicMode, setCinematicMode] = useState(false)
+  const [cameraFov, setCameraFov] = useState(75)
+  const [autoRotate, setAutoRotate] = useState(false)
+  const [bloomIntensity, setBloomIntensity] = useState(1.0)
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
 
@@ -146,6 +160,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setBoostCount((c) => c + 1)
   }, [])
 
+  const toggleCinematicMode = useCallback(() => {
+    setCinematicMode((prev) => {
+      const next = !prev
+      if (next) {
+        setCameraFov(85)
+        setAutoRotate(true)
+        setBloomIntensity(1.8)
+      } else {
+        setCameraFov(75)
+        setAutoRotate(false)
+        setBloomIntensity(1.0)
+      }
+      return next
+    })
+  }, [])
+
+  const toggleAutoRotate = useCallback(() => setAutoRotate((p) => !p), [])
+
   const addConjunctionAlert = useCallback((alert: Omit<ConjunctionAlert, "id">) => {
     setConjunctions((prev) => {
       const existing = prev.find(
@@ -153,9 +185,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       )
       const newAlert = { ...alert, id: existing?.id ?? nextAlertId.current++ }
       const withoutExisting = prev.filter((c) => c.id !== newAlert.id)
-      const updated = [newAlert, ...withoutExisting].slice(0, 15) // Keep last 15 alerts
+      const updated = [newAlert, ...withoutExisting].slice(0, 15)
 
-      // Update global risk level based on the highest risk in the feed
       const hasHigh = updated.some((c) => c.risk === "HIGH")
       const hasMedium = updated.some((c) => c.risk === "MEDIUM")
       if (hasHigh) setRiskLevel("HIGH")
@@ -205,6 +236,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         boostCount,
         deltaVCount,
         triggerDeltaVLog,
+        cinematicMode,
+        toggleCinematicMode,
+        cameraFov,
+        setCameraFov,
+        autoRotate,
+        toggleAutoRotate,
+        bloomIntensity,
+        setBloomIntensity,
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
