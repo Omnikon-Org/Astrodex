@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAppState } from "@/lib/store"
+import { Tooltip } from "@/components/Tooltip"
 
 export function LeftSidebar() {
   const {
@@ -71,15 +72,17 @@ export function LeftSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!leftSidebarOpen && (
-        <button
-          className="sidebar-toggle sidebar-toggle-left"
-          onClick={toggleLeftSidebar}
-          title="Show Target Panel"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
-        </button>
+        <Tooltip label="Show Target Panel" placement="right">
+          <button
+            className="sidebar-toggle sidebar-toggle-left"
+            onClick={toggleLeftSidebar}
+            aria-label="Show Target Panel"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </Tooltip>
       )}
 
       <aside className={`sidebar-left glass-panel ${leftSidebarOpen ? "" : "collapsed"}`}>

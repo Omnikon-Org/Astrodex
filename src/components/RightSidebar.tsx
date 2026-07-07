@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
 import { visVivaKmPerSec, LEO_DECAY_KM_PER_SEC, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
+import { Tooltip } from "@/components/Tooltip"
 
 export function RightSidebar() {
   const {
@@ -108,15 +109,17 @@ export function RightSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!rightSidebarOpen && (
-        <button
-          className="sidebar-toggle sidebar-toggle-right"
-          onClick={toggleRightSidebar}
-          title="Show Constraints Panel"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
+        <Tooltip label="Show Constraints Panel" placement="left">
+          <button
+            className="sidebar-toggle sidebar-toggle-right"
+            onClick={toggleRightSidebar}
+            aria-label="Show Constraints Panel"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        </Tooltip>
       )}
 
       <aside className={`sidebar-right glass-panel ${rightSidebarOpen ? "" : "collapsed"}`}>
