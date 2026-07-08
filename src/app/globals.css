@@ -287,6 +287,8 @@ html, body {
     transform: translateX(0);
   }
 }
+
+/* Spinner animation for loading skeleton */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -295,6 +297,7 @@ html, body {
     transform: rotate(360deg);
   }
 }
+
 @keyframes pulseGlow {
   0%, 100% {
     box-shadow: 0 0 4px rgba(56, 189, 248, 0.4);

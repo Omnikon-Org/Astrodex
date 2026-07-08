@@ -1,6 +1,20 @@
 "use client"
 
+/**
+ * Loading skeleton displayed while the 3D Scene component is dynamically importing.
+ * Provides immediate visual feedback to users during initial page load.
+ * Respects user motion preferences for accessibility compliance.
+ */
+
+const SPINNER_ANIMATION_DURATION = "0.9s"
+
 export function LoadingSkeleton() {
+  // Respect user's motion preferences for accessibility
+  const prefersReducedMotion =
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false
+
   return (
     <div
       style={{
@@ -13,7 +27,14 @@ export function LoadingSkeleton() {
         zIndex: 40,
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 16,
+        }}
+      >
         <div
           className="animate-pulse-glow"
           style={{
@@ -22,7 +43,9 @@ export function LoadingSkeleton() {
             borderRadius: "50%",
             border: "2px solid var(--accent-cyan)",
             borderTopColor: "transparent",
-            animation: "spin 0.9s linear infinite",
+            animation: prefersReducedMotion
+              ? "none"
+              : `spin ${SPINNER_ANIMATION_DURATION} linear infinite`,
           }}
         />
         <span
