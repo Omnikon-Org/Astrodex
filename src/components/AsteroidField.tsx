@@ -224,7 +224,16 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       const baseColors = isDebris ? DEBRIS_COLORS : ASTEROID_COLORS
 
       // 1. Keplerian propagation: M = n·t + M0  →  solve Kepler for E
-      if (selectedIdx !== i && simulationRunning) {
+      // Previously this branch was `selectedIdx !== i && simulationRunning`,
+      // which meant the currently selected object's eccentric anomaly stopped
+      // advancing the moment the user clicked it. Its position froze, the
+      // Vis-Viva HUD readout locked to a single km/s value, and conjunction
+      // checks under-reported collisions against the object the user was
+      // inspecting (see issue #551). Propagate for every object; the
+      // per-object work here is cheap and the AGENTS docs explicitly promise
+      // "propagation happening for each of 600 objects" with no carve-out
+      // for the selected one.
+      if (simulationRunning) {
         const n = meanMotion(ad.orbitRadius)
         anglesRef.current[i] = solveKepler(n * elapsedSceneTime + ad.meanAnomaly0, ad.eccentricity)
       }
