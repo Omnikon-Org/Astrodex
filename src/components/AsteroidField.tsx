@@ -125,6 +125,13 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const asteroidTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
   const debrisTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
   const frameCounterRef = useRef(0)
+  // Paused-time-aware sim clock. R3F's `state.clock.getElapsedTime()` keeps
+  // advancing while `simulationRunning` is false, so on resume every asteroid
+  // and debris piece used to teleport to where it would have been if the sim
+  // had never paused. This ref only advances when simulationRunning is true,
+  // and the mean-anomaly propagation for every one of the 600 objects now
+  // derives its time from here. See issue #550.
+  const simTimeRef = useRef(0)
 
   const generated = useMemo(() => {
     const d: AsteroidData[] = []
@@ -177,10 +184,17 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     }
   }, [asteroidGeometries, debrisGeometries])
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const selectedIdx = getSelectedIndex()
+    // Wall-clock time — used only for the conjunction-alert throttle and the
+    // at-risk pulsing red visual, both of which should keep ticking even
+    // while the sim is paused (a throttle that pauses would fire a burst
+    // of duplicate alerts on resume; the pulse is UI feedback, not physics).
     const t = state.clock.getElapsedTime()
-    const elapsedSceneTime = t * SCENE_TIME_SCALE
+    if (simulationRunning) {
+      simTimeRef.current += delta
+    }
+    const elapsedSceneTime = simTimeRef.current * SCENE_TIME_SCALE
     const shouldRebucket = frameCounterRef.current % LOD_REBUCKET_INTERVAL === 0
     frameCounterRef.current += 1
 
