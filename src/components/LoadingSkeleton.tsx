@@ -9,7 +9,7 @@
 const SPINNER_ANIMATION_DURATION = "0.9s"
 
 export function LoadingSkeleton() {
-  // Respect user's motion preferences for accessibility
+  // Avoid running the rotation animation when the user asks for reduced motion.
   const prefersReducedMotion =
     typeof window !== "undefined"
       ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -41,6 +41,8 @@ export function LoadingSkeleton() {
             width: 48,
             height: 48,
             borderRadius: "50%",
+            // The transparent top border creates the orbital sweep while the
+            // shared `spin` keyframe rotates the full ring.
             border: "2px solid var(--accent-cyan)",
             borderTopColor: "transparent",
             animation: prefersReducedMotion
