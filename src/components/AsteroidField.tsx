@@ -19,8 +19,26 @@ const ASTEROID_COUNT = 400
 const DEBRIS_COUNT = 200
 const TOTAL_COUNT = ASTEROID_COUNT + DEBRIS_COUNT
 
+const HIGH_DETAIL_SEGMENTS = 16
+const MEDIUM_DETAIL_SEGMENTS = 8
+const LOW_DETAIL_SEGMENTS = 4
+
+const LOD_NEAR_DISTANCE = 5.5
+const LOD_FAR_DISTANCE = 10.0
+const LOD_REBUCKET_INTERVAL = 12
+
 const ASTEROID_COLORS = ["#8B8B8B", "#A0522D", "#6B6B6B", "#B8860B", "#696969"]
 const DEBRIS_COLORS = ["#ff5500", "#ffaa00", "#00d5ff", "#e100ff", "#ffffff"]
+
+type ObjectTypeIndex = 0 | 1
+type LODTierIndex = 0 | 1 | 2
+type TierLookup = [number[], number[], number[]]
+type TierMeshRefs = [THREE.InstancedMesh | null, THREE.InstancedMesh | null, THREE.InstancedMesh | null]
+
+interface TierPlacement {
+  tierIndex: LODTierIndex
+  localIndex: number
+}
 
 function generateOrbitalObjectData(index: number): AsteroidData {
   const isDebris = index >= ASTEROID_COUNT
@@ -55,18 +73,18 @@ function generateOrbitalObjectData(index: number): AsteroidData {
   }
 }
 
+function getTierIndex(distance: number): LODTierIndex {
+  if (distance <= LOD_NEAR_DISTANCE) return 2
+  if (distance <= LOD_FAR_DISTANCE) return 1
+  return 0
+}
+
+function createTierLookup(): TierLookup {
+  return [[], [], []]
+}
+
 const dummy = new THREE.Object3D()
 const colorObj = new THREE.Color()
-const ASTEROID_MESH_ARGS: [THREE.BufferGeometry | undefined, THREE.Material | undefined, number] = [
-  undefined,
-  undefined,
-  ASTEROID_COUNT,
-]
-const DEBRIS_MESH_ARGS: [THREE.BufferGeometry | undefined, THREE.Material | undefined, number] = [
-  undefined,
-  undefined,
-  DEBRIS_COUNT,
-]
 
 // Shared ref for camera tracking — only the selected object's position
 export const trackedPosition = { current: new THREE.Vector3() }
@@ -88,13 +106,25 @@ interface AsteroidFieldProps {
 }
 
 export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFieldProps) {
-  const asteroidMeshRef = useRef<THREE.InstancedMesh>(null)
-  const debrisMeshRef = useRef<THREE.InstancedMesh>(null)
+  const asteroidMeshRefs = useRef<TierMeshRefs>([null, null, null])
+  const debrisMeshRefs = useRef<TierMeshRefs>([null, null, null])
 
   const { registerAsteroidData, simulationRunning, filterType, addConjunctionAlert } = useAppState()
 
   // Track alert timestamps per object index to avoid spamming the feed
   const lastAlertTimesRef = useRef<Record<number, number>>({})
+
+  const asteroidLookupRef = useRef<TierLookup>(createTierLookup())
+  const debrisLookupRef = useRef<TierLookup>(createTierLookup())
+  const asteroidPlacementRef = useRef<TierPlacement[]>(
+    Array.from({ length: ASTEROID_COUNT }, () => ({ tierIndex: 0 as LODTierIndex, localIndex: 0 }))
+  )
+  const debrisPlacementRef = useRef<TierPlacement[]>(
+    Array.from({ length: DEBRIS_COUNT }, () => ({ tierIndex: 0 as LODTierIndex, localIndex: 0 }))
+  )
+  const asteroidTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
+  const debrisTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
+  const frameCounterRef = useRef(0)
 
   const generated = useMemo(() => {
     const d: AsteroidData[] = []
@@ -106,53 +136,78 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     return {
       data: d,
       angles: a,
-      previousRiskStates: new Array<boolean>(TOTAL_COUNT).fill(false),
     }
   }, [])
 
   const data = generated.data
   const anglesRef = useRef(generated.angles)
-  // Cached "at risk" state per object — colors are only re-pushed on transitions
-  const prevAtRiskRef = useRef(generated.previousRiskStates)
   const dataRef = useRef(data)
+
+  const asteroidGeometries = useMemo(
+    () => [
+      new THREE.SphereGeometry(1, HIGH_DETAIL_SEGMENTS, HIGH_DETAIL_SEGMENTS),
+      new THREE.SphereGeometry(1, MEDIUM_DETAIL_SEGMENTS, MEDIUM_DETAIL_SEGMENTS),
+      new THREE.SphereGeometry(1, LOW_DETAIL_SEGMENTS, LOW_DETAIL_SEGMENTS),
+    ] as [THREE.SphereGeometry, THREE.SphereGeometry, THREE.SphereGeometry],
+    []
+  )
+
+  const debrisGeometries = useMemo(
+    () => [
+      new THREE.SphereGeometry(1, HIGH_DETAIL_SEGMENTS, HIGH_DETAIL_SEGMENTS),
+      new THREE.SphereGeometry(1, MEDIUM_DETAIL_SEGMENTS, MEDIUM_DETAIL_SEGMENTS),
+      new THREE.SphereGeometry(1, LOW_DETAIL_SEGMENTS, LOW_DETAIL_SEGMENTS),
+    ] as [THREE.SphereGeometry, THREE.SphereGeometry, THREE.SphereGeometry],
+    []
+  )
 
   // Register data in the store on mount
   useEffect(() => {
     registerAsteroidData(data)
   }, [data, registerAsteroidData])
 
-  // Initialize colors
   useEffect(() => {
-    const updateColors = (mesh: THREE.InstancedMesh | null, start: number, count: number, colors: string[]) => {
-      if (!mesh) return
-      for (let i = 0; i < count; i++) {
-        const objIndex = start + i
-        colorObj.set(colors[objIndex % colors.length])
-        mesh.setColorAt(i, colorObj)
-      }
-      if (mesh.instanceColor) {
-        mesh.instanceColor.needsUpdate = true
-      }
+    return () => {
+      asteroidGeometries[0].dispose()
+      asteroidGeometries[1].dispose()
+      asteroidGeometries[2].dispose()
+      debrisGeometries[0].dispose()
+      debrisGeometries[1].dispose()
+      debrisGeometries[2].dispose()
     }
+  }, [asteroidGeometries, debrisGeometries])
 
-    updateColors(asteroidMeshRef.current, 0, ASTEROID_COUNT, ASTEROID_COLORS)
-    updateColors(debrisMeshRef.current, ASTEROID_COUNT, DEBRIS_COUNT, DEBRIS_COLORS)
-  }, [])
-
-  useFrame((state, delta) => {
-    const asteroidMesh = asteroidMeshRef.current
-    const debrisMesh = debrisMeshRef.current
-    if (!asteroidMesh || !debrisMesh) return
-
+  useFrame((state) => {
     const selectedIdx = getSelectedIndex()
     const t = state.clock.getElapsedTime()
-    const prevAtRisk = prevAtRiskRef.current
     const elapsedSceneTime = t * SCENE_TIME_SCALE
+    const shouldRebucket = frameCounterRef.current % LOD_REBUCKET_INTERVAL === 0
+    frameCounterRef.current += 1
+
+    const asteroidMeshes = asteroidMeshRefs.current
+    const debrisMeshes = debrisMeshRefs.current
+    const asteroidLookups = asteroidLookupRef.current
+    const debrisLookups = debrisLookupRef.current
+    const asteroidPlacement = asteroidPlacementRef.current
+    const debrisPlacement = debrisPlacementRef.current
+
+    const nextAsteroidLookups: TierLookup = shouldRebucket ? createTierLookup() : asteroidLookups
+    const nextDebrisLookups: TierLookup = shouldRebucket ? createTierLookup() : debrisLookups
+    const nextAsteroidPlacement: TierPlacement[] = shouldRebucket ? new Array(ASTEROID_COUNT) : asteroidPlacement
+    const nextDebrisPlacement: TierPlacement[] = shouldRebucket ? new Array(DEBRIS_COUNT) : debrisPlacement
+
+    const asteroidMatrixDirty: [boolean, boolean, boolean] = [false, false, false]
+    const debrisMatrixDirty: [boolean, boolean, boolean] = [false, false, false]
+    const asteroidColorDirty: [boolean, boolean, boolean] = [false, false, false]
+    const debrisColorDirty: [boolean, boolean, boolean] = [false, false, false]
+
+    const cameraPosition = state.camera.position
 
     for (let i = 0; i < TOTAL_COUNT; i++) {
       const ad = dataRef.current[i]
-      const isDebris = ad.type === "debris"
-      const instanceIndex = isDebris ? i - ASTEROID_COUNT : i
+      const typeIndex: ObjectTypeIndex = ad.type === "debris" ? 1 : 0
+      const isDebris = typeIndex === 1
+      const baseColors = isDebris ? DEBRIS_COLORS : ASTEROID_COLORS
 
       // 1. Keplerian propagation: M = n·t + M0  →  solve Kepler for E
       if (selectedIdx !== i && simulationRunning) {
@@ -188,8 +243,40 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       dummy.scale.setScalar(activeScale)
       dummy.updateMatrix()
 
-      const targetMesh = isDebris ? debrisMesh : asteroidMesh
-      targetMesh.setMatrixAt(instanceIndex, dummy.matrix)
+      let tierIndex: LODTierIndex
+      let localIndex: number
+
+      if (shouldRebucket) {
+        const distanceToCamera = cameraPosition.distanceTo(_objPos)
+        tierIndex = getTierIndex(distanceToCamera)
+
+        const nextLookups = isDebris ? nextDebrisLookups : nextAsteroidLookups
+        localIndex = nextLookups[tierIndex].length
+        nextLookups[tierIndex].push(i)
+
+        const nextPlacement = isDebris ? nextDebrisPlacement : nextAsteroidPlacement
+        nextPlacement[isDebris ? i - ASTEROID_COUNT : i] = { tierIndex, localIndex }
+
+        const targetMeshes = isDebris ? debrisMeshes : asteroidMeshes
+        const targetMesh = targetMeshes[tierIndex]
+        if (!targetMesh) continue
+
+        targetMesh.setMatrixAt(localIndex, dummy.matrix)
+        if (isDebris) debrisMatrixDirty[tierIndex] = true
+        else asteroidMatrixDirty[tierIndex] = true
+      } else {
+        const placement = isDebris ? debrisPlacement[i - ASTEROID_COUNT] : asteroidPlacement[i]
+        tierIndex = placement.tierIndex
+        localIndex = placement.localIndex
+
+        const targetMeshes = isDebris ? debrisMeshes : asteroidMeshes
+        const targetMesh = targetMeshes[tierIndex]
+        if (!targetMesh) continue
+
+        targetMesh.setMatrixAt(localIndex, dummy.matrix)
+        if (isDebris) debrisMatrixDirty[tierIndex] = true
+        else asteroidMatrixDirty[tierIndex] = true
+      }
 
       // 3. Collision check with satellites
       let atRisk = false
@@ -231,19 +318,21 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         }
       }
 
-      // 4. Color updates ONLY on atRisk transitions (perf optimization)
+      // 4. Color updates keyed by the stable global object index so tier moves remain correct.
+      const targetMeshes = isDebris ? debrisMeshes : asteroidMeshes
+      const targetMesh = targetMeshes[tierIndex]
+      if (!targetMesh) continue
+
       if (atRisk && activeScale > 0) {
         const pulse = Math.sin(t * 8) * 0.5 + 0.5
         colorObj.setRGB(1.0, pulse * 0.3, pulse * 0.3) // pulsing red
-        targetMesh.setColorAt(instanceIndex, colorObj)
-        prevAtRisk[i] = true
-      } else if (prevAtRisk[i]) {
-        // Reset to default on transition out of at-risk
-        const defaultColorList = isDebris ? DEBRIS_COLORS : ASTEROID_COLORS
-        colorObj.set(defaultColorList[i % defaultColorList.length])
-        targetMesh.setColorAt(instanceIndex, colorObj)
-        prevAtRisk[i] = false
+      } else {
+        colorObj.set(baseColors[i % baseColors.length])
       }
+
+      targetMesh.setColorAt(localIndex, colorObj)
+      if (isDebris) debrisColorDirty[tierIndex] = true
+      else asteroidColorDirty[tierIndex] = true
 
       // 5. Vis-Viva speed for HUD telemetry
       const r = _objPos.length()
@@ -258,49 +347,131 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       }
     }
 
-    asteroidMesh.instanceMatrix.needsUpdate = true
-    debrisMesh.instanceMatrix.needsUpdate = true
-    if (asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
-    if (debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
+    if (shouldRebucket) {
+      asteroidLookupRef.current = nextAsteroidLookups
+      debrisLookupRef.current = nextDebrisLookups
+      asteroidPlacementRef.current = nextAsteroidPlacement
+      debrisPlacementRef.current = nextDebrisPlacement
+      asteroidTierCountsRef.current = [
+        nextAsteroidLookups[0].length,
+        nextAsteroidLookups[1].length,
+        nextAsteroidLookups[2].length,
+      ]
+      debrisTierCountsRef.current = [
+        nextDebrisLookups[0].length,
+        nextDebrisLookups[1].length,
+        nextDebrisLookups[2].length,
+      ]
+    }
+
+    for (let tierIndex = 0 as LODTierIndex; tierIndex < 3; tierIndex = (tierIndex + 1) as LODTierIndex) {
+      const asteroidMesh = asteroidMeshes[tierIndex]
+      if (asteroidMesh) {
+        asteroidMesh.count = asteroidTierCountsRef.current[tierIndex]
+        if (asteroidMatrixDirty[tierIndex]) asteroidMesh.instanceMatrix.needsUpdate = true
+        if (asteroidColorDirty[tierIndex] && asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
+      }
+
+      const debrisMesh = debrisMeshes[tierIndex]
+      if (debrisMesh) {
+        debrisMesh.count = debrisTierCountsRef.current[tierIndex]
+        if (debrisMatrixDirty[tierIndex]) debrisMesh.instanceMatrix.needsUpdate = true
+        if (debrisColorDirty[tierIndex] && debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
+      }
+    }
   })
 
-  const handleAsteroidClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
+  const handleMeshClick = useCallback(
+    (typeIndex: ObjectTypeIndex, tierIndex: LODTierIndex, e: ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
-      onAsteroidClick(dataRef.current[e.instanceId])
+
+      const lookup = typeIndex === 0 ? asteroidLookupRef.current : debrisLookupRef.current
+      const globalIndex = lookup[tierIndex][e.instanceId]
+      if (globalIndex === undefined) return
+
+      onAsteroidClick(dataRef.current[globalIndex])
     },
     [onAsteroidClick]
   )
 
-  const handleDebrisClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
-      if (e.instanceId === undefined) return
-      onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
-    },
-    [onAsteroidClick]
-  )
+  const handleAsteroidHighClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 0, e), [handleMeshClick])
+  const handleAsteroidMediumClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 1, e), [handleMeshClick])
+  const handleAsteroidLowClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 2, e), [handleMeshClick])
+  const handleDebrisHighClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 0, e), [handleMeshClick])
+  const handleDebrisMediumClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 1, e), [handleMeshClick])
+  const handleDebrisLowClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 2, e), [handleMeshClick])
 
   return (
     <>
-      {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
-        ref={asteroidMeshRef}
-        args={ASTEROID_MESH_ARGS}
-        onClick={handleAsteroidClick}
+        ref={(mesh) => {
+          asteroidMeshRefs.current[0] = mesh
+        }}
+        args={[asteroidGeometries[0], undefined, ASTEROID_COUNT]}
+        count={0}
+        onClick={handleAsteroidHighClick}
         frustumCulled={false}
       >
-        <dodecahedronGeometry args={[1, 0]} />
         <meshStandardMaterial roughness={0.8} metalness={0.2} />
       </instancedMesh>
 
-      {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
       <instancedMesh
-        ref={debrisMeshRef}
-        args={DEBRIS_MESH_ARGS}
-        onClick={handleDebrisClick}
+        ref={(mesh) => {
+          asteroidMeshRefs.current[1] = mesh
+        }}
+        args={[asteroidGeometries[1], undefined, ASTEROID_COUNT]}
+        count={0}
+        onClick={handleAsteroidMediumClick}
         frustumCulled={false}
       >
-        <boxGeometry args={[0.7, 0.7, 0.7]} />
+        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+      </instancedMesh>
+
+      <instancedMesh
+        ref={(mesh) => {
+          asteroidMeshRefs.current[2] = mesh
+        }}
+        args={[asteroidGeometries[2], undefined, ASTEROID_COUNT]}
+        count={0}
+        onClick={handleAsteroidLowClick}
+        frustumCulled={false}
+      >
+        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+      </instancedMesh>
+
+      <instancedMesh
+        ref={(mesh) => {
+          debrisMeshRefs.current[0] = mesh
+        }}
+        args={[debrisGeometries[0], undefined, DEBRIS_COUNT]}
+        count={0}
+        onClick={handleDebrisHighClick}
+        frustumCulled={false}
+      >
+        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+      </instancedMesh>
+
+      <instancedMesh
+        ref={(mesh) => {
+          debrisMeshRefs.current[1] = mesh
+        }}
+        args={[debrisGeometries[1], undefined, DEBRIS_COUNT]}
+        count={0}
+        onClick={handleDebrisMediumClick}
+        frustumCulled={false}
+      >
+        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+      </instancedMesh>
+
+      <instancedMesh
+        ref={(mesh) => {
+          debrisMeshRefs.current[2] = mesh
+        }}
+        args={[debrisGeometries[2], undefined, DEBRIS_COUNT]}
+        count={0}
+        onClick={handleDebrisLowClick}
+        frustumCulled={false}
+      >
         <meshStandardMaterial roughness={0.4} metalness={0.8} />
       </instancedMesh>
     </>
