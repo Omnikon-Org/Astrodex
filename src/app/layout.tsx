@@ -1,16 +1,5 @@
 import type { Metadata } from "next"
-import { Geist, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-})
 
 export const metadata: Metadata = {
   title: "AstroDex — Interactive 3D Asteroid Explorer",
@@ -24,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en">
       <body>{children}</body>
     </html>
   )
