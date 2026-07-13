@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
 }
 
 /* ─── Mission Control Design Tokens ─── */
 :root {
+  --font-sans-stack: "Geist", "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono-stack: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --bg-deep: #060a13;
   --bg-panel: rgba(10, 16, 28, 0.85);
   --bg-panel-solid: #0c1220;
