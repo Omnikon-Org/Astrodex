@@ -16,31 +16,26 @@ export function CameraController() {
   const { selectedAsteroid, resetCamera, clearReset } = useAppState()
   const targetPos = useRef(EARTH_POSITION.clone())
   const targetLook = useRef(EARTH_TARGET.clone())
-  const hasSelection = useRef(false)
+  
 
   useEffect(() => {
     if (resetCamera) {
-      hasSelection.current = false
-      targetPos.current.copy(EARTH_POSITION)
-      targetLook.current.copy(EARTH_TARGET)
       clearReset()
     }
   }, [resetCamera, clearReset])
 
-  useEffect(() => {
-    if (selectedAsteroid) {
-      hasSelection.current = true
-    }
-  }, [selectedAsteroid])
 
   useFrame((_, delta) => {
-    if (hasSelection.current) {
+    if (selectedAsteroid) {
       const pos = trackedPosition.current
       if (pos.lengthSq() > 0) {
         targetLook.current.copy(pos)
         _offset.copy(pos).normalize().multiplyScalar(1.5)
         targetPos.current.copy(pos).add(_offset)
       }
+    } else{
+      targetPos.current.copy(EARTH_POSITION)
+      targetLook.current.copy(EARTH_TARGET)
     }
 
     camera.position.lerp(targetPos.current, 3 * delta)
