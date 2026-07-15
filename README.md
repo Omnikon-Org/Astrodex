@@ -61,6 +61,42 @@ The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenin
 
 ---
 
+## 🏛️ Architecture At A Glance
+
+AstroDex keeps the simulation state and the WebGL renderer separate:
+
+```text
+AppProvider (src/lib/store.tsx)
+└── Home (src/app/page.tsx)
+    ├── Scene (dynamic, client-only)
+    │   └── R3F Canvas
+    │       └── SceneContent
+    │           ├── Earth, atmosphere, and clouds
+    │           ├── SatelliteSystem
+    │           ├── AsteroidField
+    │           └── Effects
+    └── HUD components
+        ├── Header, sidebars, and AgentTerminal
+        └── AsteroidCard
+```
+
+`AppProvider` is the single source of truth for simulation controls, filters,
+selected objects, satellite parameters, and conjunction alerts. HUD components
+read and update that state through `useAppState()`. `Scene` consumes the same
+state and passes only the values needed by React Three Fiber components; the
+3D components keep per-frame animation in `useFrame` and report events back to
+the store through callbacks.
+
+Supabase is **not integrated yet**. The current app therefore has no Supabase
+request in the render or state flow. When persistence is introduced, the
+Supabase client should be added at the store/service boundary: authenticated
+reads and writes belong in that layer, while R3F components should continue to
+receive plain state and callbacks. See the [future Supabase setup notes](./CONTRIBUTING.md#future-supabase-setup)
+and the [full architecture reference](./ARCHITECTURE.md) for the planned
+integration boundary and rendering pipeline.
+
+---
+
 ## 🌌 Core Features
 
 - **Multi-Object Catalog Tracking**
