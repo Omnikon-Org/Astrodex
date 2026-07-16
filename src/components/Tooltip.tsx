@@ -28,6 +28,7 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
   const tooltipId = useId()
   const triggerRef = useRef<HTMLSpanElement | null>(null)
   const bubbleRef = useRef<HTMLSpanElement | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
   const [visible, setVisible] = useState(false)
   const [position, setPosition] = useState({ left: 0, top: 0 })
 
@@ -59,27 +60,51 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
       top = centerY - bubbleRect.height / 2
     }
 
-    setPosition({
+    const nextPosition = {
       left: clamp(left, VIEWPORT_GAP, window.innerWidth - bubbleRect.width - VIEWPORT_GAP),
       top: clamp(top, VIEWPORT_GAP, window.innerHeight - bubbleRect.height - VIEWPORT_GAP),
+    }
+
+    setPosition((currentPosition) => {
+      if (
+        currentPosition.left === nextPosition.left &&
+        currentPosition.top === nextPosition.top
+      ) {
+        return currentPosition
+      }
+
+      return nextPosition
     })
   }, [placement])
+
+  const schedulePositionUpdate = useCallback(() => {
+    if (animationFrameRef.current !== null) return
+
+    animationFrameRef.current = window.requestAnimationFrame(() => {
+      animationFrameRef.current = null
+      updatePosition()
+    })
+  }, [updatePosition])
 
   useEffect(() => {
     if (!visible) return
 
-    updatePosition()
-    window.addEventListener("resize", updatePosition)
-    window.addEventListener("scroll", updatePosition, true)
+    schedulePositionUpdate()
+    window.addEventListener("resize", schedulePositionUpdate)
+    window.addEventListener("scroll", schedulePositionUpdate, true)
 
     return () => {
-      window.removeEventListener("resize", updatePosition)
-      window.removeEventListener("scroll", updatePosition, true)
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current)
+        animationFrameRef.current = null
+      }
+      window.removeEventListener("resize", schedulePositionUpdate)
+      window.removeEventListener("scroll", schedulePositionUpdate, true)
     }
-  }, [updatePosition, visible])
+  }, [schedulePositionUpdate, visible])
 
-  const show = () => setVisible(true)
-  const hide = () => setVisible(false)
+  const show = useCallback(() => setVisible(true), [])
+  const hide = useCallback(() => setVisible(false), [])
 
   return (
     <>
