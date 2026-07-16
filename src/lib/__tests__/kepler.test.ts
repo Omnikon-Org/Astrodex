@@ -106,6 +106,18 @@ describe("visViva", () => {
     expect(speed).toBeGreaterThan(0)
     expect(speed).toBeCloseTo(Math.sqrt(0.005 * (2 / 1.8 - 1 / 2.2)), 12)
   })
+
+  it("returns zero for invalid scene-unit orbit parameters", () => {
+    expect(visViva(0, 2.2)).toBe(0)
+    expect(visViva(1.8, 0)).toBe(0)
+    expect(visViva(Number.NaN, 2.2)).toBe(0)
+  })
+
+  it("returns zero for invalid kilometer orbit parameters", () => {
+    expect(visVivaKmPerSec(0, 6371)).toBe(0)
+    expect(visVivaKmPerSec(6371, 0)).toBe(0)
+    expect(visVivaKmPerSec(Number.POSITIVE_INFINITY, 6371)).toBe(0)
+  })
 })
 
 describe("meanMotion", () => {
