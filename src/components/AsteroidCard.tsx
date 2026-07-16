@@ -1,7 +1,7 @@
 "use client"
 
 import { useAppState } from "@/lib/store"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 export function AsteroidCard() {
   const {
@@ -11,8 +11,11 @@ export function AsteroidCard() {
     leftSidebarOpen,
     selectAsteroid,
   } = useAppState()
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
+
   useEffect(() => {
   if (!selectedAsteroid) return
+  closeButtonRef.current?.focus()
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") selectAsteroid(null)
   }
@@ -27,6 +30,9 @@ export function AsteroidCard() {
   return (
     <div
       className="glass-panel animate-fade-in-left"
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="asteroid-inspector-title"
       style={{
         position: "fixed",
         top: "calc(var(--header-height) + 16px)",
@@ -62,6 +68,7 @@ export function AsteroidCard() {
             }}
           />
           <span
+            id="asteroid-inspector-title"
             style={{
               fontSize: 11,
               fontWeight: 700,
@@ -74,9 +81,10 @@ export function AsteroidCard() {
           </span>
         </div>
         <button
+          ref={closeButtonRef}
           className="btn-ghost"
           onClick={() => selectAsteroid(null)}
-          aria-label="Close asteroid Card"
+          aria-label="Close asteroid details"
           style={{ padding: 4, border: "none" }}
         >
           <svg
