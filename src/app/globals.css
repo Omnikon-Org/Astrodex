@@ -343,6 +343,16 @@ html, body {
   animation: pulseGlow 2s ease-in-out infinite;
 }
 
+.loading-spinner {
+  animation: spin 0.9s linear infinite, pulseGlow 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+  }
+}
+
 .animate-terminal-blink {
   animation: terminalBlink 1s step-end infinite;
 }
