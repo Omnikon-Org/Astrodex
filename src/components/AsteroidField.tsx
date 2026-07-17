@@ -85,12 +85,16 @@ function createTierLookup(): TierLookup {
 
 const dummy = new THREE.Object3D()
 const colorObj = new THREE.Color()
+const ASTEROID_NORMAL_SCALE_HIGH = new THREE.Vector2(0.45, 0.45)
+const ASTEROID_NORMAL_SCALE_MEDIUM = new THREE.Vector2(0.4, 0.4)
+const ASTEROID_NORMAL_SCALE_LOW = new THREE.Vector2(0.35, 0.35)
 
 // Shared ref for camera tracking — only the selected object's position
 export const trackedPosition = { current: new THREE.Vector3() }
 
 // Module-level scratch — reused every frame for 600 instances to avoid GC pressure
 const _objPos = new THREE.Vector3()
+const _trailPoint = new THREE.Vector3()
 
 // Satellite position lookup table — hoisted out of useFrame so the array
 // literal isn't rebuilt 60 times per second
@@ -99,6 +103,54 @@ const SAT_POSITIONS = [
   { name: "Envisat", pos: satellitePositions.envisat },
   { name: "Hubble", pos: satellitePositions.hubble },
 ]
+
+function createAsteroidNormalTexture() {
+  const canvas = document.createElement("canvas")
+  canvas.width = 128
+  canvas.height = 128
+  const ctx = canvas.getContext("2d")!
+  const image = ctx.createImageData(canvas.width, canvas.height)
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width; x++) {
+      const i = (y * canvas.width + x) * 4
+      const ridge = Math.sin(x * 0.25) * Math.cos(y * 0.19)
+      const crater = Math.sin((x * x + y * y) * 0.012)
+      const n = Math.max(-1, Math.min(1, ridge * 0.45 + crater * 0.35))
+      image.data[i] = 128 + n * 48
+      image.data[i + 1] = 128 + Math.sin(y * 0.31) * 28
+      image.data[i + 2] = 220
+      image.data[i + 3] = 255
+    }
+  }
+  ctx.putImageData(image, 0, 0)
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+  return texture
+}
+
+function createOrbitTrailGeometry(item: AsteroidData) {
+  const points: THREE.Vector3[] = []
+  const a = item.orbitRadius
+  const e = item.eccentricity
+  const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+  for (let step = 0; step <= 144; step++) {
+    const E = (step / 144) * Math.PI * 2
+    const xPlane = a * (Math.cos(E) - e)
+    const zPlane = a * sqrt1me2 * Math.sin(E)
+    _trailPoint.set(xPlane, zPlane * item.inclination, zPlane)
+    points.push(_trailPoint.clone())
+  }
+  const geometry = new THREE.BufferGeometry().setFromPoints(points)
+  const distances = new Float32Array(points.length)
+  let distance = 0
+  for (let i = 1; i < points.length; i++) {
+    distance += points[i].distanceTo(points[i - 1])
+    distances[i] = distance
+  }
+  geometry.setAttribute("lineDistance", new THREE.BufferAttribute(distances, 1))
+  return geometry
+}
 
 interface AsteroidFieldProps {
   onAsteroidClick: (data: AsteroidData) => void
@@ -109,7 +161,14 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const asteroidMeshRefs = useRef<TierMeshRefs>([null, null, null])
   const debrisMeshRefs = useRef<TierMeshRefs>([null, null, null])
 
-  const { registerAsteroidData, simulationRunning, filterType, addConjunctionAlert } = useAppState()
+  const {
+    registerAsteroidData,
+    simulationRunning,
+    filterType,
+    addConjunctionAlert,
+    selectedAsteroid,
+    claimedAsteroids,
+  } = useAppState()
 
   // Track alert timestamps per object index to avoid spamming the feed
   const lastAlertTimesRef = useRef<Record<number, number>>({})
@@ -168,6 +227,21 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     []
   )
 
+  const asteroidNormalMap = useMemo(() => createAsteroidNormalTexture(), [])
+
+  const trailItems = useMemo(() => {
+    const claimed = data.filter((item) => claimedAsteroids.has(item.id)).slice(0, 12)
+    if (selectedAsteroid && !claimed.some((item) => item.id === selectedAsteroid.id)) {
+      return [selectedAsteroid, ...claimed]
+    }
+    return claimed
+  }, [claimedAsteroids, data, selectedAsteroid])
+
+  const trailGeometries = useMemo(
+    () => trailItems.map((item) => ({ item, geometry: createOrbitTrailGeometry(item) })),
+    [trailItems]
+  )
+
   // Register data in the store on mount
   useEffect(() => {
     registerAsteroidData(data)
@@ -181,8 +255,9 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       debrisGeometries[0].dispose()
       debrisGeometries[1].dispose()
       debrisGeometries[2].dispose()
+      asteroidNormalMap.dispose()
     }
-  }, [asteroidGeometries, debrisGeometries])
+  }, [asteroidGeometries, debrisGeometries, asteroidNormalMap])
 
   useFrame((state, delta) => {
     const selectedIdx = getSelectedIndex()
@@ -426,6 +501,21 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
 
   return (
     <>
+      {trailGeometries.map(({ item, geometry }) => {
+        const highlighted = selectedAsteroid?.id === item.id
+        return (
+          <lineLoop key={`trail-${item.id}`} geometry={geometry}>
+            <lineDashedMaterial
+              color={highlighted ? "#38bdf8" : "#34d399"}
+              opacity={highlighted ? 0.5 : 0.24}
+              transparent
+              dashSize={0.08}
+              gapSize={0.07}
+            />
+          </lineLoop>
+        )
+      })}
+
       <instancedMesh
         ref={(mesh) => {
           asteroidMeshRefs.current[0] = mesh
@@ -435,7 +525,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         onClick={handleAsteroidHighClick}
         frustumCulled={false}
       >
-        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_HIGH} />
       </instancedMesh>
 
       <instancedMesh
@@ -447,7 +537,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         onClick={handleAsteroidMediumClick}
         frustumCulled={false}
       >
-        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_MEDIUM} />
       </instancedMesh>
 
       <instancedMesh
@@ -459,7 +549,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         onClick={handleAsteroidLowClick}
         frustumCulled={false}
       >
-        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_LOW} />
       </instancedMesh>
 
       <instancedMesh
