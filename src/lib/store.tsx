@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react"
 import type { AsteroidData } from "./types"
 
 export interface ConjunctionAlert {
@@ -101,6 +101,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [cameraFov, setCameraFov] = useState(75)
   const [autoRotate, setAutoRotate] = useState(false)
   const [bloomIntensity, setBloomIntensity] = useState(1.0)
+
+  useEffect(() => {
+    if (window.innerWidth >= 768) return
+    const frame = requestAnimationFrame(() => {
+      setLeftSidebarOpen(false)
+      setRightSidebarOpen(false)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
 

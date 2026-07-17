@@ -453,3 +453,100 @@ html, body {
   text-transform: uppercase;
   animation: fadeInUp 0.14s ease-out;
 }
+
+.mobile-hud-nav {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-height: 58px;
+    --header-x-padding: 10px;
+    --sidebar-width: min(342px, calc(100vw - 18px));
+    --inspector-width: min(320px, calc(100vw - 18px));
+    --terminal-collapsed: 46px;
+  }
+
+  .glass-panel-flat {
+    min-height: var(--header-height);
+  }
+
+  .glass-panel-flat > div:first-child h1 {
+    font-size: 14px !important;
+  }
+
+  .glass-panel-flat > div:nth-child(2) {
+    gap: 6px !important;
+    overflow-x: auto;
+    max-width: calc(100vw - 84px);
+    scrollbar-width: none;
+  }
+
+  .glass-panel-flat > div:nth-child(2)::-webkit-scrollbar {
+    display: none;
+  }
+
+  .glass-panel-flat > div:nth-child(3) {
+    display: none !important;
+  }
+
+  .btn-primary,
+  .btn-ghost {
+    min-height: 32px;
+    padding: 6px 9px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .sidebar-left,
+  .sidebar-right {
+    top: calc(var(--header-height) + 8px);
+    left: 9px;
+    right: auto;
+    width: var(--sidebar-width);
+    bottom: 76px;
+    transform: translateY(0);
+  }
+
+  .sidebar-left.collapsed,
+  .sidebar-right.collapsed {
+    transform: translateY(calc(100% + 96px));
+  }
+
+  .sidebar-toggle-left,
+  .sidebar-toggle-right {
+    display: none;
+  }
+
+  .mobile-hud-nav {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 55;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 7px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: rgba(10, 16, 28, 0.92);
+    backdrop-filter: blur(16px);
+  }
+
+  .mobile-hud-nav button {
+    min-height: 36px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .mobile-hud-nav button.active {
+    border-color: rgba(56, 189, 248, 0.38);
+    background: rgba(56, 189, 248, 0.14);
+    color: var(--accent-cyan);
+  }
+}
