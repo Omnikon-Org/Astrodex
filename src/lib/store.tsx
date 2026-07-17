@@ -36,6 +36,7 @@ interface AppState {
   // Search by ID
   searchAsteroidById: (id: number) => void
   registerAsteroidData: (data: AsteroidData[]) => void
+  asteroidCatalog: AsteroidData[]
   // Space Debris Filters & Satellite Parameters
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
   setFilterType: (f: "ALL" | "ASTEROIDS" | "DEBRIS") => void
@@ -94,6 +95,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [boostCount, setBoostCount] = useState(0)
   const [deltaVCount, setDeltaVCount] = useState(0)
   const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
+  const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
   const nextAlertId = useRef(1)
 
   // Cinematic state
@@ -126,6 +128,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
     asteroidDataRef.current = data
+    setAsteroidCatalog(data)
   }, [])
 
   const searchAsteroidById = useCallback((id: number) => {
@@ -223,6 +226,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleTerminal,
         searchAsteroidById,
         registerAsteroidData,
+        asteroidCatalog,
         filterType,
         setFilterType,
         satAltitude,
