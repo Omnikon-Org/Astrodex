@@ -67,20 +67,19 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   const meshRef = useRef<THREE.Mesh>(null)
 
   const uniforms = useMemo(() => ({
-    cloudTexture: { value: null as unknown as THREE.Texture },
+    cloudTexture: { value: new THREE.CanvasTexture(createProceduralCloudTexture()) },
     sunDirection: { value: sunDirection.clone() },
   }), [sunDirection])
 
   useEffect(() => {
-    const tex = new THREE.CanvasTexture(createProceduralCloudTexture())
-    uniforms.cloudTexture.value = tex
-    uniforms.sunDirection.value.copy(sunDirection)
-  }, [sunDirection, uniforms])
+    return () => uniforms.cloudTexture.value.dispose()
+  }, [uniforms])
 
   useFrame((_, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.06
     }
+    uniforms.sunDirection.value.copy(sunDirection)
   })
 
   return (
