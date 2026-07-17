@@ -26,6 +26,16 @@ export function AsteroidCard() {
   if (!selectedAsteroid) return null
 
   const isClaimed = claimedAsteroids.has(selectedAsteroid.id)
+  const handleClaimToggle = () => {
+    if (isClaimed) {
+      const confirmed = window.confirm(`Release the mining claim for ${selectedAsteroid.name}?`)
+      if (!confirmed) return
+    } else {
+      const confirmed = window.confirm(`File a mining claim for ${selectedAsteroid.name}?`)
+      if (!confirmed) return
+    }
+    claimAsteroid(selectedAsteroid.id)
+  }
 
   return (
     <div
@@ -164,7 +174,7 @@ export function AsteroidCard() {
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={() => claimAsteroid(selectedAsteroid.id)}
+            onClick={handleClaimToggle}
             className="btn-primary"
             style={{
               width: "100%",
