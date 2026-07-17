@@ -25,7 +25,7 @@ export default function Home() {
           width: "100%",
           height: "100%",
           overflow: "hidden",
-          background: "#000005",
+          background: "var(--scene-bg)",
         }}
       >
         {/* Background 3D Space Scene */}
