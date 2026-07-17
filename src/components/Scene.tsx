@@ -2,7 +2,7 @@
 
 import { useRef, useCallback, useEffect, useMemo } from "react"
 import { Canvas } from "@react-three/fiber"
-import { Stars } from "@react-three/drei"
+import { Stats, Stars } from "@react-three/drei"
 import * as THREE from "three"
 
 import { Earth } from "./earth/Earth"
@@ -37,6 +37,7 @@ function SceneContent() {
   return (
     <>
       <color attach="background" args={["#000008"]} />
+      <Stats />
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 3, 5]} intensity={2} />
       <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
