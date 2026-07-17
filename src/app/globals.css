@@ -31,12 +31,19 @@
   --glass-bg: rgba(10, 16, 28, 0.82);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-blur: 20px;
+  --scene-bg: #000005;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 18px;
+  --hud-edge-gap: 8px;
+  --hud-stack-gap: 12px;
+  --hud-inspector-gap: 24px;
+  --hud-offscreen-gap: 16px;
   --sidebar-width: 310px;
+  --inspector-width: 300px;
   --header-height: 52px;
+  --header-x-padding: 20px;
   --terminal-collapsed: 38px;
   --terminal-expanded: 220px;
 }
@@ -360,32 +367,32 @@ html, body {
 /* ─── Sidebar Transitions ─── */
 .sidebar-left {
   position: fixed;
-  top: calc(var(--header-height) + 8px);
-  left: 8px;
-  bottom: calc(var(--terminal-collapsed) + 12px);
+  top: calc(var(--header-height) + var(--hud-edge-gap));
+  left: var(--hud-edge-gap);
+  bottom: calc(var(--terminal-collapsed) + var(--hud-stack-gap));
   width: var(--sidebar-width);
   z-index: 40;
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
 .sidebar-left.collapsed {
-  transform: translateX(calc(-1 * var(--sidebar-width) - 16px));
+  transform: translateX(calc(-1 * var(--sidebar-width) - var(--hud-offscreen-gap)));
   opacity: 0;
   pointer-events: none;
 }
 
 .sidebar-right {
   position: fixed;
-  top: calc(var(--header-height) + 8px);
-  right: 8px;
-  bottom: calc(var(--terminal-collapsed) + 12px);
+  top: calc(var(--header-height) + var(--hud-edge-gap));
+  right: var(--hud-edge-gap);
+  bottom: calc(var(--terminal-collapsed) + var(--hud-stack-gap));
   width: var(--sidebar-width);
   z-index: 40;
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 }
 
 .sidebar-right.collapsed {
-  transform: translateX(calc(var(--sidebar-width) + 16px));
+  transform: translateX(calc(var(--sidebar-width) + var(--hud-offscreen-gap)));
   opacity: 0;
   pointer-events: none;
 }
@@ -414,13 +421,13 @@ html, body {
 }
 
 .sidebar-toggle-left {
-  top: calc(var(--header-height) + 16px);
-  left: 12px;
+  top: calc(var(--header-height) + var(--hud-stack-gap));
+  left: var(--hud-stack-gap);
 }
 
 .sidebar-toggle-right {
-  top: calc(var(--header-height) + 16px);
-  right: 12px;
+  top: calc(var(--header-height) + var(--hud-stack-gap));
+  right: var(--hud-stack-gap);
 }
 
 /* Accessible tooltip used by compact icon-only controls */

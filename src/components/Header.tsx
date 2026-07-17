@@ -42,7 +42,7 @@ export function Header() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 20px",
+        padding: "0 var(--header-x-padding)",
         borderTop: "none",
         borderLeft: "none",
         borderRight: "none",

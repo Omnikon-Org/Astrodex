@@ -35,9 +35,11 @@ export function AsteroidCard() {
       aria-labelledby="asteroid-inspector-title"
       style={{
         position: "fixed",
-        top: "calc(var(--header-height) + 16px)",
-        left: leftSidebarOpen ? "calc(var(--sidebar-width) + 24px)" : "24px",
-        width: "300px",
+        top: "calc(var(--header-height) + var(--hud-stack-gap))",
+        left: leftSidebarOpen
+          ? "calc(var(--sidebar-width) + var(--hud-inspector-gap))"
+          : "var(--hud-inspector-gap)",
+        width: "var(--inspector-width)",
         zIndex: 42,
         boxShadow: "0 10px 40px rgba(0, 0, 0, 0.6)",
         border: "1px solid rgba(56, 189, 248, 0.2)",
