@@ -4,6 +4,9 @@ import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAppState } from "@/lib/store"
 import { Tooltip } from "@/components/Tooltip"
 
+type SortMode = "id" | "name" | "distance" | "risk"
+const PAGE_SIZE = 8
+
 export function LeftSidebar() {
   const {
     leftSidebarOpen,
@@ -14,14 +17,39 @@ export function LeftSidebar() {
     setFilterType,
     conjunctions,
     addConjunctionAlert,
+    asteroidCatalog,
   } = useAppState()
   const [searchId, setSearchId] = useState("")
   const [riskFilter, setRiskFilter] = useState<"ALL" | "HIGH" | "MEDIUM" | "LOW">("ALL") 
+  const [sortMode, setSortMode] = useState<SortMode>("id")
+  const [pageState, setPageState] = useState({ key: "ALL:id", page: 1 })
 
   const filteredConjunctions = useMemo(() => {
   if (riskFilter === "ALL") return conjunctions
   return conjunctions.filter((c) => c.risk === riskFilter)
   }, [conjunctions, riskFilter])
+
+  const sortedCatalog = useMemo(() => {
+    const visible = asteroidCatalog.filter((item) => {
+      if (filterType === "ASTEROIDS") return item.type === "asteroid"
+      if (filterType === "DEBRIS") return item.type === "debris"
+      return true
+    })
+    return [...visible].sort((a, b) => {
+      if (sortMode === "name") return a.name.localeCompare(b.name)
+      if (sortMode === "distance") return a.orbitRadius - b.orbitRadius
+      if (sortMode === "risk") return Number(Boolean(b.atRisk)) - Number(Boolean(a.atRisk)) || a.id - b.id
+      return a.id - b.id
+    })
+  }, [asteroidCatalog, filterType, sortMode])
+
+  const catalogKey = `${filterType}:${sortMode}`
+  const totalPages = Math.max(1, Math.ceil(sortedCatalog.length / PAGE_SIZE))
+  const page = pageState.key === catalogKey ? Math.min(pageState.page, totalPages) : 1
+  const catalogPage = sortedCatalog.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const setCatalogPage = (nextPage: number) => {
+    setPageState({ key: catalogKey, page: Math.max(1, Math.min(totalPages, nextPage)) })
+  }
 
   // Pre-seed some conjunctions at start if empty
   useEffect(() => {
@@ -183,6 +211,54 @@ export function LeftSidebar() {
                     <path d="M21 21l-4.35-4.35" />
                   </svg>
                   LOAD
+                </button>
+              </div>
+            </div>
+
+            {/* Catalog Browser */}
+            <div className="panel-section">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <div className="panel-section-title" style={{ marginBottom: 0 }}>Catalog Browser</div>
+                <select
+                  className="mc-input"
+                  aria-label="Sort catalog"
+                  value={sortMode}
+                  onChange={(e) => setSortMode(e.target.value as SortMode)}
+                  style={{ width: 112, padding: "5px 7px", fontSize: 10 }}
+                >
+                  <option value="id">ID</option>
+                  <option value="name">Name</option>
+                  <option value="distance">Distance</option>
+                  <option value="risk">Risk</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {catalogPage.map((item) => (
+                  <button
+                    key={item.id}
+                    className="catalog-row"
+                    onClick={() => searchAsteroidById(item.id)}
+                    aria-label={`Select ${item.name}`}
+                  >
+                    <span>
+                      <strong>{item.name}</strong>
+                      <small>{item.type === "debris" ? "Debris" : "Asteroid"} / {(item.orbitRadius * 0.15).toFixed(2)} AU</small>
+                    </span>
+                    <span className={item.atRisk ? "catalog-risk catalog-risk-on" : "catalog-risk"}>{item.atRisk ? "RISK" : `#${item.id}`}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10 }}>
+                <button className="btn-ghost" onClick={() => setCatalogPage(page - 1)} disabled={page === 1}>
+                  Prev
+                </button>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}>
+                  {page}/{totalPages}
+                </span>
+                <button className="btn-ghost" onClick={() => setCatalogPage(page + 1)} disabled={page === totalPages}>
+                  Next
                 </button>
               </div>
             </div>
