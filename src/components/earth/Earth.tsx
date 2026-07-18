@@ -75,44 +75,37 @@ interface EarthProps {
   sunDirection: THREE.Vector3
 }
 
-function makeDefaultTexture() {
-  const canvas = document.createElement("canvas")
-  canvas.width = 2
-  canvas.height = 2
-  const ctx = canvas.getContext("2d")!
-  ctx.fillStyle = "#4488cc"
-  ctx.fillRect(0, 0, 2, 2)
-  return new THREE.CanvasTexture(canvas)
-}
-
 export function Earth({ sunDirection }: EarthProps) {
   const meshRef = useRef<THREE.Mesh>(null)
 
-  const uniforms = useMemo(() => ({
-    dayTexture: { value: makeDefaultTexture() as THREE.Texture },
-    nightTexture: { value: makeDefaultTexture() as THREE.Texture },
-    specularTexture: { value: makeDefaultTexture() as THREE.Texture },
-    cloudShadowTexture: { value: makeDefaultTexture() as THREE.Texture },
-    sunDirection: { value: sunDirection.clone() },
-  }), [sunDirection])
-
-  useEffect(() => {
+  const uniforms = useMemo(() => {
     const day = new THREE.CanvasTexture(createProceduralEarthTexture())
     const night = new THREE.CanvasTexture(createProceduralNightTexture())
     const spec = new THREE.CanvasTexture(createProceduralSpecularTexture())
     const cloud = new THREE.CanvasTexture(createProceduralCloudTexture())
-    uniforms.dayTexture.value = day
-    uniforms.nightTexture.value = night
-    uniforms.specularTexture.value = spec
-    uniforms.cloudShadowTexture.value = cloud
-    // sunDirection is constant — set once
-    uniforms.sunDirection.value.copy(sunDirection)
-  }, [sunDirection, uniforms])
+    return {
+      dayTexture: { value: day },
+      nightTexture: { value: night },
+      specularTexture: { value: spec },
+      cloudShadowTexture: { value: cloud },
+      sunDirection: { value: sunDirection.clone() },
+    }
+  }, [sunDirection])
+
+  useEffect(() => {
+    return () => {
+      uniforms.dayTexture.value.dispose()
+      uniforms.nightTexture.value.dispose()
+      uniforms.specularTexture.value.dispose()
+      uniforms.cloudShadowTexture.value.dispose()
+    }
+  }, [uniforms])
 
   useFrame((_, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.05
     }
+    uniforms.sunDirection.value.copy(sunDirection)
   })
 
   return (
