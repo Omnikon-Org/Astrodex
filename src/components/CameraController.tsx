@@ -5,6 +5,7 @@ import { useThree, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { useAppState } from "@/lib/store"
 import { trackedPosition } from "./AsteroidField"
+import { calculateCameraTargets } from "@/lib/cameraLogic"
 
 const EARTH_POSITION = new THREE.Vector3(0, 0, 6)
 const EARTH_TARGET = new THREE.Vector3(0, 0, 0)
@@ -34,14 +35,15 @@ export function CameraController() {
   }, [selectedAsteroid])
 
   useFrame((_, delta) => {
-    if (hasSelection.current) {
-      const pos = trackedPosition.current
-      if (pos.lengthSq() > 0) {
-        targetLook.current.copy(pos)
-        _offset.copy(pos).normalize().multiplyScalar(1.5)
-        targetPos.current.copy(pos).add(_offset)
-      }
-    }
+    const { targetPos: newPos, targetLook: newLook } = calculateCameraTargets(
+      hasSelection.current,
+      trackedPosition.current,
+      targetPos.current,
+      targetLook.current
+    )
+    
+    targetPos.current.copy(newPos)
+    targetLook.current.copy(newLook)
 
     camera.position.lerp(targetPos.current, 3 * delta)
     _lookTarget.copy(targetLook.current)
