@@ -31,6 +31,70 @@ export function RightSidebar() {
   const [satStatusText, setSatStatusText] = useState("Telemetry synchronized.")
   const [boostStatus, setBoostStatus] = useState("")
 
+  // ── Validation ──────────────────────────────────────────────────────────────
+  // Each key maps to an error string (non-empty = invalid) or null (valid).
+  const [errors, setErrors] = useState<Record<string, string | null>>({
+    altitude: null,
+    inclination: null,
+    raan: null,
+    eccentricity: null,
+  })
+
+  /**
+   * Returns an error message for the given field/value pair, or null when valid.
+   * Validation is intentionally loose on intermediate keystrokes (e.g. "1" before
+   * the user finishes typing "180") — we only check that the value is a finite
+   * number and within physical bounds.
+   */
+  function validate(field: string, raw: string): string | null {
+    const n = parseFloat(raw)
+    if (!Number.isFinite(n) || raw.trim() === "") {
+      return "Must be a number"
+    }
+    switch (field) {
+      case "altitude":
+        return n < LEO_LIMITS.FLOOR || n > LEO_LIMITS.CEILING
+          ? `Altitude must be ${LEO_LIMITS.FLOOR}–${LEO_LIMITS.CEILING} km`
+          : null
+      case "inclination":
+        return n < 0 || n > 180
+          ? "Inclination must be 0–180°"
+          : null
+      case "raan":
+        return n < 0 || n >= 360
+          ? "RAAN must be 0–360°"
+          : null
+      case "eccentricity":
+        return n < 0 || n >= 0.9
+          ? "Eccentricity must be 0–0.9"
+          : null
+      default:
+        return null
+    }
+  }
+
+  /** Returns true when every satellite configurator field is error-free. */
+  const satInputsValid = Object.values(errors).every((e) => e === null)
+
+  function handleFieldChange(field: string, value: string, setter: (v: string) => void) {
+    setter(value)
+    setErrors((prev) => ({ ...prev, [field]: validate(field, value) }))
+  }
+
+  function handleFieldBlur(field: string, value: string, setter: (v: string) => void) {
+    // On blur, clamp to the valid range so the displayed value is always sane.
+    const n = parseFloat(value)
+    if (!Number.isFinite(n)) return
+    let clamped = n
+    if (field === "altitude")    clamped = Math.min(LEO_LIMITS.CEILING, Math.max(LEO_LIMITS.FLOOR, n))
+    if (field === "inclination") clamped = Math.min(180, Math.max(0, n))
+    if (field === "raan")        clamped = Math.min(359.99, Math.max(0, n))
+    if (field === "eccentricity") clamped = Math.min(0.8999, Math.max(0, n))
+    const formatted = field === "eccentricity" ? clamped.toFixed(4) : String(clamped)
+    setter(formatted)
+    setErrors((prev) => ({ ...prev, [field]: null }))
+  }
+
   const handleApply = () => {
     const maxDvVal = parseFloat(maxDv) || 0.35
     const maxBurnsVal = parseInt(maxBurns, 10) || 1
@@ -212,12 +276,27 @@ export function RightSidebar() {
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {/* Altitude */}
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Altitude (km)
                   </label>
-                  <input className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
+                  <input
+                    className={`mc-input${errors.altitude ? " mc-input-error" : ""}`}
+                    type="number"
+                    inputMode="decimal"
+                    value={altitude}
+                    onChange={(e) => handleFieldChange("altitude", e.target.value, setAltitude)}
+                    onBlur={(e) => handleFieldBlur("altitude", e.target.value, setAltitude)}
+                    aria-invalid={!!errors.altitude}
+                    aria-describedby={errors.altitude ? "err-altitude" : undefined}
+                  />
+                  {errors.altitude && (
+                    <span id="err-altitude" className="input-error">{errors.altitude}</span>
+                  )}
                 </div>
+
+                {/* Speed — read-only telemetry */}
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Speed (km/s)
@@ -230,26 +309,80 @@ export function RightSidebar() {
                     style={{ opacity: 0.6, cursor: "not-allowed" }}
                   />
                 </div>
+
+                {/* Inclination */}
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Inclination (°)
                   </label>
-                  <input className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
+                  <input
+                    className={`mc-input${errors.inclination ? " mc-input-error" : ""}`}
+                    type="number"
+                    inputMode="decimal"
+                    value={inclination}
+                    onChange={(e) => handleFieldChange("inclination", e.target.value, setInclination)}
+                    onBlur={(e) => handleFieldBlur("inclination", e.target.value, setInclination)}
+                    aria-invalid={!!errors.inclination}
+                    aria-describedby={errors.inclination ? "err-inclination" : undefined}
+                  />
+                  {errors.inclination && (
+                    <span id="err-inclination" className="input-error">{errors.inclination}</span>
+                  )}
                 </div>
+
+                {/* RAAN */}
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     RAAN (°)
                   </label>
-                  <input className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
+                  <input
+                    className={`mc-input${errors.raan ? " mc-input-error" : ""}`}
+                    type="number"
+                    inputMode="decimal"
+                    value={raan}
+                    onChange={(e) => handleFieldChange("raan", e.target.value, setRaan)}
+                    onBlur={(e) => handleFieldBlur("raan", e.target.value, setRaan)}
+                    aria-invalid={!!errors.raan}
+                    aria-describedby={errors.raan ? "err-raan" : undefined}
+                  />
+                  {errors.raan && (
+                    <span id="err-raan" className="input-error">{errors.raan}</span>
+                  )}
                 </div>
+
+                {/* Eccentricity */}
                 <div style={{ gridColumn: "span 2" }}>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Eccentricity (0–0.9)
                   </label>
-                  <input className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
+                  <input
+                    className={`mc-input${errors.eccentricity ? " mc-input-error" : ""}`}
+                    type="number"
+                    inputMode="decimal"
+                    step="0.001"
+                    value={eccentricity}
+                    onChange={(e) => handleFieldChange("eccentricity", e.target.value, setEccentricity)}
+                    onBlur={(e) => handleFieldBlur("eccentricity", e.target.value, setEccentricity)}
+                    aria-invalid={!!errors.eccentricity}
+                    aria-describedby={errors.eccentricity ? "err-eccentricity" : undefined}
+                  />
+                  {errors.eccentricity && (
+                    <span id="err-eccentricity" className="input-error">{errors.eccentricity}</span>
+                  )}
                 </div>
 
-                <button className="btn-primary" onClick={handleApplySatellite} style={{ gridColumn: "span 2", marginTop: 4 }}>
+                <button
+                  className="btn-primary"
+                  onClick={handleApplySatellite}
+                  disabled={!satInputsValid}
+                  style={{
+                    gridColumn: "span 2",
+                    marginTop: 4,
+                    opacity: satInputsValid ? 1 : 0.4,
+                    cursor: satInputsValid ? "pointer" : "not-allowed",
+                  }}
+                  title={satInputsValid ? undefined : "Fix validation errors before applying"}
+                >
                   Apply Trajectory
                 </button>
               </div>
