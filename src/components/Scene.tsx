@@ -54,7 +54,12 @@ function SceneContent() {
 
 export function Scene() {
   return (
-    <div className="fixed inset-0 z-0">
+    <div 
+      className="fixed inset-0 z-0" 
+      role="application" 
+      aria-label="Interactive 3D space scene showing Earth and orbiting asteroids"
+      tabIndex={0}
+    >
       <Canvas
         camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
         gl={{ antialias: true, alpha: false }}
