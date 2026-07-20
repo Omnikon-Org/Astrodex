@@ -14,33 +14,25 @@ Visualize asteroids, track orbital debris, and monitor conjunction threats with 
 
 ---
 
-## 🔗 Live Demo
+## 📑 Table of Contents
 
-> **👉 [https://astrodex-nine.vercel.app](https://astrodex-nine.vercel.app)**
+- [Live Demo]((https://astrodex-nine.vercel.app))
+- [Screenshots](docs/screenshots/main-dashboard.png)
+- [Tech Stack](#️-tech-stack)
+- [Architecture At A Glance](#️-architecture-at-a-glance)
+- [Core Features](#-core-features)
+- [Quick Start](#-quick-start)
+- [Getting Started](#-getting-started)
+- [Build & Deployment](#️-build--deployment)
+- [Testing & Validation](#-testing--validation)
+- [Project Structure](#-project-structure)
+- [Accessibility](#-accessibility)
+- [Troubleshooting](#️-troubleshooting)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
 
-Open in a Chromium-based browser (Chrome, Edge, Brave) for the best WebGL experience. A dedicated GPU is recommended for smooth 60 fps rendering of 600+ orbital objects.
 
----
-
-## 📸 Screenshots
-
-### Mission Control Dashboard
-The full HUD overlay with 3D Earth, asteroid field, satellite orbits, and real-time conjunction alerts.
-
-![AstroDex Main Dashboard](docs/screenshots/main-dashboard.png)
-
-### Asteroid Filter & Conjunction Alerter
-Filter the orbital catalog by object type. The Conjunction Alerter panel displays live close-approach events with miss distance and risk classification.
-
-![AstroDex Asteroid Filter](docs/screenshots/asteroid-filter.png)
-
-### Agent Terminal (Expanded)
-The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenings, maneuver burns, and orbital tracking data.
-
-![AstroDex Agent Terminal](docs/screenshots/agent-terminal.png)
-
-> [!TIP]
----
 
 ## 🛠️ Tech Stack
 
@@ -135,6 +127,86 @@ integration boundary and rendering pipeline.
   - Expandable bottom terminal dock generating monospace logs of sensor sweeps, conjunction alerts, and maneuver sequences (including boost burns).
 
 ---
+
+## ⚡ Quick Start
+
+Get AstroDex running locally in under a minute:
+
+```bash
+git clone https://github.com/<your-username>/Astrodex.git
+cd Astrodex
+npm install
+npm run dev
+
+
+---
+
+### ♿ Accessibility
+
+```md
+## ♿ Accessibility
+
+AstroDex aims to provide an inclusive experience for all users.
+
+Current accessibility efforts include:
+
+- Keyboard-accessible navigation
+- Screen-reader friendly interface improvements
+- Semantic HTML usage
+- Reduced-motion support for animation-sensitive users
+- Improved focus visibility for interactive controls
+
+Accessibility enhancements are actively being developed and community contributions are welcome. 
+
+## 🛠️ Troubleshooting
+
+### WebGL Not Supported
+
+AstroDex relies on WebGL for 3D rendering.
+
+Check browser compatibility:
+
+- Google Chrome
+- Microsoft Edge
+- Brave Browser
+- Firefox (latest version)
+
+### Poor Performance
+
+If frame rates are low:
+
+- Enable hardware acceleration
+- Close GPU-intensive applications
+- Update graphics drivers
+- Reduce browser tab usage
+
+### Dependency Installation Errors
+
+Try clearing dependencies and reinstalling:
+
+```bash
+rm -rf node_modules
+rm package-lock.json
+npm install
+
+
+---
+
+### 🚀 Roadmap
+
+```md
+## 🚀 Roadmap
+
+Planned future enhancements include:
+
+- Supabase integration for persistent data storage
+- Expanded satellite catalog support
+- Real-world orbital datasets
+- Advanced collision prediction algorithms
+- Historical orbit replay system
+- Enhanced accessibility improvements
+- Mobile-friendly mission control interface
+
 
 ## 🚀 Getting Started
 
