@@ -12,6 +12,7 @@ import { AsteroidField, trackedPosition } from "./AsteroidField"
 import { SatelliteSystem } from "./SatelliteSystem"
 import { CameraController } from "./CameraController"
 import { Effects } from "./Effects"
+import { FramerateMonitor } from "./FramerateMonitor"
 import { useAppState } from "@/lib/store"
 
 function SceneContent() {
@@ -61,6 +62,7 @@ export function Scene() {
       >
         <SceneContent />
       </Canvas>
+      <FramerateMonitor />
     </div>
   )
 }
