@@ -80,10 +80,10 @@ interface AsteroidFieldProps {
 export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFieldProps) {
   const asteroidMeshRef = useRef<THREE.InstancedMesh>(null)
   const debrisMeshRef = useRef<THREE.InstancedMesh>(null)
-  const anglesRef = useRef<number[]>([])
+  const anglesRef = useRef<number[]>(new Array(TOTAL_COUNT).fill(0))
 
   // Cached "at risk" state per object — colors are only re-pushed on transitions
-  const prevAtRiskRef = useRef<boolean[]>([])
+  const prevAtRiskRef = useRef<boolean[]>(new Array(TOTAL_COUNT).fill(false))
 
   const { registerAsteroidData, simulationRunning, filterType, addConjunctionAlert } = useAppState()
 
@@ -92,18 +92,16 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
 
   const data = useMemo(() => {
     const d: AsteroidData[] = []
-    const a: number[] = []
     for (let i = 0; i < TOTAL_COUNT; i++) {
       d.push(generateOrbitalObjectData(i))
-      a.push(0) // placeholder; first frame resolves it via Kepler
     }
-    anglesRef.current = a
-    prevAtRiskRef.current = new Array(TOTAL_COUNT).fill(false)
     return d
   }, [])
 
   const dataRef = useRef(data)
-  dataRef.current = data
+  useEffect(() => {
+    dataRef.current = data
+  }, [data])
 
   // Register data in the store on mount
   useEffect(() => {
@@ -254,7 +252,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   })
 
   const handleAsteroidClick = useCallback(
-    (e: any) => {
+    (e: import("@react-three/fiber").ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
       onAsteroidClick(dataRef.current[e.instanceId])
     },
@@ -262,7 +260,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 
   const handleDebrisClick = useCallback(
-    (e: any) => {
+    (e: import("@react-three/fiber").ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
       onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
     },
@@ -274,7 +272,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
         ref={asteroidMeshRef}
-        args={[null as any, null as any, ASTEROID_COUNT]}
+        args={[undefined as unknown as THREE.BufferGeometry, undefined as unknown as THREE.Material, ASTEROID_COUNT]}
         onClick={handleAsteroidClick}
         frustumCulled={false}
       >
@@ -285,7 +283,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
       <instancedMesh
         ref={debrisMeshRef}
-        args={[null as any, null as any, DEBRIS_COUNT]}
+        args={[undefined as unknown as THREE.BufferGeometry, undefined as unknown as THREE.Material, DEBRIS_COUNT]}
         onClick={handleDebrisClick}
         frustumCulled={false}
       >

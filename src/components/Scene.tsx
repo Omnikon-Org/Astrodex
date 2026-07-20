@@ -8,7 +8,7 @@ import * as THREE from "three"
 import { Earth } from "./earth/Earth"
 import { CloudLayer } from "./earth/CloudLayer"
 import { Atmosphere } from "./earth/Atmosphere"
-import { AsteroidField, trackedPosition } from "./AsteroidField"
+import { AsteroidField } from "./AsteroidField"
 import { SatelliteSystem } from "./SatelliteSystem"
 import { CameraController } from "./CameraController"
 import { Effects } from "./Effects"
@@ -20,7 +20,7 @@ function SceneContent() {
   const selectedIndexRef = useRef<number | null>(null)
 
   const handleAsteroidClick = useCallback(
-    (data: any) => {
+    (data: import("@/lib/store").AsteroidData) => {
       selectedIndexRef.current = data.index
       selectAsteroid(data)
     },

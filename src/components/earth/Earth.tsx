@@ -88,26 +88,24 @@ function makeDefaultTexture() {
 export function Earth({ sunDirection }: EarthProps) {
   const meshRef = useRef<THREE.Mesh>(null)
 
-  const uniformsRef = useRef({
-    dayTexture: { value: makeDefaultTexture() as THREE.Texture },
-    nightTexture: { value: makeDefaultTexture() as THREE.Texture },
-    specularTexture: { value: makeDefaultTexture() as THREE.Texture },
-    cloudShadowTexture: { value: makeDefaultTexture() as THREE.Texture },
-    sunDirection: { value: sunDirection.clone() },
-  })
-
-  useEffect(() => {
+  const [uniforms] = useState(() => {
     const day = new THREE.CanvasTexture(createProceduralEarthTexture())
     const night = new THREE.CanvasTexture(createProceduralNightTexture())
     const spec = new THREE.CanvasTexture(createProceduralSpecularTexture())
     const cloud = new THREE.CanvasTexture(createProceduralCloudTexture())
-    uniformsRef.current.dayTexture.value = day
-    uniformsRef.current.nightTexture.value = night
-    uniformsRef.current.specularTexture.value = spec
-    uniformsRef.current.cloudShadowTexture.value = cloud
-    // sunDirection is constant — set once
-    uniformsRef.current.sunDirection.value.copy(sunDirection)
-  }, [sunDirection])
+    
+    return {
+      dayTexture: { value: day },
+      nightTexture: { value: night },
+      specularTexture: { value: spec },
+      cloudShadowTexture: { value: cloud },
+      sunDirection: { value: sunDirection.clone() },
+    }
+  })
+
+  useEffect(() => {
+    uniforms.sunDirection.value.copy(sunDirection)
+  }, [sunDirection, uniforms])
 
   useFrame((_, delta) => {
     if (meshRef.current) {
@@ -119,7 +117,7 @@ export function Earth({ sunDirection }: EarthProps) {
     <mesh ref={meshRef}>
       <sphereGeometry args={[1.8, 64, 64]} />
       <shaderMaterial
-        uniforms={uniformsRef.current}
+        uniforms={uniforms}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
       />
