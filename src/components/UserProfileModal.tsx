@@ -10,8 +10,8 @@ export function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="relative w-full max-w-md p-6 bg-[#000005] border border-[var(--border-subtle)] rounded-lg shadow-2xl animate-fade-in-up">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md">
+      <div className="relative w-full max-w-md p-8 glass-panel animate-fade-in-up border-t border-[var(--glass-border)] shadow-[0_8px_32px_rgba(0,0,0,0.8)]">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
