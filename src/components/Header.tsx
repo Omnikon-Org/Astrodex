@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useAppState } from "@/lib/store"
+import { SearchCommand } from "./SearchCommand"
+import { UserProfileModal } from "./UserProfileModal"
+import { Leaderboard } from "./Leaderboard"
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -139,14 +142,19 @@ export function Header() {
         )}
       </div>
 
-      {/* Right: Clock */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-          Last updated:
-        </span>
-        <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
-          <LiveClock />
-        </span>
+      {/* Right: Clock & User */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
+            Last updated:
+          </span>
+          <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+            <LiveClock />
+          </span>
+        </div>
+        <SearchCommand />
+        <Leaderboard />
+        <UserProfileModal />
       </div>
     </header>
   )
