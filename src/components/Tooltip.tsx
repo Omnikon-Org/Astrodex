@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react"
+import React, { ReactNode, Component, ErrorInfo } from "react"
 
 interface TooltipProps {
   content: ReactNode
@@ -15,15 +15,39 @@ export function Tooltip({ content, children, position = "top" }: TooltipProps) {
   }
 
   return (
-    <div className="relative group inline-block">
-      {children}
-      <div
-        className={`absolute z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 
-        whitespace-nowrap px-2 py-1 bg-black/90 text-[var(--text-primary)] text-xs rounded border border-[var(--border-subtle)] shadow-lg pointer-events-none 
-        ${positionClasses[position]}`}
-      >
-        {content}
+    <TooltipErrorBoundary>
+      <div className="relative group inline-block">
+        {children}
+        <div
+          className={`absolute z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 
+          whitespace-nowrap px-2 py-1 bg-black/90 text-[var(--text-primary)] text-xs rounded border border-[var(--border-subtle)] shadow-lg pointer-events-none 
+          ${positionClasses[position]}`}
+        >
+          {content}
+        </div>
       </div>
-    </div>
+    </TooltipErrorBoundary>
   )
+}
+
+class TooltipErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError(_: Error) {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Tooltip error:", error, errorInfo)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <span className="text-red-500 text-xs">[Tooltip Error]</span>
+    }
+    return this.props.children
+  }
 }
