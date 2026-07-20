@@ -75,6 +75,7 @@ export function LeftSidebar() {
           className="sidebar-toggle sidebar-toggle-left"
           onClick={toggleLeftSidebar}
           title="Show Target Panel"
+          aria-label="Show Target Panel"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 18l6-6-6-6" />
@@ -111,7 +112,7 @@ export function LeftSidebar() {
                 Target + Live Feed
               </span>
             </div>
-            <button className="btn-ghost" onClick={toggleLeftSidebar} style={{ padding: 4, border: "none" }}>
+            <button className="btn-ghost" onClick={toggleLeftSidebar} style={{ padding: 4, border: "none" }} aria-label="Close Target Panel">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 18l-6-6 6-6" />
               </svg>
