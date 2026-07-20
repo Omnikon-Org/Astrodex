@@ -23,6 +23,10 @@
   --accent-green: #34d399;
   --accent-green-dim: rgba(52, 211, 153, 0.15);
   --accent-red: #f87171;
+  --accent-yellow: #fbbf24;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --accent-red-dim: rgba(248, 113, 113, 0.15);
   --accent-amber: #fbbf24;
   --accent-amber-dim: rgba(251, 191, 36, 0.15);
