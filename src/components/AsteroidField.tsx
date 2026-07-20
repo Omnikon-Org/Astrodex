@@ -381,10 +381,12 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       let closestSat = ""
       let minDistance = Infinity
 
-      for (const s of SAT_POSITIONS) {
-        const d = _objPos.distanceTo(s.pos)
-        if (d < 0.15) {
+      for (let j = 0; j < SAT_POSITIONS.length; j++) {
+        const s = SAT_POSITIONS[j]
+        const dSq = _objPos.distanceToSquared(s.pos)
+        if (dSq < 0.0225) { // 0.15 * 0.15
           atRisk = true
+          const d = Math.sqrt(dSq)
           if (d < minDistance) {
             minDistance = d
             closestSat = s.name
