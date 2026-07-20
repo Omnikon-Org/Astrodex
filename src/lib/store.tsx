@@ -35,6 +35,8 @@ interface AppState {
   toggleTerminal: () => void
   // Search by ID
   searchAsteroidById: (id: number) => void
+  selectNextAsteroid: () => void
+  selectPrevAsteroid: () => void
   registerAsteroidData: (data: AsteroidData[]) => void
 
   // Space Debris Filters & Satellite Parameters
@@ -89,6 +91,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const nextAlertId = useRef(1)
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
+
+  const selectNextAsteroid = useCallback(() => {
+    if (asteroidDataRef.current.length === 0) return
+    setSelectedAsteroid((prev) => {
+      if (!prev) return asteroidDataRef.current[0]
+      const nextId = (prev.id + 1) % asteroidDataRef.current.length
+      return asteroidDataRef.current[nextId]
+    })
+  }, [])
+
+  const selectPrevAsteroid = useCallback(() => {
+    if (asteroidDataRef.current.length === 0) return
+    setSelectedAsteroid((prev) => {
+      if (!prev) return asteroidDataRef.current[0]
+      const nextId = (prev.id - 1 + asteroidDataRef.current.length) % asteroidDataRef.current.length
+      return asteroidDataRef.current[nextId]
+    })
+  }, [])
 
   const claimAsteroid = useCallback((id: number) => {
     setClaimed((prev) => {
@@ -179,6 +199,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedAsteroid,
         claimedAsteroids,
         selectAsteroid,
+        selectNextAsteroid,
+        selectPrevAsteroid,
         claimAsteroid,
         resetCamera,
         triggerReset,
