@@ -37,6 +37,11 @@ export const SCENE_TIME_SCALE = 60
  * @param tolerance Convergence threshold on |ΔE|, default 1e-7.
  */
 export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
+  // Instrument the solver: Only runs when a global flag is set (e.g. for profiling)
+  const isInstrumented = typeof window !== "undefined" && (window as any).__INSTRUMENT_KEPLER__
+  let t0 = 0
+  if (isInstrumented) t0 = performance.now()
+
   // Wrap M to [−π, π] so the initial guess is meaningful for any time t.
   const TAU = Math.PI * 2
   const m = ((M % TAU) + TAU + Math.PI) % TAU - Math.PI
@@ -50,6 +55,14 @@ export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
     const dE = f / fp
     E -= dE
     if (Math.abs(dE) < tolerance) break
+  }
+
+  if (isInstrumented) {
+    const dt = performance.now() - t0
+    // accumulate in global stats if defined
+    if (!(window as any).__KEPLER_STATS__) (window as any).__KEPLER_STATS__ = { calls: 0, totalMs: 0 }
+    ;(window as any).__KEPLER_STATS__.calls++
+    ;(window as any).__KEPLER_STATS__.totalMs += dt
   }
 
   return E
