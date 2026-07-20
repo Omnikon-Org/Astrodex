@@ -13,9 +13,14 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "AstroDex — Interactive 3D Asteroid Explorer",
+  title: {
+    template: "%s | AstroDex",
+    default: "AstroDex — Interactive 3D Asteroid Explorer",
+  },
   description:
     "Explore 600+ asteroids orbiting Earth in real-time 3D. Track conjunctions, inspect orbital parameters, and claim discoveries in this cinematic space mission control.",
+  keywords: ["astrodex", "asteroids", "3d", "space", "orbit", "interactive", "webgl"],
+  applicationName: "AstroDex",
 }
 
 export default function RootLayout({
