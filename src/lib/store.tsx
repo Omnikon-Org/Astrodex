@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useRef, useEffect, type ReactNode } from "react"
 import type { AsteroidData } from "./types"
 
 export interface ConjunctionAlert {
@@ -36,6 +36,10 @@ interface AppState {
   // Search by ID
   searchAsteroidById: (id: number) => void
   registerAsteroidData: (data: AsteroidData[]) => void
+  setDataLoaded: (loaded: boolean) => void
+
+  settingsOpen: boolean
+  toggleSettings: () => void
 
   // Space Debris Filters & Satellite Parameters
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
@@ -71,11 +75,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
+  const [dataLoaded, setDataLoaded] = useState(false)
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const [terminalExpanded, setTerminalExpanded] = useState(false)
   const asteroidDataRef = useRef<AsteroidData[]>([])
+
+  // Simulate asteroid data fetching delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDataLoaded(true)
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const toggleSettings = () => setSettingsOpen((prev) => !prev)
 
   // Space Debris Filters & Satellite Parameters
   const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
@@ -194,6 +210,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleTerminal,
         searchAsteroidById,
         registerAsteroidData,
+        setDataLoaded,
+        settingsOpen,
+        toggleSettings,
         filterType,
         setFilterType,
         satAltitude,
