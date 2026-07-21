@@ -8,7 +8,9 @@ import { useAppState } from "@/lib/store"
 import { satellitePositions } from "./SatelliteSystem"
 import {
   solveKepler,
+  getOrbitalPosition,
   visViva,
+  visVivaKmPerSec,
   meanMotion,
   SCENE_TIME_SCALE,
   velocityToKmPerSec,
@@ -152,16 +154,12 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       const E = anglesRef.current[i]
       const a = ad.orbitRadius
       const e = ad.eccentricity
-      const cosE = Math.cos(E)
-      const sinE = Math.sin(E)
-      const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+      const inc = ad.inclination // Already in radians
 
-      // In-plane perifocal coordinates of the ellipse
-      const xPlane = a * (cosE - e)
-      const zPlane = a * sqrt1me2 * sinE
-
-      // Apply inclination tilt to break the orbit out of the xz plane
-      _objPos.set(xPlane, zPlane * ad.inclination, zPlane)
+      // Compute true 3D orbital position (defaults RAAN to 0 for asteroids since it's not in AsteroidData yet)
+      const pos = getOrbitalPosition(a, e, E, inc, 0)
+      
+      _objPos.set(pos.x, pos.y, pos.z)
 
       dummy.position.copy(_objPos)
       dummy.rotation.x = E * 0.5
