@@ -5,7 +5,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholde
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-export async function withTimeout<T>(promise: Promise<T>, ms: number = 5000): Promise<T> {
+export async function withTimeout<T>(promise: PromiseLike<T>, ms: number = 5000): Promise<T> {
   let timeoutId: NodeJS.Timeout
   const timeoutPromise = new Promise<never>((_, reject) => {
     timeoutId = setTimeout(() => {

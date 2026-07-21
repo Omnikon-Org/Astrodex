@@ -104,7 +104,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
     })
 
-    return () => subscription.unsubscribe()
+    // Fetch initial claims
+    supabase.from('claims').select('asteroid_id').then(({ data, error }) => {
+      if (!error && data) {
+        setClaimed(new Set(data.map(d => d.asteroid_id)))
+      }
+    })
+
+    // Subscribe to realtime claims updates
+    const claimsChannel = supabase.channel('claims_channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'claims' }, (payload) => {
+        setClaimed((prev) => {
+          const next = new Set(prev)
+          if (payload.eventType === 'INSERT') {
+            next.add(payload.new.asteroid_id)
+          } else if (payload.eventType === 'DELETE') {
+            next.delete(payload.old.asteroid_id)
+          }
+          return next
+        })
+      })
+      .subscribe()
+
+    return () => {
+      subscription.unsubscribe()
+      supabase.removeChannel(claimsChannel)
+    }
   }, [])
 
   const loginWithGithub = useCallback(async () => {
@@ -121,14 +146,42 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
 
-  const claimAsteroid = useCallback((id: number) => {
+  const claimAsteroid = useCallback(async (id: number) => {
+    if (!user) return // Must be logged in
+
+    const isClaiming = !claimedAsteroids.has(id)
+    
+    // Optimistic UI Update
     setClaimed((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
+      if (isClaiming) next.add(id)
+      else next.delete(id)
       return next
     })
-  }, [])
+
+    try {
+      const { withTimeout } = await import('./supabase')
+      
+      if (isClaiming) {
+        await withTimeout(
+          supabase.from('claims').insert({ asteroid_id: id, user_id: user.id })
+        )
+      } else {
+        await withTimeout(
+          supabase.from('claims').delete().eq('asteroid_id', id).eq('user_id', user.id)
+        )
+      }
+    } catch (error) {
+      console.error("Failed to sync claim:", error)
+      // Rollback Optimistic UI Update
+      setClaimed((prev) => {
+        const next = new Set(prev)
+        if (isClaiming) next.delete(id)
+        else next.add(id)
+        return next
+      })
+    }
+  }, [user, claimedAsteroids])
 
   const triggerReset = useCallback(() => {
     setResetCamera(true)
