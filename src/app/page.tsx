@@ -10,6 +10,11 @@ import { AsteroidCard } from "@/components/AsteroidCard"
 
 const Scene = dynamic(() => import("@/components/Scene").then((m) => ({ default: m.Scene })), {
   ssr: false,
+  loading: () => (
+    <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#000005", color: "var(--accent-cyan)", fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: "14px" }}>
+      Initializing WebGL context...
+    </div>
+  ),
 })
 
 export default function Home() {
