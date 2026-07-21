@@ -31,16 +31,19 @@ Open in a Chromium-based browser (Chrome, Edge, Brave) for the best WebGL experi
 ## 📸 Screenshots
 
 ### Mission Control Dashboard
+
 The full HUD overlay with 3D Earth, asteroid field, satellite orbits, and real-time conjunction alerts.
 
 ![AstroDex Main Dashboard](docs/screenshots/main-dashboard.png)
 
 ### Asteroid Filter & Conjunction Alerter
+
 Filter the orbital catalog by object type. The Conjunction Alerter panel displays live close-approach events with miss distance and risk classification.
 
 ![AstroDex Asteroid Filter](docs/screenshots/asteroid-filter.png)
 
 ### Agent Terminal (Expanded)
+
 The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenings, maneuver burns, and orbital tracking data.
 
 ![AstroDex Agent Terminal](docs/screenshots/agent-terminal.png)
@@ -49,20 +52,20 @@ The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenin
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Framework** | [Next.js 16](https://nextjs.org/) (App Router) | Server/client rendering, routing, and build tooling |
-| **UI Library** | [React 19](https://react.dev/) | Component-based UI architecture |
-| **3D Engine** | [Three.js](https://threejs.org/) | WebGL rendering, geometries, and materials |
-| **React ↔ 3D** | [React Three Fiber (R3F)](https://r3f.docs.pmnd.rs/) | Declarative Three.js in React |
-| **3D Helpers** | [@react-three/drei](https://drei.docs.pmnd.rs/) | Stars, camera controls, and instanced mesh utilities |
-| **Post-Processing** | [@react-three/postprocessing](https://github.com/pmndrs/postprocessing) | Bloom, vignette, and cinematic effects |
-| **Shaders** | Custom GLSL | Earth day/night rendering, atmosphere scattering, cloud layers |
-| **Language** | [TypeScript](https://www.typescriptlang.org/) | Type-safe development with strict mode |
-| **Styling** | Vanilla CSS + CSS Variables | Glassmorphic design system with custom properties |
-| **Fonts** | [Geist](https://vercel.com/font) + [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | UI typography + monospace terminal |
-| **Linting** | [ESLint](https://eslint.org/) | Code quality and consistency |
-| **Deployment** | [Vercel](https://vercel.com/) | Zero-config hosting for Next.js |
+| Layer               | Technology                                                                              | Purpose                                                        |
+| ------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Framework**       | [Next.js 16](https://nextjs.org/) (App Router)                                          | Server/client rendering, routing, and build tooling            |
+| **UI Library**      | [React 19](https://react.dev/)                                                          | Component-based UI architecture                                |
+| **3D Engine**       | [Three.js](https://threejs.org/)                                                        | WebGL rendering, geometries, and materials                     |
+| **React ↔ 3D**      | [React Three Fiber (R3F)](https://r3f.docs.pmnd.rs/)                                    | Declarative Three.js in React                                  |
+| **3D Helpers**      | [@react-three/drei](https://drei.docs.pmnd.rs/)                                         | Stars, camera controls, and instanced mesh utilities           |
+| **Post-Processing** | [@react-three/postprocessing](https://github.com/pmndrs/postprocessing)                 | Bloom, vignette, and cinematic effects                         |
+| **Shaders**         | Custom GLSL                                                                             | Earth day/night rendering, atmosphere scattering, cloud layers |
+| **Language**        | [TypeScript](https://www.typescriptlang.org/)                                           | Type-safe development with strict mode                         |
+| **Styling**         | Vanilla CSS + CSS Variables                                                             | Glassmorphic design system with custom properties              |
+| **Fonts**           | [Geist](https://vercel.com/font) + [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | UI typography + monospace terminal                             |
+| **Linting**         | [ESLint](https://eslint.org/)                                                           | Code quality and consistency                                   |
+| **Deployment**      | [Vercel](https://vercel.com/)                                                           | Zero-config hosting for Next.js                                |
 
 ---
 
@@ -100,11 +103,11 @@ The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenin
 
 ### Prerequisites
 
-| Tool | Version | Notes |
-|------|---------|-------|
-| [Node.js](https://nodejs.org/) | **18+** | LTS recommended (includes npm) |
-| [npm](https://www.npmjs.com/) | **9+** | Bundled with Node.js |
-| [Git](https://git-scm.com/) | Any recent | For cloning and version control |
+| Tool                           | Version    | Notes                           |
+| ------------------------------ | ---------- | ------------------------------- |
+| [Node.js](https://nodejs.org/) | **18+**    | LTS recommended (includes npm)  |
+| [npm](https://www.npmjs.com/)  | **9+**     | Bundled with Node.js            |
+| [Git](https://git-scm.com/)    | Any recent | For cloning and version control |
 
 > [!TIP]
 > Run `node -v` and `npm -v` to verify your installed versions.
@@ -153,12 +156,12 @@ The production server runs on **[http://localhost:3000](http://localhost:3000)**
 
 ### Available Scripts
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| `dev` | `npm run dev` | Start the development server with hot-reload |
-| `build` | `npm run build` | Create an optimized production build |
-| `start` | `npm run start` | Serve the production build locally |
-| `lint` | `npm run lint` | Run ESLint to check for code quality issues |
+| Script  | Command         | Description                                  |
+| ------- | --------------- | -------------------------------------------- |
+| `dev`   | `npm run dev`   | Start the development server with hot-reload |
+| `build` | `npm run build` | Create an optimized production build         |
+| `start` | `npm run start` | Serve the production build locally           |
+| `lint`  | `npm run lint`  | Run ESLint to check for code quality issues  |
 
 ### Deploying to Vercel
 
@@ -254,6 +257,7 @@ astrodex/
 ## 🤝 Contributing
 
 We welcome contributions! For the full process and guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md). In short: comment on an issue to claim it, open a focused branch for your work, and submit a PR with a clear description and testing steps. Helpful quick rules:
+
 - Comment on the issue expressing interest so maintainers can assign it.
 - Create a focused branch with a descriptive name (e.g., `feat/…`, `fix/…`, `docs/…`).
 - Keep PRs small and include steps to reproduce or test.
@@ -261,6 +265,7 @@ We welcome contributions! For the full process and guidelines, see [CONTRIBUTING
 ## 🎨 Coding style / Linting / Formatting
 
 AstroDex uses TypeScript (strict mode), ESLint, and Tailwind. Follow the conventions in [CONTRIBUTING.md#code-style](./CONTRIBUTING.md#code-style) (use `@/` path alias, add `"use client"` for client components, avoid `any`, remove unused imports). Run these commands before opening a PR:
+
 - `npm run lint`
 - `npx tsc --noEmit`
 - `npm run build`

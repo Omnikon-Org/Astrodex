@@ -42,10 +42,7 @@ function SceneContent() {
 
       <SatelliteSystem />
 
-      <AsteroidField
-        onAsteroidClick={handleAsteroidClick}
-        getSelectedIndex={getSelectedIndex}
-      />
+      <AsteroidField onAsteroidClick={handleAsteroidClick} getSelectedIndex={getSelectedIndex} />
       <CameraController />
       <Effects />
     </>

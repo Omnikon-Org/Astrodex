@@ -27,7 +27,8 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } =
+    useAppState()
 
   return (
     <header
@@ -101,7 +102,9 @@ export function Header() {
           {simulationRunning ? "Pause Simulation" : "Run Simulation"}
         </button>
 
-        <div className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+        <div
+          className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}
+        >
           Risk: {riskLevel}
         </div>
 
@@ -131,7 +134,16 @@ export function Header() {
 
         {selectedAsteroid && (
           <button className="btn-ghost" onClick={triggerReset}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back to Earth

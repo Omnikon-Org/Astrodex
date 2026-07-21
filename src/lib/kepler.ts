@@ -39,7 +39,7 @@ export const SCENE_TIME_SCALE = 60
 export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
   // Wrap M to [−π, π] so the initial guess is meaningful for any time t.
   const TAU = Math.PI * 2
-  const m = ((M % TAU) + TAU + Math.PI) % TAU - Math.PI
+  const m = (((M % TAU) + TAU + Math.PI) % TAU) - Math.PI
 
   // Robust initial guess.
   let E = e < 0.8 ? m : Math.PI * Math.sign(m || 1)

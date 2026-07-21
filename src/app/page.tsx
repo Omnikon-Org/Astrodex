@@ -32,7 +32,7 @@ export default function Home() {
         <LeftSidebar />
         <RightSidebar />
         <AgentTerminal />
-        
+
         {/* Floating Asteroid Inspector */}
         <AsteroidCard />
       </main>

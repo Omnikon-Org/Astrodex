@@ -3,13 +3,8 @@
 import { useAppState } from "@/lib/store"
 
 export function AsteroidCard() {
-  const {
-    selectedAsteroid,
-    claimedAsteroids,
-    claimAsteroid,
-    leftSidebarOpen,
-    selectAsteroid,
-  } = useAppState()
+  const { selectedAsteroid, claimedAsteroids, claimAsteroid, leftSidebarOpen, selectAsteroid } =
+    useAppState()
 
   if (!selectedAsteroid) return null
 
@@ -47,9 +42,7 @@ export function AsteroidCard() {
               height: 6,
               borderRadius: "50%",
               backgroundColor: isClaimed ? "var(--accent-green)" : "var(--accent-cyan)",
-              boxShadow: isClaimed
-                ? "0 0 6px var(--accent-green)"
-                : "0 0 6px var(--accent-cyan)",
+              boxShadow: isClaimed ? "0 0 6px var(--accent-green)" : "0 0 6px var(--accent-cyan)",
             }}
           />
           <span

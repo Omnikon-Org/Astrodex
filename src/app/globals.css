@@ -46,11 +46,16 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   background: var(--bg-deep);
   color: var(--text-primary);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family:
+    var(--font-sans),
+    system-ui,
+    -apple-system,
+    sans-serif;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -115,7 +120,9 @@ html, body {
   font-size: 13px;
   padding: 8px 10px;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .mc-input:focus {
@@ -289,7 +296,8 @@ html, body {
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 4px rgba(56, 189, 248, 0.4);
     opacity: 1;
   }
@@ -300,8 +308,13 @@ html, body {
 }
 
 @keyframes terminalBlink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 @keyframes slideInBottom {
@@ -343,7 +356,9 @@ html, body {
   bottom: calc(var(--terminal-collapsed) + 12px);
   width: var(--sidebar-width);
   z-index: 40;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease;
 }
 
 .sidebar-left.collapsed {
@@ -359,7 +374,9 @@ html, body {
   bottom: calc(var(--terminal-collapsed) + 12px);
   width: var(--sidebar-width);
   z-index: 40;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease;
 }
 
 .sidebar-right.collapsed {
