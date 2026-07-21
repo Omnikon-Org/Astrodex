@@ -68,6 +68,7 @@ export function AsteroidCard() {
           className="btn-ghost"
           onClick={() => selectAsteroid(null)}
           style={{ padding: 4, border: "none" }}
+          aria-label="Close Inspector"
         >
           <svg
             width="14"

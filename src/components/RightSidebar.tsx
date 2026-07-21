@@ -104,6 +104,7 @@ export function RightSidebar() {
           className="sidebar-toggle sidebar-toggle-right"
           onClick={toggleRightSidebar}
           title="Show Constraints Panel"
+          aria-label="Show Constraints Panel"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 18l-6-6 6-6" />
@@ -125,7 +126,7 @@ export function RightSidebar() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button className="btn-ghost" onClick={toggleRightSidebar} style={{ padding: 4, border: "none" }}>
+              <button className="btn-ghost" onClick={toggleRightSidebar} style={{ padding: 4, border: "none" }} aria-label="Hide Constraints Panel">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 18l6-6-6-6" />
                 </svg>
