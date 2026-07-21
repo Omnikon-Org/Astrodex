@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useMemo, useCallback, useEffect } from "react"
-import { useFrame } from "@react-three/fiber"
+import { useFrame, ThreeEvent } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
 import { useAppState } from "@/lib/store"
@@ -254,7 +254,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   })
 
   const handleAsteroidClick = useCallback(
-    (e: any) => {
+    (e: ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
       onAsteroidClick(dataRef.current[e.instanceId])
     },
@@ -262,7 +262,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 
   const handleDebrisClick = useCallback(
-    (e: any) => {
+    (e: ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
       onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
     },
@@ -274,7 +274,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
         ref={asteroidMeshRef}
-        args={[null as any, null as any, ASTEROID_COUNT]}
+        args={[undefined as any, undefined as any, ASTEROID_COUNT]}
         onClick={handleAsteroidClick}
         frustumCulled={false}
       >
@@ -285,7 +285,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
       <instancedMesh
         ref={debrisMeshRef}
-        args={[null as any, null as any, DEBRIS_COUNT]}
+        args={[undefined as any, undefined as any, DEBRIS_COUNT]}
         onClick={handleDebrisClick}
         frustumCulled={false}
       >
