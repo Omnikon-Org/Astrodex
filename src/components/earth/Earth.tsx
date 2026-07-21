@@ -57,7 +57,7 @@ void main() {
   vec3 twilightColor = vec3(0.9, 0.4, 0.1) * twilight * 0.5;
 
   vec3 warmNight = nightColor * vec3(1.55, 1.05, 0.55) * 0.20;
-  vec3 color = mix(warmNight, dayColor, dayMix);
+  vec3 color = mix(warmNight, dayColor * shadowFactor, dayMix);
   color += twilightColor;
 
   vec3 viewDir = normalize(-vPosition);
