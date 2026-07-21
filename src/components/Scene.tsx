@@ -34,6 +34,10 @@ function SceneContent() {
       <color attach="background" args={["#000008"]} />
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 3, 5]} intensity={2} />
+      <mesh position={[50, 30, 50]}>
+        <sphereGeometry args={[2, 32, 32]} />
+        <meshBasicMaterial color={[5, 5, 4]} toneMapped={false} />
+      </mesh>
       <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
 
       <Earth sunDirection={sunDirection} />
