@@ -42,7 +42,7 @@ git clone https://github.com/<your-username>/astrodex.git
 cd astrodex
 
 # 2. Add the upstream remote so you can pull future changes
-git remote add upstream https://github.com/SourabhX16/astrodex.git
+git remote add upstream https://github.com/RishiByte/astrodex.git
 
 # 3. Install dependencies
 npm install
@@ -380,7 +380,7 @@ If you witness or experience unacceptable behavior, please report it by opening 
 
 ---
 
-[issues]: https://github.com/SourabhX16/astrodex/issues
+[issues]: https://github.com/RishiByte/astrodex/issues
 [nodejs]: https://nodejs.org
 [npm]: https://www.npmjs.com
 [ts]: https://www.typescriptlang.org
