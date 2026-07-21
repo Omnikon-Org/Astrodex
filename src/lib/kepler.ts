@@ -32,17 +32,18 @@ export const SCENE_TIME_SCALE = 60
  * Uses Newton-Raphson with an initial guess that handles the high-eccentricity
  * regime robustly (E₀ = π when e ≥ 0.8).
  *
- * @param M Mean anomaly in radians (can be any real value; wrapped to [−π, π]).
- * @param e Eccentricity in [0, 1).
- * @param tolerance Convergence threshold on |ΔE|, default 1e-7.
+ * @param M Mean anomaly in radians.
+ * @param e Eccentricity.
+ * @param initialGuess Optional cached anomaly from the previous frame for faster convergence.
+ * @param tolerance Convergence threshold, default 1e-7.
  */
-export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
+export function solveKepler(M: number, e: number, initialGuess?: number, tolerance = 1e-7): number {
   // Wrap M to [−π, π] so the initial guess is meaningful for any time t.
   const TAU = Math.PI * 2
   const m = ((M % TAU) + TAU + Math.PI) % TAU - Math.PI
 
   // Robust initial guess.
-  let E = e < 0.8 ? m : Math.PI * Math.sign(m || 1)
+  let E = initialGuess !== undefined ? initialGuess : (e < 0.8 ? m : Math.PI * Math.sign(m || 1))
 
   for (let i = 0; i < 40; i++) {
     const f = E - e * Math.sin(E) - m
