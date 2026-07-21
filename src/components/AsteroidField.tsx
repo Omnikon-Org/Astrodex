@@ -2,6 +2,7 @@
 
 import { useRef, useMemo, useCallback, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
+import { Line } from "@react-three/drei"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
 import { useAppState } from "@/lib/store"
@@ -269,8 +270,36 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     [onAsteroidClick]
   )
 
+  const { claimedAsteroids } = useAppState()
+  const trails = useMemo(() => {
+    return Array.from(claimedAsteroids).map((id) => {
+      const ad = dataRef.current.find((a) => a.id === id)
+      if (!ad) return null
+
+      const pts = []
+      const a = ad.orbitRadius
+      const e = ad.eccentricity
+      const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+      const incl = ad.inclination
+
+      for (let i = 0; i <= 64; i++) {
+        const E = (i / 64) * Math.PI * 2
+        const cosE = Math.cos(E)
+        const sinE = Math.sin(E)
+        const xPlane = a * (cosE - e)
+        const zPlane = a * sqrt1me2 * sinE
+        pts.push(new THREE.Vector3(xPlane, zPlane * incl, zPlane))
+      }
+
+      return (
+        <Line key={id} points={pts} color="#00ffff" lineWidth={1} transparent opacity={0.4} />
+      )
+    })
+  }, [claimedAsteroids])
+
   return (
     <>
+      {trails}
       {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
         ref={asteroidMeshRef}
