@@ -156,24 +156,24 @@ export function RightSidebar() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="maxDv" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Max total Δv (m/s)
                   </label>
-                  <input className="mc-input" type="text" value={maxDv} onChange={(e) => setMaxDv(e.target.value)} />
+                  <input id="maxDv" className="mc-input" type="text" value={maxDv} onChange={(e) => setMaxDv(e.target.value)} />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="maxBurns" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Max burns
                   </label>
-                  <input className="mc-input" type="text" value={maxBurns} onChange={(e) => setMaxBurns(e.target.value)} />
+                  <input id="maxBurns" className="mc-input" type="text" value={maxBurns} onChange={(e) => setMaxBurns(e.target.value)} />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="maneuverAxis" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Preferred maneuver axis
                   </label>
-                  <input className="mc-input" type="text" value={maneuverAxis} onChange={(e) => setManeuverAxis(e.target.value)} />
+                  <input id="maneuverAxis" className="mc-input" type="text" value={maneuverAxis} onChange={(e) => setManeuverAxis(e.target.value)} />
                 </div>
 
                 <button className="btn-primary" onClick={handleApply} style={{ width: "100%", marginTop: 2 }}>
@@ -200,16 +200,17 @@ export function RightSidebar() {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="altitude" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Altitude (km)
                   </label>
-                  <input className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
+                  <input id="altitude" className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="speed" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Speed (km/s)
                   </label>
                   <input
+                    id="speed"
                     className="mc-input"
                     type="text"
                     value={displaySpeedKmS.toFixed(2)}
@@ -218,22 +219,22 @@ export function RightSidebar() {
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="inclination" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Inclination (°)
                   </label>
-                  <input className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
+                  <input id="inclination" className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="raan" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     RAAN (°)
                   </label>
-                  <input className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
+                  <input id="raan" className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
                 </div>
                 <div style={{ gridColumn: "span 2" }}>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="eccentricity" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Eccentricity (0–0.9)
                   </label>
-                  <input className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
+                  <input id="eccentricity" className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
                 </div>
 
                 <button className="btn-primary" onClick={handleApplySatellite} style={{ gridColumn: "span 2", marginTop: 4 }}>
