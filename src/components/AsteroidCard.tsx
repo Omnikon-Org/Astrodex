@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react"
 
 import { useAppState } from "@/lib/store"
 
@@ -10,6 +11,8 @@ export function AsteroidCard() {
     leftSidebarOpen,
     selectAsteroid,
   } = useAppState()
+  
+  const [announcement, setAnnouncement] = useState("")
 
   if (!selectedAsteroid) return null
 
@@ -144,7 +147,10 @@ export function AsteroidCard() {
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={() => claimAsteroid(selectedAsteroid.id)}
+            onClick={() => {
+              claimAsteroid(selectedAsteroid.id)
+              setAnnouncement(isClaimed ? `Mining claim released for ${selectedAsteroid.name}` : `Mining claim filed for ${selectedAsteroid.name}`)
+            }}
             className="btn-primary"
             style={{
               width: "100%",
@@ -161,6 +167,9 @@ export function AsteroidCard() {
           >
             {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
           </button>
+        </div>
+        <div aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
+          {announcement}
         </div>
       </div>
     </div>
