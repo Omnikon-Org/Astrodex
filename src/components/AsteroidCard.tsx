@@ -16,8 +16,9 @@ export function AsteroidCard() {
   const isClaimed = claimedAsteroids.has(selectedAsteroid.id)
 
   return (
-    <div
+    <section
       className="glass-panel animate-fade-in-left"
+      aria-labelledby="asteroid-card-title"
       style={{
         position: "fixed",
         top: "calc(var(--header-height) + 16px)",
@@ -52,17 +53,19 @@ export function AsteroidCard() {
                 : "0 0 6px var(--accent-cyan)",
             }}
           />
-          <span
+          <h2
+            id="asteroid-card-title"
             style={{
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               color: "var(--text-primary)",
+              margin: 0,
             }}
           >
             Inspector: {selectedAsteroid.name}
-          </span>
+          </h2>
         </div>
         <button
           className="btn-ghost"
@@ -163,6 +166,6 @@ export function AsteroidCard() {
           </button>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
