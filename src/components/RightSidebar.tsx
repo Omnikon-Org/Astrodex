@@ -200,7 +200,7 @@ export function RightSidebar() {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label title="Vertical distance of the satellite above the Earth's surface" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Altitude (km)
                   </label>
                   <input className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
@@ -218,19 +218,19 @@ export function RightSidebar() {
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label title="The angle between the orbital plane and the Earth's equator" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Inclination (°)
                   </label>
                   <input className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label title="Right Ascension of the Ascending Node (RAAN): The orientation of the orbit's ascending node in the equatorial plane" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     RAAN (°)
                   </label>
                   <input className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
                 </div>
                 <div style={{ gridColumn: "span 2" }}>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label title="Measures how much the orbit deviates from a perfect circle (0 = circular, >0 = elliptical)" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Eccentricity (0–0.9)
                   </label>
                   <input className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
