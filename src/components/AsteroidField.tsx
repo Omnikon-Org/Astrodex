@@ -43,14 +43,16 @@ function generateOrbitalObjectData(index: number): AsteroidData {
     orbitRadius,
     speed,
     scale: isDebris ? 0.015 + Math.random() * 0.025 : 0.03 + Math.random() * 0.06,
-    inclination: isDebris ? (Math.random() - 0.5) * 1.2 : (Math.random() - 0.5) * 0.35,
+    inclination: isDebris ? (Math.random() - 0.5) * 1.2 : (Math.random() - 0.5) * Math.PI, // Full 180 deg variance
     distance: `${(orbitRadius * 0.15).toFixed(2)} AU`,
     velocity: "0.0 km/s", // overwritten on first frame from Vis-Viva
     claimed: false,
     type,
     name,
     atRisk: false,
-    eccentricity: isDebris ? Math.random() * 0.18 : Math.random() * 0.28,
+    eccentricity: isDebris 
+      ? Math.random() * 0.3 
+      : (Math.random() < 0.03 ? 1.05 + Math.random() * 0.5 : Math.random() * 0.8), // 3% hyperbolic
     meanAnomaly0: Math.random() * Math.PI * 2,
   }
 }
