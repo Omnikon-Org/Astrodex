@@ -27,7 +27,7 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, reduceMotion, toggleReduceMotion } = useAppState()
 
   return (
     <header
@@ -137,6 +137,20 @@ export function Header() {
             Back to Earth
           </button>
         )}
+
+        <button 
+          className="btn-ghost" 
+          onClick={toggleReduceMotion}
+          aria-pressed={reduceMotion}
+          title={reduceMotion ? "Enable Motion" : "Reduce Motion"}
+        >
+          {reduceMotion ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          )}
+          {reduceMotion ? "Motion: Reduced" : "Motion: Full"}
+        </button>
       </div>
 
       {/* Right: Clock */}

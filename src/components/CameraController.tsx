@@ -13,7 +13,7 @@ const _lookTarget = new THREE.Vector3()
 
 export function CameraController() {
   const { camera } = useThree()
-  const { selectedAsteroid, resetCamera, clearReset } = useAppState()
+  const { selectedAsteroid, resetCamera, clearReset, reduceMotion } = useAppState()
   const targetPos = useRef(EARTH_POSITION.clone())
   const targetLook = useRef(EARTH_TARGET.clone())
   const hasSelection = useRef(false)
@@ -43,7 +43,11 @@ export function CameraController() {
       }
     }
 
-    camera.position.lerp(targetPos.current, 3 * delta)
+    if (reduceMotion) {
+      camera.position.copy(targetPos.current)
+    } else {
+      camera.position.lerp(targetPos.current, 3 * delta)
+    }
     _lookTarget.copy(targetLook.current)
     camera.lookAt(_lookTarget)
   })
