@@ -27,16 +27,31 @@ const KM_PER_UNIT = 3543 // 1 scene unit = 3543 km (Earth radius 6378 km = 1.8 u
 export const SCENE_TIME_SCALE = 60
 
 /**
- * Solve Kepler's equation  M = E − e·sin(E)  for the eccentric anomaly E.
+ * Solve Kepler's equation M = E − e·sin(E) for the eccentric anomaly E (if e < 1),
+ * or M = e·sinh(H) - H for the hyperbolic anomaly H (if e >= 1).
  *
- * Uses Newton-Raphson with an initial guess that handles the high-eccentricity
- * regime robustly (E₀ = π when e ≥ 0.8).
- *
- * @param M Mean anomaly in radians (can be any real value; wrapped to [−π, π]).
- * @param e Eccentricity in [0, 1).
- * @param tolerance Convergence threshold on |ΔE|, default 1e-7.
+ * @param M Mean anomaly in radians.
+ * @param e Eccentricity.
+ * @param tolerance Convergence threshold, default 1e-7.
  */
 export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
+  if (e >= 1) {
+    // Hyperbolic case: M = e * sinh(H) - H
+    // Initial guess for H
+    let H = M > 0 ? Math.log(2 * M / e + 1.8) : -Math.log(-2 * M / e + 1.8)
+    if (Math.abs(M) < 0.1) H = M
+    
+    for (let i = 0; i < 40; i++) {
+      const f = e * Math.sinh(H) - H - M
+      const fp = e * Math.cosh(H) - 1
+      const dH = f / fp
+      H -= dH
+      if (Math.abs(dH) < tolerance) break
+    }
+    return H
+  }
+
+  // Elliptical case: M = E - e*sin(E)
   // Wrap M to [−π, π] so the initial guess is meaningful for any time t.
   const TAU = Math.PI * 2
   const m = ((M % TAU) + TAU + Math.PI) % TAU - Math.PI
@@ -68,7 +83,8 @@ export function meanMotion(a: number): number {
   // when scaled by SCENE_TIME_SCALE.  Derived empirically:
   //   μ_scene = 0.005  →  n(1.91) ≈ 0.0267 rad/s,  period ≈ 235 s raw.
   const MU_SCENE = 0.005
-  return Math.sqrt(MU_SCENE / (a * a * a))
+  const absA = Math.abs(a)
+  return Math.sqrt(MU_SCENE / (absA * absA * absA))
 }
 
 /**
@@ -80,6 +96,7 @@ export function meanMotion(a: number): number {
  */
 export function visViva(r: number, a: number): number {
   const MU_SCENE = 0.005
+  // For hyperbola (a < 0), this is naturally correct as 1/a becomes negative, meaning 2/r + 1/|a|
   return Math.sqrt(Math.max(0, MU_SCENE * (2 / r - 1 / a)))
 }
 
@@ -88,7 +105,7 @@ export function visViva(r: number, a: number): number {
  * Inspector telemetry readout where users expect km/s.
  */
 export function visVivaKmPerSec(rKm: number, aKm: number): number {
-  return Math.sqrt(Math.max(0, MU_EARTH_KM * (2 / rKm - 1 / aKm)))
+  return Math.sqrt(Math.max(0, 3.986e5 * (2 / rKm - 1 / aKm))) // Hardcode MU_EARTH_KM to avoid breaking existing imports
 }
 
 /**
@@ -150,4 +167,42 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV1 = Math.abs(vPerigee - v1)
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
+}
+
+export function getOrbitalPosition(
+  a: number,
+  e: number,
+  E_or_H: number,
+  incRad: number,
+  raanRad: number = 0
+): { x: number; y: number; z: number } {
+  let x_pf, y_pf;
+
+  if (e >= 1) {
+    const H = E_or_H;
+    const a_h = Math.abs(a);
+    // Hyperbolic perifocal coordinates
+    x_pf = a_h * (e - Math.cosh(H));
+    y_pf = a_h * Math.sqrt(e * e - 1) * Math.sinh(H);
+  } else {
+    const E = E_or_H;
+    const cosE = Math.cos(E);
+    const sinE = Math.sin(E);
+    const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e));
+
+    x_pf = a * (cosE - e);
+    y_pf = a * sqrt1me2 * sinE;
+  }
+
+  // Inclination rotation about the line of nodes (x_pf axis)
+  const x1 = x_pf
+  const y1 = y_pf * Math.sin(incRad)
+  const z1 = y_pf * Math.cos(incRad)
+
+  // RAAN rotation about the polar (y) axis
+  const x = x1 * Math.cos(raanRad) - z1 * Math.sin(raanRad)
+  const z = x1 * Math.sin(raanRad) + z1 * Math.cos(raanRad)
+  const y = y1
+
+  return { x, y, z }
 }
