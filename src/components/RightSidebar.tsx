@@ -101,7 +101,7 @@ export function RightSidebar() {
       {/* Toggle button when collapsed */}
       {!rightSidebarOpen && (
         <button
-          className="sidebar-toggle sidebar-toggle-right"
+          className="fixed z-45 top-[calc(var(--header-height)+16px)] right-3 w-7 h-7 flex items-center justify-center bg-white/5 backdrop-blur-[12px] border border-white/10 rounded-md text-white/40 cursor-pointer transition-all duration-200 hover:text-white/90 hover:bg-white/5 hover:border-white/10"
           onClick={toggleRightSidebar}
           title="Show Constraints Panel"
         >
@@ -111,237 +111,183 @@ export function RightSidebar() {
         </button>
       )}
 
-      <aside className={`sidebar-right glass-panel ${rightSidebarOpen ? "" : "collapsed"}`}>
-        <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <aside className={`fixed z-40 top-[calc(var(--header-height)+8px)] right-2 bottom-[calc(var(--terminal-collapsed)+12px)] w-[var(--sidebar-width)] bg-[#0a101ce6] backdrop-blur-[20px] border border-sky-400/10 rounded-xl transition-all duration-300 ease-out ${rightSidebarOpen ? "" : "translate-x-[calc(var(--sidebar-width)+16px)] opacity-0 pointer-events-none"}`}>
+        <div className="h-full flex flex-col overflow-hidden">
           {/* Header */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "12px 14px 10px",
-              borderBottom: "1px solid var(--border-subtle)",
-              flexShrink: 0,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button className="btn-ghost" onClick={toggleRightSidebar} style={{ padding: 4, border: "none" }}>
+          <div className="flex items-center justify-between px-3.5 py-3 border-b border-white/5 shrink-0">
+            <div className="flex items-center gap-2">
+              <button className="inline-flex items-center justify-center p-1 bg-transparent border-none text-white/60 cursor-pointer transition-all duration-200 hover:text-white/90" onClick={toggleRightSidebar}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </button>
-              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", color: "var(--text-primary)" }}>
+              <span className="text-xs font-bold tracking-[0.06em] text-white/90">
                 Constraints
               </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
               </svg>
             </div>
           </div>
 
           {/* Scrollable content */}
-          <div
-            style={{
-              flex: 1,
-              overflowY: "auto",
-              padding: "12px 14px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 12,
-            }}
-          >
+          <div className="flex-1 overflow-y-auto p-3.5 flex flex-col gap-3">
             {/* Planner Constraints */}
-            <div className="panel-section">
-              <div className="panel-section-title">Planner Constraints</div>
+            <div className="bg-white/2 border border-white/5 rounded-md p-3">
+              <div className="text-[10px] font-bold tracking-widest uppercase text-white/60 mb-2.5">Planner Constraints</div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="flex flex-col gap-2.5">
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label className="text-[10px] text-white/40 tracking-[0.04em] block mb-1">
                     Max total Δv (m/s)
                   </label>
-                  <input className="mc-input" type="text" value={maxDv} onChange={(e) => setMaxDv(e.target.value)} />
+                  <input className="w-full bg-[#080c16e6] border border-white/5 rounded-md text-white/90 font-mono text-[13px] px-2.5 py-2 outline-none transition-all duration-200 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/10 placeholder-white/35" type="text" value={maxDv} onChange={(e) => setMaxDv(e.target.value)} />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label className="text-[10px] text-white/40 tracking-[0.04em] block mb-1">
                     Max burns
                   </label>
-                  <input className="mc-input" type="text" value={maxBurns} onChange={(e) => setMaxBurns(e.target.value)} />
+                  <input className="w-full bg-[#080c16e6] border border-white/5 rounded-md text-white/90 font-mono text-[13px] px-2.5 py-2 outline-none transition-all duration-200 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/10 placeholder-white/35" type="text" value={maxBurns} onChange={(e) => setMaxBurns(e.target.value)} />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label className="text-[10px] text-white/40 tracking-[0.04em] block mb-1">
                     Preferred maneuver axis
                   </label>
-                  <input className="mc-input" type="text" value={maneuverAxis} onChange={(e) => setManeuverAxis(e.target.value)} />
+                  <input className="w-full bg-[#080c16e6] border border-white/5 rounded-md text-white/90 font-mono text-[13px] px-2.5 py-2 outline-none transition-all duration-200 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/10 placeholder-white/35" type="text" value={maneuverAxis} onChange={(e) => setManeuverAxis(e.target.value)} />
                 </div>
 
-                <button className="btn-primary" onClick={handleApply} style={{ width: "100%", marginTop: 2 }}>
+                <button className="w-full mt-0.5 inline-flex items-center justify-center gap-1.5 px-4 py-1.5 bg-sky-400/15 border border-sky-400/30 rounded-md text-sky-400 text-xs font-semibold tracking-[0.04em] cursor-pointer transition-all duration-200 hover:bg-sky-400/20 hover:border-sky-400/50 hover:shadow-[0_0_12px_rgba(56,189,248,0.15)]" onClick={handleApply}>
                   Apply
                 </button>
 
-                <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center" }}>
+                <p className="text-[10px] text-white/40 text-center">
                   {statusText}
                 </p>
               </div>
             </div>
 
             {/* Manual Satellite (3D Orbit) */}
-            <div
-              className="panel-section"
-              style={{
-                border: "1px solid rgba(56, 189, 248, 0.15)",
-                background: "rgba(56, 189, 248, 0.03)",
-              }}
-            >
-              <div className="panel-section-title" style={{ color: "var(--accent-cyan)" }}>
+            <div className="bg-sky-400/5 border border-sky-400/15 rounded-md p-3">
+              <div className="text-[10px] font-bold tracking-widest uppercase text-sky-400 mb-2.5">
                 Manual Satellite (3D Orbit)
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label className="text-[10px] text-white/40 tracking-[0.04em] block mb-1">
                     Altitude (km)
                   </label>
-                  <input className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
+                  <input className="w-full bg-[#080c16e6] border border-white/5 rounded-md text-white/90 font-mono text-[13px] px-2.5 py-2 outline-none transition-all duration-200 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/10 placeholder-white/35" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label className="text-[10px] text-white/40 tracking-[0.04em] block mb-1">
                     Speed (km/s)
                   </label>
                   <input
-                    className="mc-input"
+                    className="w-full bg-[#080c16e6] border border-white/5 rounded-md text-white/90 font-mono text-[13px] px-2.5 py-2 outline-none transition-all duration-200 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/10 placeholder-white/35 opacity-60 cursor-not-allowed"
                     type="text"
                     value={displaySpeedKmS.toFixed(2)}
                     disabled
-                    style={{ opacity: 0.6, cursor: "not-allowed" }}
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label className="text-[10px] text-white/40 tracking-[0.04em] block mb-1">
                     Inclination (°)
                   </label>
-                  <input className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
+                  <input className="w-full bg-[#080c16e6] border border-white/5 rounded-md text-white/90 font-mono text-[13px] px-2.5 py-2 outline-none transition-all duration-200 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/10 placeholder-white/35" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label className="text-[10px] text-white/40 tracking-[0.04em] block mb-1">
                     RAAN (°)
                   </label>
-                  <input className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
+                  <input className="w-full bg-[#080c16e6] border border-white/5 rounded-md text-white/90 font-mono text-[13px] px-2.5 py-2 outline-none transition-all duration-200 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/10 placeholder-white/35" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
                 </div>
-                <div style={{ gridColumn: "span 2" }}>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                <div className="col-span-2">
+                  <label className="text-[10px] text-white/40 tracking-[0.04em] block mb-1">
                     Eccentricity (0–0.9)
                   </label>
-                  <input className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
+                  <input className="w-full bg-[#080c16e6] border border-white/5 rounded-md text-white/90 font-mono text-[13px] px-2.5 py-2 outline-none transition-all duration-200 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/10 placeholder-white/35" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
                 </div>
 
-                <button className="btn-primary" onClick={handleApplySatellite} style={{ gridColumn: "span 2", marginTop: 4 }}>
+                <button className="col-span-2 mt-1 inline-flex items-center justify-center gap-1.5 px-4 py-1.5 bg-sky-400/15 border border-sky-400/30 rounded-md text-sky-400 text-xs font-semibold tracking-[0.04em] cursor-pointer transition-all duration-200 hover:bg-sky-400/20 hover:border-sky-400/50 hover:shadow-[0_0_12px_rgba(56,189,248,0.15)]" onClick={handleApplySatellite}>
                   Apply Trajectory
                 </button>
               </div>
 
-              <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", marginTop: 6 }}>
+              <p className="text-[10px] text-white/40 text-center mt-1.5">
                 {satStatusText}
               </p>
 
-              <p style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 8, lineHeight: 1.4 }}>
+              <p className="text-[9px] text-white/40 mt-2 leading-relaxed">
                 Inclination: 0°=equatorial, 90°=polar • RAAN: orbit orientation in 360° • Speed via Vis-Viva.
               </p>
             </div>
 
             {/* ─── LEO Orbital Decay Monitor ─── */}
             <div
-              className="panel-section"
-              style={{
-                border:
-                  altitudeHealth === "crit"
-                    ? "1px solid rgba(248, 113, 113, 0.35)"
-                    : altitudeHealth === "warn"
-                    ? "1px solid rgba(251, 191, 36, 0.35)"
-                    : "1px solid var(--border-subtle)",
-                background:
-                  altitudeHealth === "crit"
-                    ? "rgba(248, 113, 113, 0.04)"
-                    : altitudeHealth === "warn"
-                    ? "rgba(251, 191, 36, 0.04)"
-                    : undefined,
-              }}
+              className={`rounded-md p-3 border ${
+                altitudeHealth === "crit"
+                  ? "border-red-400/35 bg-red-400/5"
+                  : altitudeHealth === "warn"
+                  ? "border-amber-400/35 bg-amber-400/5"
+                  : "border-white/5 bg-white/2"
+              }`}
             >
               <div
-                className="panel-section-title"
-                style={{
-                  color:
-                    altitudeHealth === "crit"
-                      ? "var(--accent-red)"
-                      : altitudeHealth === "warn"
-                      ? "var(--accent-amber)"
-                      : "var(--accent-green)",
-                }}
+                className={`text-[10px] font-bold tracking-widest uppercase mb-2.5 ${
+                  altitudeHealth === "crit"
+                    ? "text-red-400"
+                    : altitudeHealth === "warn"
+                    ? "text-amber-400"
+                    : "text-emerald-400"
+                }`}
               >
                 LEO Decay Monitor
               </div>
 
-              <div className="kv-row">
-                <span className="kv-label">Current Altitude</span>
+              <div className="flex justify-between items-center py-1 text-xs border-t border-white/5 first:border-t-0 mt-0 pt-0">
+                <span className="text-white/40 text-[11px]">Current Altitude</span>
                 <span
-                  className="kv-value"
-                  style={{
-                    color:
-                      altitudeHealth === "crit"
-                        ? "var(--accent-red)"
-                        : altitudeHealth === "warn"
-                        ? "var(--accent-amber)"
-                        : "var(--accent-green)",
-                  }}
+                  className={`font-mono text-xs font-medium ${
+                    altitudeHealth === "crit"
+                      ? "text-red-400"
+                      : altitudeHealth === "warn"
+                      ? "text-amber-400"
+                      : "text-emerald-400"
+                  }`}
                 >
                   {Math.round(satAltitude)} km
                 </span>
               </div>
-              <div className="kv-row">
-                <span className="kv-label">Drag Rate</span>
-                <span className="kv-value">{decayRate} km/min</span>
+              <div className="flex justify-between items-center py-1 text-xs border-t border-white/5">
+                <span className="text-white/40 text-[11px]">Drag Rate</span>
+                <span className="text-white/90 font-mono text-xs font-medium">{decayRate} km/min</span>
               </div>
-              <div className="kv-row">
-                <span className="kv-label">Floor</span>
-                <span className="kv-value">{LEO_LIMITS.FLOOR} km (re-entry)</span>
+              <div className="flex justify-between items-center py-1 text-xs border-t border-white/5">
+                <span className="text-white/40 text-[11px]">Floor</span>
+                <span className="text-white/90 font-mono text-xs font-medium">{LEO_LIMITS.FLOOR} km (re-entry)</span>
               </div>
 
               {/* Altitude bar */}
-              <div
-                style={{
-                  marginTop: 8,
-                  height: 6,
-                  background: "var(--bg-input)",
-                  borderRadius: 3,
-                  border: "1px solid var(--border-subtle)",
-                  overflow: "hidden",
-                }}
-              >
+              <div className="mt-2 h-1.5 bg-[#080c16e6] rounded-[3px] border border-white/5 overflow-hidden">
                 <div
-                  style={{
-                    width: `${Math.max(0, Math.min(1, altFraction)) * 100}%`,
-                    height: "100%",
-                    background:
-                      altitudeHealth === "crit"
-                        ? "var(--accent-red)"
-                        : altitudeHealth === "warn"
-                        ? "var(--accent-amber)"
-                        : "var(--accent-green)",
-                    transition: "width 0.3s ease",
-                  }}
+                  className={`h-full transition-all duration-300 ease-out ${
+                    altitudeHealth === "crit"
+                      ? "bg-red-400"
+                      : altitudeHealth === "warn"
+                      ? "bg-amber-400"
+                      : "bg-emerald-400"
+                  }`}
+                  style={{ width: `${Math.max(0, Math.min(1, altFraction)) * 100}%` }}
                 />
               </div>
 
               <button
-                className="btn-primary"
+                className="w-full mt-2.5 inline-flex items-center justify-center gap-1.5 px-4 py-1.5 bg-sky-400/15 border border-sky-400/30 rounded-md text-sky-400 text-xs font-semibold tracking-[0.04em] cursor-pointer transition-all duration-200 hover:bg-sky-400/20 hover:border-sky-400/50 hover:shadow-[0_0_12px_rgba(56,189,248,0.15)] disabled:opacity-40 disabled:cursor-not-allowed"
                 onClick={handleBoost}
                 disabled={satAltitude >= LEO_LIMITS.CEILING}
-                style={{
-                  width: "100%",
-                  marginTop: 10,
-                  opacity: satAltitude >= LEO_LIMITS.CEILING ? 0.4 : 1,
-                }}
               >
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 19V5M5 12l7-7 7 7" />
@@ -349,7 +295,7 @@ export function RightSidebar() {
                 Boost Burn (+50 km)
               </button>
 
-              <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", marginTop: 6, minHeight: 14 }}>
+              <p className="text-[10px] text-white/40 text-center mt-1.5 min-h-[14px]">
                 {boostStatus || "Atmospheric drag continuously degrades altitude."}
               </p>
             </div>

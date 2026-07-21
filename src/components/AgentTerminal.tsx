@@ -97,52 +97,27 @@ export function AgentTerminal() {
 
   return (
     <div
-      className="glass-panel-flat"
-      style={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: terminalExpanded ? "var(--terminal-expanded)" : "var(--terminal-collapsed)",
-        zIndex: 40,
-        borderBottom: "none",
-        borderLeft: "none",
-        borderRight: "none",
-        borderRadius: 0,
-        borderTop: "1px solid var(--glass-border)",
-        transition: "height 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        display: "flex",
-        flexDirection: "column",
-      }}
+      className={`fixed bottom-0 left-0 right-0 z-40 bg-[#0a101ce6] backdrop-blur-[20px] border-t border-white/10 transition-[height] duration-300 ease-out flex flex-col ${
+        terminalExpanded ? "h-[var(--terminal-expanded)]" : "h-[var(--terminal-collapsed)]"
+      }`}
     >
       {/* Toggle bar */}
       <button
         onClick={toggleTerminal}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 20px",
-          height: "var(--terminal-collapsed)",
-          flexShrink: 0,
-          background: "none",
-          border: "none",
-          borderBottom: terminalExpanded ? "1px solid var(--border-subtle)" : "none",
-          cursor: "pointer",
-          color: "var(--text-secondary)",
-          width: "100%",
-        }}
+        className={`flex items-center justify-between px-5 h-[var(--terminal-collapsed)] shrink-0 bg-transparent border-none cursor-pointer text-white/60 w-full ${
+          terminalExpanded ? "border-b border-white/5" : ""
+        }`}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="flex items-center gap-2">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="4 17 10 11 4 5" />
             <line x1="12" y1="19" x2="20" y2="19" />
           </svg>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          <span className="text-[11px] font-bold tracking-[0.1em] uppercase">
             Agent Terminal
           </span>
           {!terminalExpanded && logs.length > 0 && (
-            <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}>
+            <span className="text-[10px] text-white/40 font-mono">
               — {logs[logs.length - 1].msg.substring(0, 60)}...
             </span>
           )}
@@ -156,10 +131,9 @@ export function AgentTerminal() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={{
-            transition: "transform 0.3s ease",
-            transform: terminalExpanded ? "rotate(180deg)" : "rotate(0deg)",
-          }}
+          className={`transition-transform duration-300 ease-out ${
+            terminalExpanded ? "rotate-180" : "rotate-0"
+          }`}
         >
           <path d="M18 15l-6-6-6 6" />
         </svg>
@@ -169,44 +143,33 @@ export function AgentTerminal() {
       {terminalExpanded && (
         <div
           ref={scrollRef}
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            padding: "8px 20px",
-            fontFamily: "var(--font-mono), monospace",
-            fontSize: 11,
-            lineHeight: 1.7,
-          }}
+          className="flex-1 overflow-y-auto py-2 px-5 font-mono text-[11px] leading-[1.7]"
         >
           {logs.map((log, i) => (
             <div
               key={i}
-              style={{
-                display: "flex",
-                gap: 10,
-                opacity: i === logs.length - 1 ? 1 : 0.7,
-              }}
+              className={`flex gap-2.5 ${i === logs.length - 1 ? "opacity-100" : "opacity-70"}`}
             >
-              <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>{log.time}</span>
+              <span className="text-white/40 shrink-0">{log.time}</span>
               <span
-                style={{
-                  color: log.msg.includes("WARNING")
-                    ? "var(--accent-red)"
+                className={
+                  log.msg.includes("WARNING")
+                    ? "text-red-400"
                     : log.msg.startsWith("[CONJ]")
-                    ? "var(--accent-amber)"
+                    ? "text-amber-400"
                     : log.msg.startsWith("[MANV]")
-                    ? "var(--accent-green)"
+                    ? "text-emerald-400"
                     : log.msg.startsWith("[TRK]")
-                    ? "var(--accent-cyan)"
-                    : "var(--text-secondary)",
-                }}
+                    ? "text-sky-400"
+                    : "text-white/60"
+                }
               >
                 {log.msg}
               </span>
             </div>
           ))}
           {/* Blinking cursor */}
-          <span className="animate-terminal-blink" style={{ color: "var(--accent-cyan)" }}>
+          <span className="text-sky-400 animate-terminal-blink">
             ▋
           </span>
         </div>
