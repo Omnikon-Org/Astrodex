@@ -33,7 +33,8 @@ interface AppState {
   toggleLeftSidebar: () => void
   toggleRightSidebar: () => void
   toggleTerminal: () => void
-  // Search by ID
+  // Search by ID or Name
+  searchAsteroid: (query: string) => void
   searchAsteroidById: (id: number) => void
   registerAsteroidData: (data: AsteroidData[]) => void
 
@@ -121,6 +122,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const searchAsteroid = useCallback((query: string) => {
+    const lowerQuery = query.toLowerCase()
+    const found = asteroidDataRef.current.find((a) => a.name.toLowerCase().includes(lowerQuery) || a.id.toString() === query)
+    if (found) {
+      setSelectedAsteroid(found)
+    }
+  }, [])
+
   const triggerDeltaVLog = useCallback(() => {
     setDeltaVCount((c) => c + 1)
   }, [])
@@ -192,6 +201,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleLeftSidebar,
         toggleRightSidebar,
         toggleTerminal,
+        searchAsteroid,
         searchAsteroidById,
         registerAsteroidData,
         filterType,
