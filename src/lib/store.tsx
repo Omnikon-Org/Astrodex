@@ -1,7 +1,9 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useRef, type ReactNode, useEffect } from "react"
 import type { AsteroidData } from "./types"
+import { supabase } from "./supabase"
+import type { User } from "@supabase/supabase-js"
 
 export interface ConjunctionAlert {
   id: number
@@ -15,6 +17,10 @@ export interface ConjunctionAlert {
 }
 
 interface AppState {
+  user: User | null
+  loginWithGithub: () => Promise<void>
+  loginWithGoogle: () => Promise<void>
+  logout: () => Promise<void>
   selectedAsteroid: AsteroidData | null
   claimedAsteroids: Set<number>
   selectAsteroid: (a: AsteroidData | null) => void
@@ -66,6 +72,7 @@ const LEO_FLOOR_KM = 180 // cannot decay below ~180 km (re-entry threshold)
 const LEO_CEILING_KM = 500 // hard upper bound for user-set altitude
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
   const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
   const [resetCamera, setResetCamera] = useState(false)
@@ -87,6 +94,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [deltaVCount, setDeltaVCount] = useState(0)
   const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
   const nextAlertId = useRef(1)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const loginWithGithub = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'github' })
+  }, [])
+
+  const loginWithGoogle = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'google' })
+  }, [])
+
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut()
+  }, [])
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
 
@@ -176,6 +207,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        user,
+        loginWithGithub,
+        loginWithGoogle,
+        logout,
         selectedAsteroid,
         claimedAsteroids,
         selectAsteroid,
