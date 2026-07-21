@@ -186,7 +186,7 @@ export function LeftSidebar() {
 
             {/* Live Target Details */}
             <div className="panel-section">
-              <div className="panel-section-title">Live Target Details</div>
+              <h2 className="panel-section-title">Live Target Details</h2>
               {selectedAsteroid ? (
                 <div>
                   <div className="kv-row">
@@ -226,7 +226,7 @@ export function LeftSidebar() {
             {/* Conjunction Feed */}
             <div className="panel-section" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <div className="panel-section-title" style={{ marginBottom: 0 }}>Conjunction Alerter</div>
+                <h2 className="panel-section-title" style={{ marginBottom: 0 }}>Conjunction Alerter</h2>
                   <div
                     style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}
                     title={riskFilter !== "ALL" ? `${filteredConjunctions.length} of ${conjunctions.length} total` : undefined}
