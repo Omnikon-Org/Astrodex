@@ -269,13 +269,25 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     [onAsteroidClick]
   )
 
+  const handlePointerOver = useCallback((e: any) => {
+    e.stopPropagation()
+    document.body.style.cursor = 'pointer'
+  }, [])
+
+  const handlePointerOut = useCallback((e: any) => {
+    e.stopPropagation()
+    document.body.style.cursor = 'auto'
+  }, [])
+
   return (
     <>
       {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
         ref={asteroidMeshRef}
-        args={[null as any, null as any, ASTEROID_COUNT]}
+        args={[undefined, undefined, ASTEROID_COUNT]}
         onClick={handleAsteroidClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
         frustumCulled={false}
       >
         <dodecahedronGeometry args={[1, 0]} />
@@ -285,8 +297,10 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
       <instancedMesh
         ref={debrisMeshRef}
-        args={[null as any, null as any, DEBRIS_COUNT]}
+        args={[undefined, undefined, DEBRIS_COUNT]}
         onClick={handleDebrisClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
         frustumCulled={false}
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
