@@ -134,10 +134,12 @@ export function LeftSidebar() {
               <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
                 Filter Catalog
               </label>
-              <div style={{ display: "flex", background: "var(--bg-input)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: 2 }}>
+              <div role="tablist" style={{ display: "flex", background: "var(--bg-input)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: 2 }}>
                 {(["ALL", "ASTEROIDS", "DEBRIS"] as const).map((tab) => (
                   <button
                     key={tab}
+                    role="tab"
+                    aria-selected={filterType === tab}
                     onClick={() => setFilterType(tab)}
                     style={{
                       flex: 1,

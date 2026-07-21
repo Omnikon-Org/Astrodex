@@ -169,6 +169,8 @@ export function AgentTerminal() {
       {terminalExpanded && (
         <div
           ref={scrollRef}
+          role="log"
+          aria-live="polite"
           style={{
             flex: 1,
             overflowY: "auto",

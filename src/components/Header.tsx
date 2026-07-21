@@ -101,12 +101,12 @@ export function Header() {
           {simulationRunning ? "Pause Simulation" : "Run Simulation"}
         </button>
 
-        <div className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+        <div role="status" className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
           Risk: {riskLevel}
         </div>
 
         {/* Connection indicator */}
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <div role="status" style={{ display: "flex", alignItems: "center", gap: 5 }}>
           <div
             style={{
               width: 6,
