@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo, useCallback, useEffect } from "react"
+import { useRef, useMemo, useCallback, useEffect, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
@@ -128,6 +128,53 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     updateColors(debrisMeshRef.current, ASTEROID_COUNT, DEBRIS_COUNT, DEBRIS_COLORS)
   }, [])
 
+  const workerRef = useRef<Worker>(null)
+  const [asteroidsPositions] = useState(() => new Float32Array(TOTAL_COUNT * 3))
+  const [satPositions] = useState(() => new Float32Array(3 * 3))
+  const [asteroidIds, setAsteroidIds] = useState<number[]>([])
+
+  useEffect(() => {
+    setAsteroidIds(dataRef.current.map(d => d.id))
+  }, [])
+
+  useEffect(() => {
+    workerRef.current = new Worker(new URL('../workers/conjunction.worker.ts', import.meta.url))
+    workerRef.current.onmessage = (e) => {
+      const alerts = e.data
+      const t = Date.now() / 1000 // use absolute time for throttling
+      alerts.forEach((alert: any) => {
+        const { index, id, minDistance, closestSat } = alert
+        const ad = dataRef.current[index]
+        
+        ad.atRisk = true
+        
+        const lastAlert = lastAlertTimesRef.current[index] || 0
+        if (t - lastAlert > 8) {
+          lastAlertTimesRef.current[index] = t
+
+          const missKm = (minDistance * KM_PER_UNIT_CONST).toFixed(1)
+          const riskLevel = minDistance < 0.05 ? "HIGH" : minDistance < 0.1 ? "MEDIUM" : "LOW"
+
+          // Re-map satellite index to name
+          const satName = closestSat === 0 ? "ISS" : closestSat === 1 ? "Envisat" : "Hubble"
+
+          addConjunctionAlert({
+            tca: "now",
+            missKm,
+            risk: riskLevel,
+            secondaryId: id,
+            secondaryName: ad.name,
+            type: ad.type,
+            satelliteName: satName,
+          })
+        }
+      })
+    }
+    return () => {
+      workerRef.current?.terminate()
+    }
+  }, [addConjunctionAlert])
+
   useFrame((state, delta) => {
     const asteroidMesh = asteroidMeshRef.current
     const debrisMesh = debrisMeshRef.current
@@ -180,48 +227,24 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       const targetMesh = isDebris ? debrisMesh : asteroidMesh
       targetMesh.setMatrixAt(instanceIndex, dummy.matrix)
 
-      // 3. Collision check with satellites
-      let atRisk = false
-      let closestSat = ""
-      let minDistance = Infinity
-
-      for (const s of SAT_POSITIONS) {
-        const d = _objPos.distanceTo(s.pos)
-        if (d < 0.15) {
-          atRisk = true
-          if (d < minDistance) {
-            minDistance = d
-            closestSat = s.name
-          }
-        }
-      }
-
-      ad.atRisk = atRisk
-
-      // Handle conjunction alerts in the store (throttle to once per 8 seconds per object)
-      if (atRisk && simulationRunning && activeScale > 0) {
+      // 3. Delegate Collision check to Web Worker
+      // Instead of calculating distance for every satellite every frame on the main thread,
+      // we pack the coordinates into a Float32Array.
+      asteroidsPositions[i * 3] = _objPos.x
+      asteroidsPositions[i * 3 + 1] = _objPos.y
+      asteroidsPositions[i * 3 + 2] = _objPos.z
+      
+      // Clear atRisk status if it hasn't been refreshed in 0.5s by the worker
+      if (ad.atRisk) {
         const lastAlert = lastAlertTimesRef.current[i] || 0
-        if (t - lastAlert > 8) {
-          lastAlertTimesRef.current[i] = t
-
-          // Miss distance representation in kilometers (0.15 units ≈ 500 km)
-          const missKm = (minDistance * KM_PER_UNIT_CONST).toFixed(1)
-          const riskLevel = minDistance < 0.05 ? "HIGH" : minDistance < 0.1 ? "MEDIUM" : "LOW"
-
-          addConjunctionAlert({
-            tca: "now",
-            missKm,
-            risk: riskLevel,
-            secondaryId: ad.id,
-            secondaryName: ad.name,
-            type: ad.type,
-            satelliteName: closestSat,
-          })
+        const tNow = Date.now() / 1000
+        if (tNow - lastAlert > 0.5) {
+          ad.atRisk = false
         }
       }
 
-      // 4. Color updates ONLY on atRisk transitions (perf optimization)
-      if (atRisk && activeScale > 0) {
+      // 4. Update Colors based on risk and selections (perf optimization)
+      if (ad.atRisk && activeScale > 0) {
         const pulse = Math.sin(t * 8) * 0.5 + 0.5
         colorObj.setRGB(1.0, pulse * 0.3, pulse * 0.3) // pulsing red
         targetMesh.setColorAt(instanceIndex, colorObj)
@@ -245,6 +268,28 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       if (i === selectedIdx) {
         trackedPosition.current.copy(_objPos)
       }
+    }
+
+    // Send data to worker every few frames or just every frame if worker is idle
+    // We'll just postMessage every frame for now. Web workers handle queues.
+    // Also need satellite positions
+    satPositions[0] = satellitePositions.iss.x
+    satPositions[1] = satellitePositions.iss.y
+    satPositions[2] = satellitePositions.iss.z
+    satPositions[3] = satellitePositions.envisat.x
+    satPositions[4] = satellitePositions.envisat.y
+    satPositions[5] = satellitePositions.envisat.z
+    satPositions[6] = satellitePositions.hubble.x
+    satPositions[7] = satellitePositions.hubble.y
+    satPositions[8] = satellitePositions.hubble.z
+
+    if (workerRef.current && simulationRunning) {
+      workerRef.current.postMessage({
+        asteroids: asteroidsPositions,
+        satellites: satPositions,
+        asteroidIds: asteroidIds,
+        threshold: 0.15
+      })
     }
 
     asteroidMesh.instanceMatrix.needsUpdate = true
