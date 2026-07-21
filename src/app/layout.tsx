@@ -16,6 +16,14 @@ export const metadata: Metadata = {
   title: "AstroDex — Interactive 3D Asteroid Explorer",
   description:
     "Explore 600+ asteroids orbiting Earth in real-time 3D. Track conjunctions, inspect orbital parameters, and claim discoveries in this cinematic space mission control.",
+  alternates: {
+    canonical: 'https://astrodex.app',
+  },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function RootLayout({
