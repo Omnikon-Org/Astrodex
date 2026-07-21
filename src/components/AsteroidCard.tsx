@@ -70,6 +70,8 @@ export function AsteroidCard() {
           style={{ padding: 4, border: "none" }}
         >
           <svg
+            role="img"
+            aria-label="Close icon"
             width="14"
             height="14"
             viewBox="0 0 24 24"
