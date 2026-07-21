@@ -144,10 +144,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut()
   }, [])
 
+  const lastClaimTime = useRef<number>(0)
+
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
 
   const claimAsteroid = useCallback(async (id: number) => {
     if (!user) return // Must be logged in
+
+    const now = Date.now()
+    if (now - lastClaimTime.current < 1000) {
+      console.warn("Rate limit: Please wait before claiming again.")
+      return
+    }
+    lastClaimTime.current = now
 
     const isClaiming = !claimedAsteroids.has(id)
     
@@ -164,11 +173,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       
       if (isClaiming) {
         await withTimeout(
-          supabase.from('claims').insert({ asteroid_id: id, user_id: user.id })
+          supabase.from('claims').insert({ asteroid_id: id, user_id: user.id }) as PromiseLike<any>
         )
       } else {
         await withTimeout(
-          supabase.from('claims').delete().eq('asteroid_id', id).eq('user_id', user.id)
+          supabase.from('claims').delete().eq('asteroid_id', id).eq('user_id', user.id) as PromiseLike<any>
         )
       }
     } catch (error) {
