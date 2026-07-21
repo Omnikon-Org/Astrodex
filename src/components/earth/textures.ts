@@ -327,3 +327,43 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+export function createProceduralAsteroidNormalMap(): HTMLCanvasElement {
+  const canvas = document.createElement("canvas")
+  canvas.width = 512
+  canvas.height = 512
+  const ctx = canvas.getContext("2d")!
+  const w = canvas.width
+  const h = canvas.height
+
+  ctx.fillStyle = "rgb(128, 128, 255)"
+  ctx.fillRect(0, 0, w, h)
+
+  const imgData = ctx.getImageData(0, 0, w, h)
+  const data = imgData.data
+
+  for (let i = 0; i < data.length; i += 4) {
+    const noiseX = (Math.random() - 0.5) * 120
+    const noiseY = (Math.random() - 0.5) * 120
+    data[i] = Math.min(255, Math.max(0, 128 + noiseX))
+    data[i + 1] = Math.min(255, Math.max(0, 128 + noiseY))
+  }
+
+  ctx.putImageData(imgData, 0, 0)
+  
+  for (let i = 0; i < 40; i++) {
+    const x = Math.random() * w
+    const y = Math.random() * h
+    const r = 10 + Math.random() * 30
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, r)
+    grad.addColorStop(0, "rgba(80, 80, 255, 0.4)")
+    grad.addColorStop(0.5, "rgba(180, 180, 255, 0.2)")
+    grad.addColorStop(1, "rgba(128, 128, 255, 0)")
+    ctx.fillStyle = grad
+    ctx.beginPath()
+    ctx.arc(x, y, r, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  return canvas
+}
