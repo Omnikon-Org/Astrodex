@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
-import { visVivaKmPerSec, LEO_DECAY_KM_PER_SEC, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
+import { visVivaKmPerSec, calculateLEODecayRate, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
 
 export function RightSidebar() {
   const {
@@ -92,7 +92,9 @@ export function RightSidebar() {
 
   // ── LEO health bar: green above 300 km, amber 200-300 km, red below ──
   const altFraction = (satAltitude - LEO_LIMITS.FLOOR) / (LEO_LIMITS.CEILING - LEO_LIMITS.FLOOR)
-  const decayRate = (LEO_DECAY_KM_PER_SEC * 60).toFixed(2) // km/min
+  // Add some fake variance for the display
+  const thrustVariation = (Math.sin(Date.now() / 1000) * 0.1).toFixed(2)
+  const decayRate = (calculateLEODecayRate(satAltitude) * 60).toFixed(2) // km/min
   const altitudeHealth: "ok" | "warn" | "crit" =
     satAltitude > 300 ? "ok" : satAltitude > 220 ? "warn" : "crit"
 

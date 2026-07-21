@@ -118,12 +118,22 @@ export function velocityToKmPerSec(sceneV: number): number {
 }
 
 /**
- * Atmospheric-drag decay rate (km per real-second) applied to LEO satellites
- * such as the ISS.  This is a presentation-tuned value: ~0.05 km/s of real
- * time, so the satellite loses ~3 km/min and reaches threatening altitudes
- * within a few minutes of unattended operation.
+ * Calculates atmospheric-drag decay rate (km per real-second) for LEO satellites
+ * as a function of altitude in km. Uses a simplified exponential atmosphere model
+ * tuned for presentation (faster than reality so the user sees decay).
+ * @param altitudeKm Current altitude in kilometers
  */
-export const LEO_DECAY_KM_PER_SEC = 0.05
+export function calculateLEODecayRate(altitudeKm: number): number {
+  // Base rate at 400km is 0.05 km/s
+  // Scale height H approx 50 km for this simplified model
+  const H = 50
+  const h0 = 400
+  const baseRate = 0.05
+  
+  if (altitudeKm < 100) return baseRate * Math.exp((h0 - 100) / H)
+  
+  return baseRate * Math.exp((h0 - altitudeKm) / H)
+}
 
 export const KM_PER_UNIT_CONST = KM_PER_UNIT
 
