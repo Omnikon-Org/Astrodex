@@ -2,6 +2,8 @@
 
 import { useAppState } from "@/lib/store"
 
+import FocusLock from "react-focus-lock"
+
 export function AsteroidCard() {
   const {
     selectedAsteroid,
@@ -16,9 +18,11 @@ export function AsteroidCard() {
   const isClaimed = claimedAsteroids.has(selectedAsteroid.id)
 
   return (
-    <div
-      className="glass-panel animate-fade-in-left"
-      style={{
+    <FocusLock returnFocus>
+      <div
+        className="glass-panel animate-fade-in-left"
+        aria-labelledby="asteroid-card-title"
+        style={{
         position: "fixed",
         top: "calc(var(--header-height) + 16px)",
         left: leftSidebarOpen ? "calc(var(--sidebar-width) + 24px)" : "24px",
@@ -164,5 +168,6 @@ export function AsteroidCard() {
         </div>
       </div>
     </div>
+    </FocusLock>
   )
 }
