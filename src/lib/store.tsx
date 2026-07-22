@@ -136,6 +136,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
+    // Update the ref immediately so searchAsteroidById can access the latest
+    // asteroid data without waiting for the asynchronous React state update.
     asteroidDataRef.current = data
     setAsteroidCatalog(data)
   }, [])
