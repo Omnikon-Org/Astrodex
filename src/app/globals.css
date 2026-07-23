@@ -132,6 +132,27 @@ html, body {
   box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.08);
 }
 
+/* Validation error state — applied alongside .mc-input */
+.mc-input-error {
+  border-color: rgba(251, 191, 36, 0.55) !important;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1) !important;
+}
+
+.mc-input-error:focus {
+  border-color: rgba(251, 191, 36, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.18) !important;
+}
+
+/* Inline validation message shown beneath an invalid input */
+.input-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--accent-amber);
+}
+
 .mc-input::placeholder {
   color: var(--text-muted);
   font-family: var(--font-sans), system-ui, sans-serif;
