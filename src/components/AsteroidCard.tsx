@@ -41,19 +41,45 @@ export function AsteroidCard() {
     leftSidebarOpen,
     selectAsteroid,
   } = useAppState()
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
+
+  useEffect(() => {
+  if (!selectedAsteroid) return
+  closeButtonRef.current?.focus()
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") selectAsteroid(null)
+  }
+  document.addEventListener("keydown", onKeyDown)
+  return () => document.removeEventListener("keydown", onKeyDown)
+}, [selectedAsteroid, selectAsteroid])
 
   if (!selectedAsteroid) return null
 
   const isClaimed = claimedAsteroids.has(selectedAsteroid.id)
+  const handleClaimToggle = () => {
+    if (isClaimed) {
+      const confirmed = window.confirm(`Release the mining claim for ${selectedAsteroid.name}?`)
+      if (!confirmed) return
+    } else {
+      const confirmed = window.confirm(`File a mining claim for ${selectedAsteroid.name}?`)
+      if (!confirmed) return
+    }
+    claimAsteroid(selectedAsteroid.id)
+  }
 
   return (
     <div
       className="glass-panel animate-fade-in-left"
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="asteroid-inspector-title"
       style={{
         position: "fixed",
-        top: "calc(var(--header-height) + 16px)",
-        left: leftSidebarOpen ? "calc(var(--sidebar-width) + 24px)" : "24px",
-        width: "300px",
+        top: "calc(var(--header-height) + var(--hud-stack-gap))",
+        left: leftSidebarOpen
+          ? "calc(var(--sidebar-width) + var(--hud-inspector-gap))"
+          : "var(--hud-inspector-gap)",
+        width: "var(--inspector-width)",
         zIndex: 42,
         boxShadow: "0 10px 40px rgba(0, 0, 0, 0.6)",
         border: "1px solid rgba(56, 189, 248, 0.2)",
@@ -84,6 +110,7 @@ export function AsteroidCard() {
             }}
           />
           <span
+            id="asteroid-inspector-title"
             style={{
               fontSize: 11,
               fontWeight: 700,
@@ -96,8 +123,10 @@ export function AsteroidCard() {
           </span>
         </div>
         <button
+          ref={closeButtonRef}
           className="btn-ghost"
           onClick={() => selectAsteroid(null)}
+          aria-label="Close asteroid details"
           style={{ padding: 4, border: "none" }}
         >
           <svg
@@ -176,7 +205,7 @@ export function AsteroidCard() {
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={() => claimAsteroid(selectedAsteroid.id)}
+            onClick={handleClaimToggle}
             className="btn-primary"
             style={{
               width: "100%",
