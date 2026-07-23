@@ -1,7 +1,37 @@
 "use client"
 
-import { useAppState } from "@/lib/store"
 import { useEffect, useRef } from "react"
+import { useAppState } from "@/lib/store"
+import { trackedPosition } from "./AsteroidField"
+
+function LiveCoordinates() {
+  const xRef = useRef<HTMLSpanElement>(null)
+  const yRef = useRef<HTMLSpanElement>(null)
+  const zRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    let frameId: number
+    const update = () => {
+      if (xRef.current && yRef.current && zRef.current) {
+        xRef.current.innerText = trackedPosition.current.x.toFixed(2)
+        yRef.current.innerText = trackedPosition.current.y.toFixed(2)
+        zRef.current.innerText = trackedPosition.current.z.toFixed(2)
+      }
+      frameId = requestAnimationFrame(update)
+    }
+    frameId = requestAnimationFrame(update)
+    return () => cancelAnimationFrame(frameId)
+  }, [])
+
+  return (
+    <div className="kv-row">
+      <span className="kv-label">Live Coordinates</span>
+      <span className="kv-value" style={{ fontVariantNumeric: "tabular-nums" }}>
+        X: <span ref={xRef}>0.00</span> Y: <span ref={yRef}>0.00</span> Z: <span ref={zRef}>0.00</span>
+      </span>
+    </div>
+  )
+}
 
 export function AsteroidCard() {
   const {
@@ -143,6 +173,7 @@ export function AsteroidCard() {
         {/* Orbit Visual Diagram Placeholder or Stats */}
         <div className="panel-section" style={{ marginBottom: 14 }}>
           <div className="panel-section-title">Orbital Mechanics</div>
+          <LiveCoordinates />
           <div className="kv-row">
             <span className="kv-label">Semi-Major Axis</span>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
