@@ -65,7 +65,7 @@ interface AppState {
   // Search by ID
   searchAsteroidById: (id: number) => void
   registerAsteroidData: (data: AsteroidData[]) => void
-
+  asteroidCatalog: AsteroidData[]
   // Space Debris Filters & Satellite Parameters
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
   setFilterType: (f: "ALL" | "ASTEROIDS" | "DEBRIS") => void
@@ -84,6 +84,15 @@ interface AppState {
   /** Increments every time a Δv budget is computed — AgentTerminal watches this. */
   deltaVCount: number
   triggerDeltaVLog: () => void
+  // Cinematic settings
+  cinematicMode: boolean
+  toggleCinematicMode: () => void
+  cameraFov: number
+  setCameraFov: (fov: number) => void
+  autoRotate: boolean
+  toggleAutoRotate: () => void
+  bloomIntensity: number
+  setBloomIntensity: (intensity: number) => void
   conjunctions: ConjunctionAlert[]
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   clearConjunctions: () => void
@@ -111,13 +120,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Space Debris Filters & Satellite Parameters
   const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
-  const [satAltitude, setSatAltitude] = useState(400) // km, LEO default
-  const [satInclination, setSatInclination] = useState(51.63) // degrees — ISS historical value
-  const [satRaan, setSatRaan] = useState(0) // degrees
-  const [satEccentricity, setSatEccentricity] = useState(0.0006) // ≈ circular LEO
+  const [satAltitude, setSatAltitude] = useState(400)
+  const [satInclination, setSatInclination] = useState(51.63)
+  const [satRaan, setSatRaan] = useState(0)
+  const [satEccentricity, setSatEccentricity] = useState(0.0006)
   const [boostCount, setBoostCount] = useState(0)
   const [deltaVCount, setDeltaVCount] = useState(0)
   const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
+  const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
   const nextAlertId = useRef(1)
 
   useEffect(() => {
@@ -269,7 +279,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
+    // Update the ref immediately so searchAsteroidById can access the latest
+    // asteroid data without waiting for the asynchronous React state update.
     asteroidDataRef.current = data
+    setAsteroidCatalog(data)
   }, [])
 
   const searchAsteroidById = useCallback((id: number) => {
@@ -304,18 +317,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setBoostCount((c) => c + 1)
   }, [])
 
+  const toggleCinematicMode = useCallback(() => {
+    setCinematicMode((prev) => {
+      const next = !prev
+      if (next) {
+        setCameraFov(85)
+        setAutoRotate(true)
+        setBloomIntensity(1.8)
+      } else {
+        setCameraFov(75)
+        setAutoRotate(false)
+        setBloomIntensity(1.0)
+      }
+      return next
+    })
+  }, [])
+
+  const toggleAutoRotate = useCallback(() => setAutoRotate((p) => !p), [])
+
   const addConjunctionAlert = useCallback((alert: Omit<ConjunctionAlert, "id">) => {
     setConjunctions((prev) => {
-      // Check if this combination of satellite and secondary ID is already in the list
-      const exists = prev.some(
+      const existing = prev.find(
         (c) => c.satelliteName === alert.satelliteName && c.secondaryId === alert.secondaryId
       )
-      if (exists) return prev
+      const newAlert = { ...alert, id: existing?.id ?? nextAlertId.current++ }
+      const withoutExisting = prev.filter((c) => c.id !== newAlert.id)
+      const updated = [newAlert, ...withoutExisting].slice(0, 15)
 
-      const newAlert = { ...alert, id: nextAlertId.current++ }
-      const updated = [newAlert, ...prev].slice(0, 15) // Keep last 15 alerts
-
-      // Update global risk level based on the highest risk in the feed
       const hasHigh = updated.some((c) => c.risk === "HIGH")
       const hasMedium = updated.some((c) => c.risk === "MEDIUM")
       if (hasHigh) setRiskLevel("HIGH")
@@ -358,6 +386,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleTerminal,
         searchAsteroidById,
         registerAsteroidData,
+        asteroidCatalog,
         filterType,
         setFilterType,
         satAltitude,
@@ -371,6 +400,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         boostCount,
         deltaVCount,
         triggerDeltaVLog,
+        cinematicMode,
+        toggleCinematicMode,
+        cameraFov,
+        setCameraFov,
+        autoRotate,
+        toggleAutoRotate,
+        bloomIntensity,
+        setBloomIntensity,
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
