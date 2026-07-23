@@ -2,12 +2,13 @@ import type { Metadata } from "next"
 import "./globals.css"
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://astrodex.app'),
   title: {
-    template: "%s | AstroDex",
-    default: "AstroDex — Interactive 3D Asteroid Explorer",
+    default: "AstroDex | Real-Time 3D Asteroid & Orbital Explorer",
+    template: "%s | AstroDex"
   },
   description:
-    "Explore 600+ asteroids orbiting Earth in real-time 3D. Track conjunctions, inspect orbital parameters, and claim discoveries in this cinematic space mission control.",
+    "Explore 600+ asteroids and orbital debris in stunning real-time 3D. Track near-Earth conjunctions, inspect Keplerian orbital parameters, and file mining claims in a cinematic space mission control simulator.",
   keywords: ["Asteroid tracker", "3D Space", "Orbital mechanics", "Near-Earth objects", "WebGL space simulation", "Astrodex", "Space mission control"],
   authors: [{ name: "AstroDex Team" }],
   creator: "AstroDex",
