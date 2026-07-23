@@ -42,7 +42,7 @@ git clone https://github.com/<your-username>/astrodex.git
 cd astrodex
 
 # 2. Add the upstream remote so you can pull future changes
-git remote add upstream https://github.com/RishiByte/astrodex.git
+git remote add upstream https://github.com/Omnikon-Org/Astrodex.git
 
 # 3. Install dependencies
 npm install
@@ -65,19 +65,68 @@ git merge upstream/main
 
 ## Claiming an Issue
 
-- **Comment on the issue** expressing interest
-- **We'll assign it within 24-48 hours**
-- If multiple people are interested, preference order:
-  1. Collaboration (joint PR encouraged)
-  2. Experience level (we prioritize helping new contributors)
-  3. First-comment basis (if tied)
+AstroDex uses automated issue assignment to keep work moving and prevent issue hoarding.
 
-- **Timeline:** Once assigned, you have:
-  - **3-5 days** for `easy` labeled issues
-  - **5-7 days** for `intermediate` labeled issues
-  - *Contact us if you need an extension — we're here to support you!*
+### Contributor Claim Command
 
-- **Next step:** Open a **draft PR** to let us know you're working on it. This helps prevent duplicate efforts.
+Comment exactly:
+
+```text
+/assign
+```
+
+The bot will assign the issue to you when:
+
+- The issue is not already assigned
+- You have fewer than **3 active assigned open issues**
+- The comment is on an issue, not a pull request
+
+After a successful claim, the issue receives the `waiting-for-pr` label and the bot confirms your current assignment count.
+
+### Assignment Limits
+
+Each contributor may have up to **3 active assigned open issues** at a time.
+
+If you already have 3 assigned open issues, the bot will not assign another one. Complete one of your current issues before claiming more work.
+
+### Pull Request Deadline
+
+After assignment, open a linked pull request within **5 days**. Link the PR using GitHub-supported issue references such as:
+
+```text
+Fixes #123
+Closes #123
+Resolves #123
+```
+
+GitHub's linked issue UI is also supported.
+
+If no linked pull request is found after 5 days, the assignment is removed automatically, the `stale-assignment` label is added, and the issue becomes available for other contributors.
+
+Closed pull requests that were not merged do not keep an assignment active. Open a new linked PR if you still want to work on the issue.
+
+### Opening Issues
+
+Each contributor may have up to **5 open issues** that they created.
+
+If you open or reopen an issue while you already have more than 5 open issues, the bot will comment and close the newest issue. Please wait until one of your existing issues is resolved before opening another.
+
+### Maintainer Commands
+
+Maintainers can bypass assignment limits with:
+
+```text
+/force-assign @username
+```
+
+Only repository maintainers can use this command. It is intended for manual triage, GSSoC coordination, and cases where maintainers intentionally want to assign work outside the normal contributor limits.
+
+### Automation Labels
+
+The workflows create these labels automatically if they are missing:
+
+- `waiting-for-pr` — assigned issue waiting for a linked pull request
+- `stale-assignment` — assignment expired because no linked pull request was opened in time
 
 ---
 
@@ -380,7 +429,7 @@ If you witness or experience unacceptable behavior, please report it by opening 
 
 ---
 
-[issues]: https://github.com/RishiByte/astrodex/issues
+[issues]: https://github.com/Omnikon-Org/Astrodex/issues
 [nodejs]: https://nodejs.org
 [npm]: https://www.npmjs.com
 [ts]: https://www.typescriptlang.org
