@@ -165,7 +165,7 @@ export function RightSidebar() {
           >
             {/* Planner Constraints */}
             <div className="panel-section">
-              <div className="panel-section-title">Planner Constraints</div>
+              <h2 className="panel-section-title">Planner Constraints</h2>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
@@ -207,9 +207,9 @@ export function RightSidebar() {
                 background: "rgba(56, 189, 248, 0.03)",
               }}
             >
-              <div className="panel-section-title" style={{ color: "var(--accent-cyan)" }}>
+              <h2 className="panel-section-title" style={{ color: "var(--accent-cyan)" }}>
                 Manual Satellite (3D Orbit)
-              </div>
+              </h2>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
@@ -281,7 +281,7 @@ export function RightSidebar() {
                     : undefined,
               }}
             >
-              <div
+              <h2
                 className="panel-section-title"
                 style={{
                   color:
@@ -293,7 +293,7 @@ export function RightSidebar() {
                 }}
               >
                 LEO Decay Monitor
-              </div>
+              </h2>
 
               <div className="kv-row">
                 <span className="kv-label">Current Altitude</span>

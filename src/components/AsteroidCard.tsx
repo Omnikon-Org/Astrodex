@@ -172,8 +172,7 @@ export function AsteroidCard() {
 
         {/* Orbit Visual Diagram Placeholder or Stats */}
         <div className="panel-section" style={{ marginBottom: 14 }}>
-          <div className="panel-section-title">Orbital Mechanics</div>
-          <LiveCoordinates />
+          <h3 className="panel-section-title">Orbital Mechanics</h3>
           <div className="kv-row">
             <span className="kv-label">Semi-Major Axis</span>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
