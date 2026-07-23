@@ -160,6 +160,86 @@ integration boundary and rendering pipeline.
 
 ---
 
+## ⚡ Quick Start
+
+Get AstroDex running locally in under a minute:
+
+```bash
+git clone https://github.com/<your-username>/Astrodex.git
+cd Astrodex
+npm install
+npm run dev
+
+
+---
+
+### ♿ Accessibility
+
+```md
+## ♿ Accessibility
+
+AstroDex aims to provide an inclusive experience for all users.
+
+Current accessibility efforts include:
+
+- Keyboard-accessible navigation
+- Screen-reader friendly interface improvements
+- Semantic HTML usage
+- Reduced-motion support for animation-sensitive users
+- Improved focus visibility for interactive controls
+
+Accessibility enhancements are actively being developed and community contributions are welcome. 
+
+## 🛠️ Troubleshooting
+
+### WebGL Not Supported
+
+AstroDex relies on WebGL for 3D rendering.
+
+Check browser compatibility:
+
+- Google Chrome
+- Microsoft Edge
+- Brave Browser
+- Firefox (latest version)
+
+### Poor Performance
+
+If frame rates are low:
+
+- Enable hardware acceleration
+- Close GPU-intensive applications
+- Update graphics drivers
+- Reduce browser tab usage
+
+### Dependency Installation Errors
+
+Try clearing dependencies and reinstalling:
+
+```bash
+rm -rf node_modules
+rm package-lock.json
+npm install
+
+
+---
+
+### 🚀 Roadmap
+
+```md
+## 🚀 Roadmap
+
+Planned future enhancements include:
+
+- Supabase integration for persistent data storage
+- Expanded satellite catalog support
+- Real-world orbital datasets
+- Advanced collision prediction algorithms
+- Historical orbit replay system
+- Enhanced accessibility improvements
+- Mobile-friendly mission control interface
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
