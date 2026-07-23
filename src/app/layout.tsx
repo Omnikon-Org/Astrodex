@@ -23,16 +23,28 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "AstroDex",
-    description: "Explore 600+ asteroids orbiting Earth in real-time 3D.",
-    url: "https://astrodex.example.com",
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'AstroDex',
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Any',
+    description: 'Explore 600+ asteroids orbiting Earth in real-time 3D.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD'
+    }
   }
 
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={`${geistSans.variable} ${jetbrainsMono.variable}`}>
+      <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {children}
+      </body>
     </html>
   )
 }
