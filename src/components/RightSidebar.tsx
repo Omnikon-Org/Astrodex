@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
 import { visVivaKmPerSec, LEO_DECAY_KM_PER_SEC, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
+import { Tooltip } from "@/components/Tooltip"
 
 export function RightSidebar() {
   const {
@@ -72,9 +73,17 @@ export function RightSidebar() {
     const incVal = parseFloat(inclination) || 0
     const raanVal = parseFloat(raan) || 0
     const eVal = parseFloat(eccentricity) || 0
+    const clampedAltitude = Math.min(LEO_LIMITS.CEILING, Math.max(LEO_LIMITS.FLOOR, altVal))
+    const normalizedInclination = ((incVal % 360) + 360) % 360
+    const normalizedRaan = ((raanVal % 360) + 360) % 360
+    const clampedEccentricity = Math.max(0, Math.min(0.9, eVal))
 
     updateSatelliteParams(altVal, incVal, raanVal)
     updateSatelliteEccentricity(eVal)
+    setAltitude(String(clampedAltitude))
+    setInclination(String(normalizedInclination))
+    setRaan(String(normalizedRaan))
+    setEccentricity(clampedEccentricity.toFixed(4))
 
     setSatStatusText(
       "ISS Trajectory Uploaded: " +
@@ -86,7 +95,7 @@ export function RightSidebar() {
   const handleBoost = () => {
     const burnKm = 50
     boostBurn(burnKm)
-    setBoostStatus(`Boost burn executed: +${burnKm} km @ ${displaySpeedKmS.toFixed(0)} m/s Δv`)
+    setBoostStatus(`Boost burn executed: +${burnKm} km @ ${displaySpeedKmS.toFixed(2)} km/s`)
     setTimeout(() => setBoostStatus(""), 3000)
   }
 
@@ -172,7 +181,7 @@ export function RightSidebar() {
             <div className="bg-sky-400/5 border border-sky-400/15 rounded-md p-3">
               <div className="text-[10px] font-bold tracking-widest uppercase text-sky-400 mb-2.5">
                 Manual Satellite (3D Orbit)
-              </div>
+              </h2>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
@@ -245,7 +254,7 @@ export function RightSidebar() {
                 }`}
               >
                 LEO Decay Monitor
-              </div>
+              </h2>
 
               <div className="flex justify-between items-center py-1 text-xs border-t border-white/5 first:border-t-0 mt-0 pt-0">
                 <span className="text-white/40 text-[11px]">Current Altitude</span>

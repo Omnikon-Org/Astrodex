@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
 }
 
 /* ─── Mission Control Design Tokens ─── */
 :root {
+  --font-sans-stack: "Geist", "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono-stack: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --bg-deep: #060a13;
   --header-height: 52px;
   --sidebar-width: 310px;
@@ -80,6 +82,16 @@ html, body {
   }
 }
 
+/* Spinner animation for loading skeleton */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes pulseGlow {
   0%, 100% {
     box-shadow: 0 0 4px rgba(56, 189, 248, 0.4);
@@ -121,6 +133,16 @@ html, body {
 
 .animate-pulse-glow {
   animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.loading-spinner {
+  animation: spin 0.9s linear infinite, pulseGlow 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+  }
 }
 
 .animate-terminal-blink {
