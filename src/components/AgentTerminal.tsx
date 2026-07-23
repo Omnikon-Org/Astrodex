@@ -3,6 +3,11 @@
 import { useState, useEffect, useRef } from "react"
 import { useAppState } from "@/lib/store"
 
+type LogEntry = {
+  time: string
+  msg: string
+}
+
   const LOG_MESSAGES = [
     "[SYS] Orbital propagator initialized — 600 objects tracked",
     "[CONJ] Scanning primary object catalog for close approaches...",
@@ -33,22 +38,21 @@ function getTimestamp() {
   })
 }
 
+function createInitialLogs() {
+  return [
+    { time: getTimestamp(), msg: LOG_MESSAGES[0] },
+    { time: getTimestamp(), msg: LOG_MESSAGES[1] },
+    { time: getTimestamp(), msg: LOG_MESSAGES[2] },
+  ]
+}
+
 export function AgentTerminal() {
   const { terminalExpanded, toggleTerminal, boostCount, deltaVCount } = useAppState()
-  const [logs, setLogs] = useState<Array<{ time: string; msg: string }>>([])
+  const [logs, setLogs] = useState<LogEntry[]>(createInitialLogs)
   const scrollRef = useRef<HTMLDivElement>(null)
   const indexRef = useRef(3)
   const lastBoostSeen = useRef(boostCount)
   const lastDvSeen = useRef(deltaVCount)
-
-  // Initialize logs and start interval on client side only to prevent hydration mismatch
-  useEffect(() => {
-    setLogs([
-      { time: getTimestamp(), msg: LOG_MESSAGES[0] },
-      { time: getTimestamp(), msg: LOG_MESSAGES[1] },
-      { time: getTimestamp(), msg: LOG_MESSAGES[2] },
-    ])
-  }, [])
 
   // Auto-generate log entries
   useEffect(() => {
@@ -169,7 +173,12 @@ export function AgentTerminal() {
       {/* Terminal content */}
       {terminalExpanded && (
         <div
+          id="agent-terminal-log"
           ref={scrollRef}
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions text"
+          aria-label="Agent terminal notifications"
           style={{
             flex: 1,
             overflowY: "auto",
