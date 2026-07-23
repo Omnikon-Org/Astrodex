@@ -172,8 +172,8 @@ export function AsteroidCard() {
 
         {/* Orbit Visual Diagram Placeholder or Stats */}
         <div className="panel-section" style={{ marginBottom: 14 }}>
-          <h3 className="panel-section-title">Orbital Mechanics</h3>
-          <div className="kv-row">
+          <div className="panel-section-title">Orbital Mechanics</div>
+          <div className="kv-row" title="The semi-major axis (a) is one half of the major axis of the elliptical orbit, representing the mean distance from the primary body.">
             <span className="kv-label">Semi-Major Axis</span>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
           </div>
@@ -181,7 +181,7 @@ export function AsteroidCard() {
             <span className="kv-label">Mean Orbit Radius</span>
             <span className="kv-value">{selectedAsteroid.orbitRadius.toFixed(2)} R⊕</span>
           </div>
-          <div className="kv-row">
+          <div className="kv-row" title="The angle between the asteroid's orbital plane and the ecliptic plane.">
             <span className="kv-label">Inclination Angle</span>
             <span className="kv-value">
               {(selectedAsteroid.inclination * (180 / Math.PI)).toFixed(1)}°
