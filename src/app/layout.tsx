@@ -1,5 +1,17 @@
 import type { Metadata } from "next"
+import { Geist, Geist_Mono } from "next/font/google" // Added font imports
 import "./globals.css"
+
+// Instantiated the font families with CSS variable names
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+})
+
+const jetbrainsMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://astrodex.app'),
@@ -49,3 +61,4 @@ export default function RootLayout({
     </html>
   )
 }
+
