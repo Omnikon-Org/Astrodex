@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
 import { visVivaKmPerSec, LEO_DECAY_KM_PER_SEC, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
+import { Tooltip } from "@/components/Tooltip"
 
 export function RightSidebar() {
   const {
@@ -72,9 +73,17 @@ export function RightSidebar() {
     const incVal = parseFloat(inclination) || 0
     const raanVal = parseFloat(raan) || 0
     const eVal = parseFloat(eccentricity) || 0
+    const clampedAltitude = Math.min(LEO_LIMITS.CEILING, Math.max(LEO_LIMITS.FLOOR, altVal))
+    const normalizedInclination = ((incVal % 360) + 360) % 360
+    const normalizedRaan = ((raanVal % 360) + 360) % 360
+    const clampedEccentricity = Math.max(0, Math.min(0.9, eVal))
 
     updateSatelliteParams(altVal, incVal, raanVal)
     updateSatelliteEccentricity(eVal)
+    setAltitude(String(clampedAltitude))
+    setInclination(String(normalizedInclination))
+    setRaan(String(normalizedRaan))
+    setEccentricity(clampedEccentricity.toFixed(4))
 
     setSatStatusText(
       "ISS Trajectory Uploaded: " +
@@ -86,7 +95,7 @@ export function RightSidebar() {
   const handleBoost = () => {
     const burnKm = 50
     boostBurn(burnKm)
-    setBoostStatus(`Boost burn executed: +${burnKm} km @ ${displaySpeedKmS.toFixed(0)} m/s Δv`)
+    setBoostStatus(`Boost burn executed: +${burnKm} km @ ${displaySpeedKmS.toFixed(2)} km/s`)
     setTimeout(() => setBoostStatus(""), 3000)
   }
 
@@ -100,15 +109,17 @@ export function RightSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!rightSidebarOpen && (
-        <button
-          className="sidebar-toggle sidebar-toggle-right"
-          onClick={toggleRightSidebar}
-          title="Show Constraints Panel"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
+        <Tooltip label="Show Constraints Panel" placement="left">
+          <button
+            className="sidebar-toggle sidebar-toggle-right"
+            onClick={toggleRightSidebar}
+            aria-label="Show Constraints Panel"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        </Tooltip>
       )}
 
       <aside className={`sidebar-right glass-panel ${rightSidebarOpen ? "" : "collapsed"}`}>
@@ -125,7 +136,9 @@ export function RightSidebar() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button className="btn-ghost" onClick={toggleRightSidebar} style={{ padding: 4, border: "none" }}>
+              <button className="btn-ghost" onClick={toggleRightSidebar} 
+              aria-label="Hide Constraints Panel"
+              style={{ padding: 4, border: "none" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 18l6-6-6-6" />
                 </svg>
@@ -152,7 +165,7 @@ export function RightSidebar() {
           >
             {/* Planner Constraints */}
             <div className="panel-section">
-              <div className="panel-section-title">Planner Constraints</div>
+              <h2 className="panel-section-title">Planner Constraints</h2>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
@@ -194,13 +207,13 @@ export function RightSidebar() {
                 background: "rgba(56, 189, 248, 0.03)",
               }}
             >
-              <div className="panel-section-title" style={{ color: "var(--accent-cyan)" }}>
+              <h2 className="panel-section-title" style={{ color: "var(--accent-cyan)" }}>
                 Manual Satellite (3D Orbit)
-              </div>
+              </h2>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label title="Vertical distance of the satellite above the Earth's surface" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Altitude (km)
                   </label>
                   <input className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
@@ -218,19 +231,19 @@ export function RightSidebar() {
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label title="The angle between the orbital plane and the Earth's equator" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Inclination (°)
                   </label>
                   <input className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label title="Right Ascension of the Ascending Node (RAAN): The orientation of the orbit's ascending node in the equatorial plane" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     RAAN (°)
                   </label>
                   <input className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
                 </div>
                 <div style={{ gridColumn: "span 2" }}>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label title="Measures how much the orbit deviates from a perfect circle (0 = circular, >0 = elliptical)" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Eccentricity (0–0.9)
                   </label>
                   <input className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
@@ -268,7 +281,7 @@ export function RightSidebar() {
                     : undefined,
               }}
             >
-              <div
+              <h2
                 className="panel-section-title"
                 style={{
                   color:
@@ -280,7 +293,7 @@ export function RightSidebar() {
                 }}
               >
                 LEO Decay Monitor
-              </div>
+              </h2>
 
               <div className="kv-row">
                 <span className="kv-label">Current Altitude</span>
