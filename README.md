@@ -1,29 +1,47 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/AstroDex-Space%20Situational%20Awareness-0f172a?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzOGJkZjgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwYXRoIGQ9Ik0xMiAyYTEwIDEwIDAgMCAxIDAgMjAiLz48cGF0aCBkPSJNMTIgMmExMCAxMCAwIDAgMCAwIDIwIi8+PC9zdmc+" alt="AstroDex Badge"/>
-</p>
+# AstroDex 🌌
 
-<h1 align="center">🌌 AstroDex — Space Objects & Debris Explorer</h1>
+**Interactive 3D Asteroid & Orbital Explorer**
 
-<p align="center">
-  <strong>An interactive, open-source 3D space situational awareness (SSA) dashboard and command center.</strong><br/>
-  Visualize asteroids, track orbital debris, and monitor conjunction threats with active satellites — all in real-time.
-</p>
+AstroDex is a real-time, cinematic 3D space mission control simulator that lets you explore 600+ asteroids and orbital debris in Earth's orbit. Track near-Earth conjunctions, inspect Keplerian orbital parameters, deploy manual satellites, and file mining claims right from your browser.
 
-<p align="center">
-  <a href="https://astrodex-nine.vercel.app"><img src="https://img.shields.io/badge/🚀_Live_Demo-astrodex--nine.vercel.app-38bdf8?style=flat-square" alt="Live Demo"/></a>
-  <a href="https://github.com/SourabhX16/astrodex/issues"><img src="https://img.shields.io/github/issues/SourabhX16/astrodex?style=flat-square&color=34d399&label=Issues" alt="Issues"/></a>
-  <a href="https://github.com/SourabhX16/astrodex/pulls"><img src="https://img.shields.io/github/issues-pr/SourabhX16/astrodex?style=flat-square&color=a78bfa&label=PRs" alt="Pull Requests"/></a>
-  <a href="https://github.com/SourabhX16/astrodex/blob/main/LICENSE"><img src="https://img.shields.io/github/license/SourabhX16/astrodex?style=flat-square&color=f59e0b" alt="License"/></a>
-  <a href="https://github.com/SourabhX16/astrodex/stargazers"><img src="https://img.shields.io/github/stars/SourabhX16/astrodex?style=flat-square&color=fbbf24" alt="Stars"/></a>
-  <a href="https://github.com/SourabhX16/astrodex/network/members"><img src="https://img.shields.io/github/forks/SourabhX16/astrodex?style=flat-square&color=818cf8" alt="Forks"/></a>
-</p>
+## Features
+![AstroDex Badge](https://img.shields.io/badge/AstroDex-Space%20Situational%20Awareness-0f172a?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzOGJkZjgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwYXRoIGQ9Ik0xMiAyYTEwIDEwIDAgMCAxIDAgMjAiLz48cGF0aCBkPSJNMTIgMmExMCAxMCAwIDAgMCAwIDIwIi8+PC9zdmc+)
 
----
+# 🌌 AstroDex — Space Objects & Debris Explorer
 
-## 🔗 Live Demo
+**An interactive, open-source 3D space situational awareness (SSA) dashboard and command center.**
+Visualize asteroids, track orbital debris, and monitor conjunction threats with active satellites — all in real-time.
 
-> **👉 [https://astrodex-nine.vercel.app](https://astrodex-nine.vercel.app)**
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-astrodex--nine.vercel.app-38bdf8?style=flat-square)](https://astrodex-nine.vercel.app)
+[![Issues](https://img.shields.io/github/issues/Omnikon-Org/Astrodex?style=flat-square&color=34d399&label=Issues)](https://github.com/Omnikon-Org/Astrodex/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/Omnikon-Org/Astrodex?style=flat-square&color=a78bfa&label=PRs)](https://github.com/Omnikon-Org/Astrodex/pulls)
+[![License](https://img.shields.io/github/license/Omnikon-Org/Astrodex?style=flat-square&color=f59e0b)](https://github.com/Omnikon-Org/Astrodex/blob/main/LICENSE)
+[![Stars](https://img.shields.io/github/stars/Omnikon-Org/Astrodex?style=flat-square&color=fbbf24)](https://github.com/Omnikon-Org/Astrodex/stargazers)
+[![Forks](https://img.shields.io/github/forks/Omnikon-Org/Astrodex?style=flat-square&color=818cf8)](https://github.com/Omnikon-Org/Astrodex/network/members)
 
+- 🌍 **Cinematic Earth View**: Custom GLSL shaders for Earth, atmosphere, and cloud layers.
+- 🚀 **600+ Instanced Asteroids/Debris**: Procedurally generated asteroids on Keplerian elliptical orbits.
+- 🎯 **Click-to-Inspect & Camera Tracking**: Seamlessly select asteroids in 3D space, tracking them dynamically with smooth camera lerping.
+- ⚠️ **Real-time Conjunction Detection**: Live alerts when objects pass within a dangerous proximity to Earth.
+- 🛰️ **LEO Orbital Decay**: Monitor satellite altitudes and receive warnings as orbits decay towards the critical limit.
+- 💎 **Claim System**: File simulated mining claims on valuable asteroids.
+- ♿ **Accessible UI**: Keyboard navigation, screen-reader support, "reduce motion" toggles, and semantic HTML layouts for the HUD.
+- 🔍 **SEO Optimized**: Canonical URLs, Open Graph tags, JSON-LD structured data, and dynamic sitemaps.
+
+## Tech Stack
+
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **3D Rendering**:
+  - [Three.js (r184)](https://threejs.org/)
+  - [React Three Fiber v9](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction)
+  - [@react-three/drei v10](https://github.com/pmndrs/drei)
+  - [@react-three/postprocessing v3](https://github.com/pmndrs/react-postprocessing) (Bloom, Vignette)
+- **State Management**: React Context (`src/lib/store.tsx`)
+- **Physics/Math**: Custom Orbital Mechanics Engine (`src/lib/kepler.ts`)
+
+## Getting Started
 Open in a Chromium-based browser (Chrome, Edge, Brave) for the best WebGL experience. A dedicated GPU is recommended for smooth 60 fps rendering of 600+ orbital objects.
 
 ---
@@ -48,6 +66,7 @@ The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenin
 
 ![AstroDex Agent Terminal](docs/screenshots/agent-terminal.png)
 
+> [!TIP]
 ---
 
 ## 🛠️ Tech Stack
@@ -69,35 +88,160 @@ The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenin
 
 ---
 
+## 🏛️ Architecture At A Glance
+
+AstroDex keeps the simulation state and the WebGL renderer separate:
+
+```text
+AppProvider (src/lib/store.tsx)
+└── Home (src/app/page.tsx)
+    ├── Scene (dynamic, client-only)
+    │   └── R3F Canvas
+    │       └── SceneContent
+    │           ├── Earth, atmosphere, and clouds
+    │           ├── SatelliteSystem
+    │           ├── AsteroidField
+    │           └── Effects
+    └── HUD components
+        ├── Header, sidebars, and AgentTerminal
+        └── AsteroidCard
+```
+
+`AppProvider` is the single source of truth for simulation controls, filters,
+selected objects, satellite parameters, and conjunction alerts. HUD components
+read and update that state through `useAppState()`. `Scene` consumes the same
+state and passes only the values needed by React Three Fiber components; the
+3D components keep per-frame animation in `useFrame` and report events back to
+the store through callbacks.
+
+Supabase is **not integrated yet**. The current app therefore has no Supabase
+request in the render or state flow. When persistence is introduced, the
+Supabase client should be added at the store/service boundary: authenticated
+reads and writes belong in that layer, while R3F components should continue to
+receive plain state and callbacks. See the [future Supabase setup notes](./CONTRIBUTING.md#future-supabase-setup)
+and the [full architecture reference](./ARCHITECTURE.md) for the planned
+integration boundary and rendering pipeline.
+
+---
+
 ## 🌌 Core Features
 
-- **Multi-Object Catalog Tracking**:
-  - **400 Rocky Asteroids (Natural)**: Rendered in grey-brown rock textures, each on its own random elliptical orbit (`e ∈ [0, 0.28)`).
-  - **200 Space Debris Pieces (Man-made)**: Spent rocket stages, dead satellites, and metallic fragments orbiting closer to Earth, rendered in high-visibility neon colors (orange, cyan, magenta).
-- **True Keplerian Orbital Mechanics**:
-  - Every object (asteroids, debris, and the 3 satellites) is propagated by solving **Kepler's Equation** `M = E − e·sin(E)` with a Newton-Raphson solver in `src/lib/kepler.ts`.
-  - Per-frame **Vis-Viva** speed `v = √(μ·(2/r − 1/a))` — objects accelerate at perigee and decelerate at apogee.
+- **Multi-Object Catalog Tracking**
+  - **400 Rocky Asteroids (Natural)**: rendered in grey-brown rock textures, each on its own random elliptical orbit (`e ∈ [0, 0.28)`).
+  - **200 Space Debris Pieces (Man-made)**: spent rocket stages, dead satellites, and metallic fragments orbiting closer to Earth, rendered in high-visibility neon colors (orange, cyan, magenta).
+
+- **True Keplerian Orbital Mechanics**
+  - Every object (asteroids, debris, and the 3 satellites) is propagated by solving Kepler's Equation with a Newton-Raphson solver in [`src/lib/kepler.ts`](src/lib/kepler.ts).
+  - Per-frame Vis-Viva velocity — objects accelerate at perigee and decelerate at apogee.
   - Orbit-line geometries are drawn as true ellipses sweeping eccentric anomaly, not circles.
-- **LEO Orbital Decay & Boost Burn**:
-  - The ISS altitude continuously drops from atmospheric drag (`0.05 km/s` of real time, clamped to 180 km re-entry floor / 500 km ceiling).
-  - The Right Sidebar **LEO Decay Monitor** shows a green → amber → red health bar plus the current altitude and drag rate.
-  - Clicking **Boost Burn (+50 km)** injects Δv that restores the orbit; the boost is logged to the Agent Terminal.
-  - As the ISS decays the orbit ring visibly shrinks and conjunction risks with debris rise.
-- **Interactive Satellite System**:
+  - 📖 Full equations and derivations: see [ARCHITECTURE.md](./ARCHITECTURE.md#orbital-mechanics).
+
+- **LEO Orbital Decay & Boost Burn**
+  - The ISS altitude continuously drops from simulated atmospheric drag.
+  - The Right Sidebar's **LEO Decay Monitor** shows a green → amber → red health bar plus current altitude and drag rate.
+  - Clicking **Boost Burn** injects Δv that restores the orbit; the maneuver is logged to the Agent Terminal.
+  - As the ISS decays, the orbit ring visibly shrinks and conjunction risks with debris rise.
+  - 📖 Exact decay rates and altitude thresholds: see [ARCHITECTURE.md](./ARCHITECTURE.md#leo-decay-model).
+
+- **Interactive Satellite System**
   - Renders 3D orbital planes for active satellites: **ISS (ZARYA)**, **Envisat (Polar)**, and **Hubble Space Telescope**.
   - Satellites move along realistic inclined Keplerian trajectories.
-- **Real-Time Conjunction Alerting**:
+
+- **Real-Time Conjunction Alerting**
   - Performs live 3D collision detection between satellites and the orbital catalog.
-  - Triggers alerts inside the **Conjunction Alerter** panel and log notifications in the **Agent Terminal** if a space object approaches within critical distance.
+  - Triggers alerts inside the **Conjunction Alerter** panel and log notifications in the **Agent Terminal** when a space object approaches within critical distance.
   - Highlights at-risk objects in the 3D viewport by flashing their colors to a pulsing red indicator.
-- **Dynamic Orbital Telemetry Controls**:
+
+- **Dynamic Orbital Telemetry Controls**
   - The Right Sidebar's **Manual Satellite (3D Orbit)** panel is fully functional. Update parameters (Altitude, Inclination, RAAN, Eccentricity) and click **Apply Trajectory** to watch the ISS satellite and its elliptical orbit trail dynamically recalculate and warp in 3D in real-time.
-- **Cinematic Earth Shader**:
+
+- **Cinematic Earth Shader**
   - Custom GLSL material blending Earth day/night textures dynamically based on sun angle, highlighting glowing cities, ocean specular reflections, a twilight terminator ring, and atmospheric Rayleigh scattering effects.
-- **Agent Terminal**:
+
+- **Agent Terminal**
   - Expandable bottom terminal dock generating monospace logs of sensor sweeps, conjunction alerts, and maneuver sequences (including boost burns).
 
 ---
+
+## ⚡ Quick Start
+
+Get AstroDex running locally in under a minute:
+
+```bash
+git clone https://github.com/<your-username>/Astrodex.git
+cd Astrodex
+npm install
+npm run dev
+
+
+---
+
+### ♿ Accessibility
+
+```md
+## ♿ Accessibility
+
+AstroDex aims to provide an inclusive experience for all users.
+
+Current accessibility efforts include:
+
+- Keyboard-accessible navigation
+- Screen-reader friendly interface improvements
+- Semantic HTML usage
+- Reduced-motion support for animation-sensitive users
+- Improved focus visibility for interactive controls
+
+Accessibility enhancements are actively being developed and community contributions are welcome. 
+
+## 🛠️ Troubleshooting
+
+### WebGL Not Supported
+
+AstroDex relies on WebGL for 3D rendering.
+
+Check browser compatibility:
+
+- Google Chrome
+- Microsoft Edge
+- Brave Browser
+- Firefox (latest version)
+
+### Poor Performance
+
+If frame rates are low:
+
+- Enable hardware acceleration
+- Close GPU-intensive applications
+- Update graphics drivers
+- Reduce browser tab usage
+
+### Dependency Installation Errors
+
+Try clearing dependencies and reinstalling:
+
+```bash
+rm -rf node_modules
+rm package-lock.json
+npm install
+
+
+---
+
+### 🚀 Roadmap
+
+```md
+## 🚀 Roadmap
+
+Planned future enhancements include:
+
+- Supabase integration for persistent data storage
+- Expanded satellite catalog support
+- Real-world orbital datasets
+- Advanced collision prediction algorithms
+- Historical orbit replay system
+- Enhanced accessibility improvements
+- Mobile-friendly mission control interface
+
 
 ## 🚀 Getting Started
 
@@ -113,14 +257,16 @@ The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenin
 > Run `node -v` and `npm -v` to verify your installed versions.
 
 ### Installation
-
+1. Clone the repository
 ```bash
-# 1. Fork the repository on GitHub, then clone your fork
-git clone https://github.com/<your-username>/astrodex.git
+git clone https://github.com/RishiByte/astrodex.git
 cd astrodex
+# 1. Fork the repository on GitHub, then clone your fork
+git clone https://github.com/<your-username>/Astrodex.git
+cd Astrodex
 
 # 2. Add the upstream remote (to stay in sync)
-git remote add upstream https://github.com/SourabhX16/astrodex.git
+git remote add upstream https://github.com/Omnikon-Org/Astrodex.git
 
 # 3. Install dependencies
 npm install
@@ -178,29 +324,15 @@ AstroDex is designed for zero-config deployment on [Vercel](https://vercel.com/)
 ### Type Checking
 
 ```bash
-# Run the TypeScript compiler in check-only mode (no output emitted)
-npx tsc --noEmit
+npm install
 ```
 
-### Linting
-
+3. Run the development server
 ```bash
-# Run ESLint across the entire project
-npm run lint
+npm run dev
 ```
 
-### Build Validation
-
-```bash
-# Verify the project compiles successfully for production
-npm run build
-```
-
-### Pre-PR Checklist
-
-Before opening a pull request, ensure all of the following pass:
-
-```bash
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 npm run lint          # ✅ No new lint errors
 npx tsc --noEmit      # ✅ No type errors
 npm run build         # ✅ Build completes successfully
@@ -214,7 +346,7 @@ npm run build         # ✅ Build completes successfully
 ## 📂 Project Structure
 
 ```text
-astrodex/
+Astrodex/
 ├── public/                     # Static assets
 ├── src/
 │   ├── app/
@@ -226,7 +358,7 @@ astrodex/
 │   │   │   ├── Earth.tsx       # Earth day/night custom GLSL shader
 │   │   │   ├── CloudLayer.tsx  # Procedural cloud layer
 │   │   │   ├── Atmosphere.tsx  # Atmosphere scattering shader glow
-│   │   │   └── textures.ts    # Canvas 2D texture generators (zero external assets)
+│   │   │   └── textures.ts     # Canvas 2D texture generators (zero external assets)
 │   │   ├── AsteroidField.tsx   # Dual InstancedMesh (Asteroids & Space Debris) — Keplerian
 │   │   ├── SatelliteSystem.tsx # ISS/Envisat/Hubble + LEO decay
 │   │   ├── CameraController.tsx # Tracking camera controller
@@ -261,8 +393,10 @@ We welcome contributions! For the full process and guidelines, see [CONTRIBUTING
 - Comment on the issue expressing interest so maintainers can assign it.
 - Create a focused branch with a descriptive name (e.g., `feat/…`, `fix/…`, `docs/…`).
 - Keep PRs small and include steps to reproduce or test.
+- Have a question or idea? Use [GitHub Discussions](https://github.com/Omnikon-Org/Astrodex/discussions) rather than opening an issue.
+- Found a security issue? See [SECURITY.md](./SECURITY.md) for responsible disclosure — please don't file it as a public issue.
 
-## 🎨 Coding style / Linting / Formatting
+### Coding Style / Linting / Formatting
 
 AstroDex uses TypeScript (strict mode), ESLint, and Tailwind. Follow the conventions in [CONTRIBUTING.md#code-style](./CONTRIBUTING.md#code-style) (use `@/` path alias, add `"use client"` for client components, avoid `any`, remove unused imports). Run these commands before opening a PR:
 
@@ -270,12 +404,24 @@ AstroDex uses TypeScript (strict mode), ESLint, and Tailwind. Follow the convent
 - `npx tsc --noEmit`
 - `npm run build`
 
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
 
 ---
 
-<p align="center">
-  Made with ❤️ by the <a href="https://github.com/SourabhX16/astrodex/graphs/contributors">AstroDex contributors</a>
-</p>
+## Architecture & Code conventions
+
+- **3D Components**: All 3D components are strictly `"use client"` and rendered dynamically via `next/dynamic({ ssr: false })` to avoid SSR mismatches with WebGL.
+- **Shader Code**: GLSL code for the planet and atmosphere is embedded directly in component files via template literals to maximize portability.
+- **Performance**: The 600+ asteroids use `<InstancedMesh>` for a single draw call. Individual `THREE.Vector3` or `Color` objects are reused outside of the render loop to prevent garbage collection pressure.
+- **Orbital Mechanics**: All Keplerian calculations live in `src/lib/kepler.ts`.
+
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+MIT License
+Made with ❤️ by the [AstroDex contributors](https://github.com/Omnikon-Org/Astrodex/graphs/contributors)

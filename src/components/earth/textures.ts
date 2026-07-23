@@ -1,3 +1,11 @@
+/**
+ * Create the daytime Earth albedo map used by the globe shader.
+ *
+ * All generated maps use a 2:1 equirectangular canvas so the same UVs can be
+ * shared by the Earth, cloud, night-light, and specular materials. The shapes
+ * are intentionally illustrative rather than geographic data; random terrain
+ * variation keeps the procedural surface from looking tiled.
+ */
 export function createProceduralEarthTexture(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   canvas.width = 1024
@@ -138,12 +146,6 @@ export function createProceduralEarthTexture(): HTMLCanvasElement {
     ctx.fill()
 
     // Add some terrain variation
-    const bound = ctx.getImageData(
-      Math.max(0, cx - 0.12 * w),
-      Math.max(0, cy - 0.12 * w),
-      Math.min(w, 0.24 * w),
-      Math.min(h, 0.24 * w)
-    )
     for (let i = 0; i < 80; i++) {
       const tx = cx + (Math.random() - 0.5) * 0.2 * w
       const ty = cy + (Math.random() - 0.5) * 0.2 * w
@@ -174,6 +176,11 @@ export function createProceduralEarthTexture(): HTMLCanvasElement {
   return canvas
 }
 
+/**
+ * Create the night-side emissive map. City clusters are layered from dense
+ * urban cores, dimmer suburban halos, and sparse rural/fishing lights so the
+ * shader can blend believable night illumination without external assets.
+ */
 export function createProceduralNightTexture(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   canvas.width = 1024
@@ -341,6 +348,11 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
   return canvas
 }
 
+/**
+ * Create the grayscale specular map consumed by the ocean highlight pass.
+ * Brighter procedural patches represent reflective water while land remains
+ * black, allowing the Earth shader to control the final highlight intensity.
+ */
 export function createProceduralSpecularTexture(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   canvas.width = 1024
@@ -368,6 +380,11 @@ export function createProceduralSpecularTexture(): HTMLCanvasElement {
   return canvas
 }
 
+/**
+ * Create a transparent-looking cloud density map. Horizontal bands provide
+ * latitude-wide cloud systems and radial gradients add storm cells; the
+ * CloudLayer material uses this grayscale texture as a soft alpha mask.
+ */
 export function createProceduralCloudTexture(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   canvas.width = 1024

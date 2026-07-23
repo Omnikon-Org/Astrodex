@@ -1,7 +1,10 @@
 "use client"
 
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing"
+import { EffectComposer, Bloom, Vignette, ChromaticAberration } from "@react-three/postprocessing"
 import { BlendFunction } from "postprocessing"
+import * as THREE from "three"
+
+const CHROMATIC_OFFSET = new THREE.Vector2(0.0012, 0.0008)
 
 export function Effects() {
   return (

@@ -16,7 +16,18 @@
  */
 
 const MU_EARTH_KM = 3.986e5 // km³/s²
+const MU_SCENE = 0.005
 const KM_PER_UNIT = 3543 // 1 scene unit = 3543 km (Earth radius 6378 km = 1.8 units)
+
+function visVivaSpeed(mu: number, radius: number, semiMajorAxis: number): number {
+  if (!Number.isFinite(radius) || !Number.isFinite(semiMajorAxis) || radius <= 0 || semiMajorAxis <= 0) {
+    return 0
+  }
+
+  const radicand = mu * (2 / radius - 1 / semiMajorAxis)
+
+  return Math.sqrt(Math.max(0, radicand))
+}
 
 /**
  * Time scaling factor: scene seconds per real second.
@@ -67,7 +78,6 @@ export function meanMotion(a: number): number {
   // (a ≈ 1.91 units, 400 km altitude) yields a period of ~60 scene-seconds
   // when scaled by SCENE_TIME_SCALE.  Derived empirically:
   //   μ_scene = 0.005  →  n(1.91) ≈ 0.0267 rad/s,  period ≈ 235 s raw.
-  const MU_SCENE = 0.005
   return Math.sqrt(MU_SCENE / (a * a * a))
 }
 
@@ -79,8 +89,7 @@ export function meanMotion(a: number): number {
  *     v = sqrt( μ·(2/r − 1/a) )
  */
 export function visViva(r: number, a: number): number {
-  const MU_SCENE = 0.005
-  return Math.sqrt(Math.max(0, MU_SCENE * (2 / r - 1 / a)))
+  return visVivaSpeed(MU_SCENE, r, a)
 }
 
 /**
@@ -88,7 +97,7 @@ export function visViva(r: number, a: number): number {
  * Inspector telemetry readout where users expect km/s.
  */
 export function visVivaKmPerSec(rKm: number, aKm: number): number {
-  return Math.sqrt(Math.max(0, MU_EARTH_KM * (2 / rKm - 1 / aKm)))
+  return visVivaSpeed(MU_EARTH_KM, rKm, aKm)
 }
 
 /**

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo } from "react"
+import { useMemo, useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { useAppState } from "@/lib/store"
@@ -94,6 +94,12 @@ export function SatelliteSystem() {
   const issRef = useRef<THREE.Mesh>(null)
   const envisatRef = useRef<THREE.Mesh>(null)
   const hubbleRef = useRef<THREE.Mesh>(null)
+  // Paused-time-aware sim clock. R3F's `state.clock.getElapsedTime()` keeps
+  // advancing while `simulationRunning` is false, so on resume every satellite
+  // used to teleport to where it would have been if the sim had never paused.
+  // This ref only advances when simulationRunning is true, and every Kepler
+  // solve now derives its mean anomaly from it. See issue #550.
+  const simTimeRef = useRef(0)
 
   // Convert km altitude to 3D scene units (Earth radius is 1.8 units = 6378 km)
   const issRadius = useMemo(() => 1.8 + kmToSceneUnits(satAltitude), [satAltitude])
@@ -114,10 +120,11 @@ export function SatelliteSystem() {
     [hubbleRadius]
   )
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!simulationRunning) return
 
-    const time = state.clock.getElapsedTime()
+    simTimeRef.current += delta
+    const time = simTimeRef.current
     const tempPos = new THREE.Vector3()
 
     // LEO atmospheric drag — slowly drop the ISS altitude in real time
