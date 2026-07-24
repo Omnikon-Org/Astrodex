@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef, useCallback, useMemo, useEffect } from "react"
-import { Canvas } from "@react-three/fiber"
-import { Stars, Loader } from "@react-three/drei"
+import { useRef, useCallback, useEffect, useMemo } from "react"
+import { Canvas, useFrame } from "@react-three/fiber"
+import { Stats, Stars } from "@react-three/drei"
 import * as THREE from "three"
 
 import { Earth } from "./earth/Earth"
@@ -11,8 +11,8 @@ import { Atmosphere } from "./earth/Atmosphere"
 import { AsteroidField } from "./AsteroidField"
 import { SatelliteSystem } from "./SatelliteSystem"
 import { CameraController } from "./CameraController"
-import { useEffect, useMemo, useRef, useCallback } from "react"
 import { Effects } from "./Effects"
+import { CanvasErrorBoundary } from "./CanvasErrorBoundary"
 import { useAppState } from "@/lib/store"
 import type { AsteroidData } from "@/lib/types"
 
@@ -97,16 +97,8 @@ function SunRig({ sunDirection }: { sunDirection: THREE.Vector3 }) {
 }
 
 function SceneContent() {
-  useEffect(() => {
-    const isInstrumented = typeof window !== "undefined" && (window as any).__INSTRUMENT_SCENE__
-    if (isInstrumented) {
-      performance.mark("SceneContent-Mount-Start")
-      return () => performance.mark("SceneContent-Unmount")
-    }
-  }, [])
-
   const sunDirection = useMemo(() => new THREE.Vector3(5, 3, 5).normalize(), [])
-  const { selectAsteroid, searchAsteroidById } = useAppState()
+  const { selectedAsteroid, selectAsteroid } = useAppState()
   const selectedIndexRef = useRef<number | null>(null)
 
   const handleAsteroidClick = useCallback(
@@ -122,30 +114,6 @@ function SceneContent() {
   }, [selectedAsteroid])
 
   const getSelectedIndex = useCallback(() => selectedIndexRef.current, [])
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input
-      if (document.activeElement?.tagName === "INPUT") return
-
-      let currentIndex = selectedIndexRef.current
-      if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-        const nextIndex = currentIndex === null ? 1 : Math.min(currentIndex + 1, 600)
-        selectedIndexRef.current = nextIndex
-        searchAsteroidById(nextIndex)
-      } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-        const prevIndex = currentIndex === null ? 600 : Math.max(currentIndex - 1, 1)
-        selectedIndexRef.current = prevIndex
-        searchAsteroidById(prevIndex)
-      } else if (e.key === "Escape") {
-        selectedIndexRef.current = null
-        selectAsteroid(null)
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [searchAsteroidById, selectAsteroid])
 
   return (
     <>
@@ -174,25 +142,15 @@ function SceneContent() {
 
 export function Scene() {
   return (
-    <div 
-      className="fixed inset-0 z-0" 
-      role="region" 
-      aria-label="Interactive 3D simulation of Earth, satellites, and asteroids in real-time"
-    >
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
-        gl={{ antialias: true, alpha: false }}
-        aria-label="Interactive 3D space scene showing Earth and asteroids"
-        fallback={<div>Interactive 3D space scene showing Earth and asteroids</div>}
-      >
-        <SceneContent />
-      </Canvas>
-      <Loader
-        containerStyles={{ background: "rgba(10, 16, 28, 0.95)" }}
-        innerStyles={{ width: "300px", border: "1px solid rgba(56, 189, 248, 0.4)", background: "rgba(0,0,0,0)" }}
-        barStyles={{ background: "var(--accent-cyan)", height: "4px" }}
-        dataInterpolation={(p) => `Astrodex Booting... ${p.toFixed(0)}%`}
-      />
+    <div className="fixed inset-0 z-0">
+      <CanvasErrorBoundary>
+        <Canvas
+          camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
+          gl={{ antialias: true, alpha: false }}
+        >
+          <SceneContent />
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   )
 }
