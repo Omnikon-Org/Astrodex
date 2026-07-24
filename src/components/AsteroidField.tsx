@@ -4,11 +4,13 @@ import { useRef, useMemo, useCallback, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
-import { useAppState } from "@/lib/store"
+import { useAppState, simClock } from "@/lib/store"
 import { satellitePositions } from "./SatelliteSystem"
 import {
   solveKepler,
+  getOrbitalPosition,
   visViva,
+  visVivaKmPerSec,
   meanMotion,
   SCENE_TIME_SCALE,
   velocityToKmPerSec,
@@ -82,6 +84,7 @@ interface AsteroidFieldProps {
 export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFieldProps) {
   const asteroidMeshRef = useRef<THREE.InstancedMesh>(null)
   const debrisMeshRef = useRef<THREE.InstancedMesh>(null)
+  const markerMeshRef = useRef<THREE.InstancedMesh>(null)
   const anglesRef = useRef<number[]>([])
 
   // Cached "at risk" state per object — colors are only re-pushed on transitions
@@ -133,15 +136,17 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   useFrame((state, delta) => {
     const asteroidMesh = asteroidMeshRef.current
     const debrisMesh = debrisMeshRef.current
-    if (!asteroidMesh || !debrisMesh) return
+    const markerMesh = markerMeshRef.current
+    if (!asteroidMesh || !debrisMesh || !markerMesh) return
 
     _projScreenMatrix.multiplyMatrices(state.camera.projectionMatrix, state.camera.matrixWorldInverse)
     _frustum.setFromProjectionMatrix(_projScreenMatrix)
 
     const selectedIdx = getSelectedIndex()
-    const t = state.clock.getElapsedTime()
+    const t = simClock.time
     const prevAtRisk = prevAtRiskRef.current
     const deltaScaled = delta * SCENE_TIME_SCALE
+    let markerCount = 0
 
     for (let i = 0; i < TOTAL_COUNT; i++) {
       const ad = dataRef.current[i]
@@ -149,24 +154,24 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       const instanceIndex = isDebris ? i - ASTEROID_COUNT : i
 
       // 1. Keplerian propagation: M = n·t + M0  →  solve Kepler for E
-      if (selectedIdx !== i && simulationRunning) {
+      if (selectedIdx !== i && simulationRunning && ad.orbitRadius > 0) {
         const n = meanMotion(ad.orbitRadius)
-        anglesRef.current[i] = solveKepler(n * t * deltaScaled + ad.meanAnomaly0, ad.eccentricity)
+        anglesRef.current[i] = solveKepler(
+          n * t * deltaScaled + ad.meanAnomaly0,
+          ad.eccentricity,
+          anglesRef.current[i]
+        )
       }
 
       const E = anglesRef.current[i]
       const a = ad.orbitRadius
       const e = ad.eccentricity
-      const cosE = Math.cos(E)
-      const sinE = Math.sin(E)
-      const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+      const inc = ad.inclination // Already in radians
 
-      // In-plane perifocal coordinates of the ellipse
-      const xPlane = a * (cosE - e)
-      const zPlane = a * sqrt1me2 * sinE
-
-      // Apply inclination tilt to break the orbit out of the xz plane
-      _objPos.set(xPlane, zPlane * ad.inclination, zPlane)
+      // Compute true 3D orbital position (defaults RAAN to 0 for asteroids since it's not in AsteroidData yet)
+      const pos = getOrbitalPosition(a, e, E, inc, 0)
+      
+      _objPos.set(pos.x, pos.y, pos.z)
 
       // 2. Filter rendering scale
       let activeScale = ad.scale
@@ -204,6 +209,15 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       }
 
       ad.atRisk = atRisk
+
+      if (atRisk && activeScale > 0 && markerCount < 50) {
+        dummy.position.copy(_objPos)
+        dummy.scale.setScalar(isDebris ? 0.3 : 0.6)
+        dummy.quaternion.copy(state.camera.quaternion)
+        dummy.updateMatrix()
+        markerMesh.setMatrixAt(markerCount, dummy.matrix)
+        markerCount++
+      }
 
       // Handle conjunction alerts in the store (throttle to once per 8 seconds per object)
       if (atRisk && simulationRunning && activeScale > 0) {
@@ -256,6 +270,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
 
     asteroidMesh.instanceMatrix.needsUpdate = true
     debrisMesh.instanceMatrix.needsUpdate = true
+    markerMesh.count = markerCount
+    markerMesh.instanceMatrix.needsUpdate = true
     if (asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
     if (debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
   })
@@ -276,13 +292,25 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     [onAsteroidClick]
   )
 
+  const handlePointerOver = useCallback((e: any) => {
+    e.stopPropagation()
+    document.body.style.cursor = 'pointer'
+  }, [])
+
+  const handlePointerOut = useCallback((e: any) => {
+    e.stopPropagation()
+    document.body.style.cursor = 'auto'
+  }, [])
+
   return (
     <>
       {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
         ref={asteroidMeshRef}
-        args={[null as any, null as any, ASTEROID_COUNT]}
+        args={[undefined, undefined, ASTEROID_COUNT]}
         onClick={handleAsteroidClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
         frustumCulled={false}
       >
         <dodecahedronGeometry args={[1, 0]} />
@@ -292,12 +320,20 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
       <instancedMesh
         ref={debrisMeshRef}
-        args={[null as any, null as any, DEBRIS_COUNT]}
+        args={[undefined, undefined, DEBRIS_COUNT]}
         onClick={handleDebrisClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
         frustumCulled={false}
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
         <meshStandardMaterial roughness={0.4} metalness={0.8} />
+      </instancedMesh>
+
+      {/* ─── Conjunction Markers ─── */}
+      <instancedMesh ref={markerMeshRef} args={[undefined, undefined, 50]} frustumCulled={false}>
+        <ringGeometry args={[0.7, 1, 32]} />
+        <meshBasicMaterial color="#ff0044" transparent opacity={0.6} depthTest={false} side={THREE.DoubleSide} />
       </instancedMesh>
     </>
   )

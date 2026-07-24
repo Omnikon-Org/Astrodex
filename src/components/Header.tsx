@@ -27,7 +27,16 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, searchAsteroid } = useAppState()
+  const [searchQuery, setSearchQuery] = useState("")
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      searchAsteroid(searchQuery.trim())
+      setSearchQuery("")
+    }
+  }
 
   return (
     <header
@@ -105,6 +114,24 @@ export function Header() {
           Risk: {riskLevel}
         </div>
 
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <input
+            type="text"
+            className="mc-input"
+            style={{ width: "180px", padding: "4px 8px" }}
+            placeholder="Search Asteroid ID/Name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button type="submit" className="btn-ghost" style={{ padding: "4px 8px" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+        </form>
+
         {/* Connection indicator */}
         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
           <div
@@ -130,11 +157,11 @@ export function Header() {
         </div>
 
         {selectedAsteroid && (
-          <button className="btn-ghost" onClick={triggerReset}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <button className="btn-primary flex items-center gap-1" onClick={triggerReset}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
-            Back to Earth
+            Return to Earth
           </button>
         )}
       </div>
