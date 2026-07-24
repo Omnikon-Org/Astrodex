@@ -1,7 +1,18 @@
 "use client"
 
+/**
+ * @file store.tsx
+ * @description Centralized State Management & Custom Hook Provider for AstroDex.
+ * Houses global application state including Asteroid catalog management, orbital mechanics telemetry,
+ * UI sidebar states, and conjunction collision risks.
+ */
+
 import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react"
 import type { AsteroidData } from "./types"
+
+// ==========================================
+// Types & Interfaces
+// ==========================================
 
 export interface ConjunctionAlert {
   id: number
@@ -14,48 +25,48 @@ export interface ConjunctionAlert {
   satelliteName: string
 }
 
-interface AppState {
+export interface AppState {
+  // Asteroid Selection & Catalog
   selectedAsteroid: AsteroidData | null
   claimedAsteroids: Set<number>
-  selectAsteroid: (a: AsteroidData | null) => void
+  asteroidCatalog: AsteroidData[]
+  selectAsteroid: (asteroid: AsteroidData | null) => void
   claimAsteroid: (id: number) => void
+  searchAsteroidById: (id: number) => void
+  registerAsteroidData: (data: AsteroidData[]) => void
+
+  // Camera & Simulation Controls
   resetCamera: boolean
   triggerReset: () => void
   clearReset: () => void
-  // Simulation
   simulationRunning: boolean
   toggleSimulation: () => void
   riskLevel: "HIGH" | "MEDIUM" | "LOW"
-  // Panel toggles
+
+  // UI & Panel Toggles
   leftSidebarOpen: boolean
   rightSidebarOpen: boolean
   terminalExpanded: boolean
   toggleLeftSidebar: () => void
   toggleRightSidebar: () => void
   toggleTerminal: () => void
-  // Search by ID
-  searchAsteroidById: (id: number) => void
-  registerAsteroidData: (data: AsteroidData[]) => void
-  asteroidCatalog: AsteroidData[]
-  // Space Debris Filters & Satellite Parameters
+
+  // Space Debris Filters & Satellite Orbit Telemetry
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
-  setFilterType: (f: "ALL" | "ASTEROIDS" | "DEBRIS") => void
+  setFilterType: (filter: "ALL" | "ASTEROIDS" | "DEBRIS") => void
   satAltitude: number
   satInclination: number
   satRaan: number
   satEccentricity: number
   updateSatelliteParams: (alt: number, inc: number, raan: number) => void
   updateSatelliteEccentricity: (e: number) => void
-  /** Decrement the ISS altitude by `amount` km, clamped to the LEO floor. */
   decayAltitude: (amount: number) => void
-  /** Inject Δv into the ISS to raise its altitude (counter-acts drag). */
   boostBurn: (deltaKm: number) => void
-  /** Increments every time a boost burn fires — AgentTerminal watches this. */
   boostCount: number
-  /** Increments every time a Δv budget is computed — AgentTerminal watches this. */
   deltaVCount: number
   triggerDeltaVLog: () => void
-  // Cinematic settings
+
+  // Cinematic & Visual FX Settings
   cinematicMode: boolean
   toggleCinematicMode: () => void
   cameraFov: number
@@ -64,48 +75,65 @@ interface AppState {
   toggleAutoRotate: () => void
   bloomIntensity: number
   setBloomIntensity: (intensity: number) => void
+
+  // Conjunction Alert System
   conjunctions: ConjunctionAlert[]
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   clearConjunctions: () => void
 }
 
+// ==========================================
+// Constants
+// ==========================================
+
+const LEO_FLOOR_KM = 180  // Re-entry threshold limit
+const LEO_CEILING_KM = 500 // Hard upper ceiling limit
+
+export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM } as const
+
 const AppContext = createContext<AppState | null>(null)
 
-const LEO_FLOOR_KM = 180 // cannot decay below ~180 km (re-entry threshold)
-const LEO_CEILING_KM = 500 // hard upper bound for user-set altitude
+// ==========================================
+// Context Provider Component
+// ==========================================
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  // 1. Asteroid Data States
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
-  const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
-  const [resetCamera, setResetCamera] = useState(false)
-  const [simulationRunning, setSimulationRunning] = useState(true)
-  const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
-
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
-  const [terminalExpanded, setTerminalExpanded] = useState(false)
+  const [claimedAsteroids, setClaimedAsteroids] = useState<Set<number>>(new Set())
+  const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
   const asteroidDataRef = useRef<AsteroidData[]>([])
 
-  // Space Debris Filters & Satellite Parameters
+  // 2. Simulation & Camera States
+  const [resetCamera, setResetCamera] = useState<boolean>(false)
+  const [simulationRunning, setSimulationRunning] = useState<boolean>(true)
+  const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
+
+  // 3. Navigation & Panel States
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState<boolean>(true)
+  const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(true)
+  const [terminalExpanded, setTerminalExpanded] = useState<boolean>(false)
+
+  // 4. Debris Filters & Satellite Trajectory
   const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
-  const [satAltitude, setSatAltitude] = useState(400)
-  const [satInclination, setSatInclination] = useState(51.63)
-  const [satRaan, setSatRaan] = useState(0)
-  const [satEccentricity, setSatEccentricity] = useState(0.0006)
-  const [boostCount, setBoostCount] = useState(0)
-  const [deltaVCount, setDeltaVCount] = useState(0)
+  const [satAltitude, setSatAltitude] = useState<number>(400)
+  const [satInclination, setSatInclination] = useState<number>(51.63)
+  const [satRaan, setSatRaan] = useState<number>(0)
+  const [satEccentricity, setSatEccentricity] = useState<number>(0.0006)
+  const [boostCount, setBoostCount] = useState<number>(0)
+  const [deltaVCount, setDeltaVCount] = useState<number>(0)
   const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
-  const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
-  const nextAlertId = useRef(1)
+  const nextAlertId = useRef<number>(1)
 
-  // Cinematic state
-  const [cinematicMode, setCinematicMode] = useState(false)
-  const [cameraFov, setCameraFov] = useState(75)
-  const [autoRotate, setAutoRotate] = useState(false)
-  const [bloomIntensity, setBloomIntensity] = useState(1.0)
+  // 5. Cinematic Visual Rendering States
+  const [cinematicMode, setCinematicMode] = useState<boolean>(false)
+  const [cameraFov, setCameraFov] = useState<number>(75)
+  const [autoRotate, setAutoRotate] = useState<boolean>(false)
+  const [bloomIntensity, setBloomIntensity] = useState<number>(1.0)
 
+  // Auto-collapse sidebars on smaller mobile screens
   useEffect(() => {
-    if (window.innerWidth >= 768) return
+    if (typeof window !== "undefined" && window.innerWidth >= 768) return
     const frame = requestAnimationFrame(() => {
       setLeftSidebarOpen(false)
       setRightSidebarOpen(false)
@@ -113,14 +141,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => cancelAnimationFrame(frame)
   }, [])
 
-  const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
+  // Action Handlers
+  const selectAsteroid = useCallback((asteroid: AsteroidData | null) => {
+    setSelectedAsteroid(asteroid)
+  }, [])
 
   const claimAsteroid = useCallback((id: number) => {
-    setClaimed((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
+    setClaimedAsteroids((prevClaims) => {
+      const nextClaims = new Set(prevClaims)
+      if (nextClaims.has(id)) {
+        nextClaims.delete(id)
+      } else {
+        nextClaims.add(id)
+      }
+      return nextClaims
     })
   }, [])
 
@@ -128,29 +162,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setResetCamera(true)
     setSelectedAsteroid(null)
   }, [])
-  const clearReset = useCallback(() => setResetCamera(false), [])
 
-  const toggleSimulation = useCallback(() => setSimulationRunning((p) => !p), [])
-  const toggleLeftSidebar = useCallback(() => setLeftSidebarOpen((p) => !p), [])
-  const toggleRightSidebar = useCallback(() => setRightSidebarOpen((p) => !p), [])
-  const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
+  const clearReset = useCallback(() => setResetCamera(false), [])
+  const toggleSimulation = useCallback(() => setSimulationRunning((prev) => !prev), [])
+  const toggleLeftSidebar = useCallback(() => setLeftSidebarOpen((prev) => !prev), [])
+  const toggleRightSidebar = useCallback(() => setRightSidebarOpen((prev) => !prev), [])
+  const toggleTerminal = useCallback(() => setTerminalExpanded((prev) => !prev), [])
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
-    // Update the ref immediately so searchAsteroidById can access the latest
-    // asteroid data without waiting for the asynchronous React state update.
     asteroidDataRef.current = data
     setAsteroidCatalog(data)
   }, [])
 
   const searchAsteroidById = useCallback((id: number) => {
-    const found = asteroidDataRef.current.find((a) => a.id === id)
+    const found = asteroidDataRef.current.find((item) => item.id === id)
     if (found) {
       setSelectedAsteroid(found)
     }
   }, [])
 
   const triggerDeltaVLog = useCallback(() => {
-    setDeltaVCount((c) => c + 1)
+    setDeltaVCount((count) => count + 1)
   }, [])
 
   const updateSatelliteParams = useCallback((alt: number, inc: number, raan: number) => {
@@ -159,25 +191,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSatRaan(((raan % 360) + 360) % 360)
   }, [])
 
-  const updateSatelliteEccentricity = useCallback((e: number) => {
-    setSatEccentricity(Math.max(0, Math.min(0.9, e)))
+  const updateSatelliteEccentricity = useCallback((eccentricity: number) => {
+    setSatEccentricity(Math.max(0, Math.min(0.9, eccentricity)))
   }, [])
 
   const decayAltitude = useCallback((amount: number) => {
     if (amount <= 0) return
-    setSatAltitude((prev) => Math.max(LEO_FLOOR_KM, prev - amount))
+    setSatAltitude((prevAlt) => Math.max(LEO_FLOOR_KM, prevAlt - amount))
   }, [])
 
   const boostBurn = useCallback((deltaKm: number) => {
     if (deltaKm <= 0) return
-    setSatAltitude((prev) => Math.min(LEO_CEILING_KM, prev + deltaKm))
-    setBoostCount((c) => c + 1)
+    setSatAltitude((prevAlt) => Math.min(LEO_CEILING_KM, prevAlt + deltaKm))
+    setBoostCount((count) => count + 1)
   }, [])
 
   const toggleCinematicMode = useCallback(() => {
-    setCinematicMode((prev) => {
-      const next = !prev
-      if (next) {
+    setCinematicMode((prevMode) => {
+      const nextMode = !prevMode
+      if (nextMode) {
         setCameraFov(85)
         setAutoRotate(true)
         setBloomIntensity(1.8)
@@ -186,25 +218,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setAutoRotate(false)
         setBloomIntensity(1.0)
       }
-      return next
+      return nextMode
     })
   }, [])
 
-  const toggleAutoRotate = useCallback(() => setAutoRotate((p) => !p), [])
+  const toggleAutoRotate = useCallback(() => setAutoRotate((prev) => !prev), [])
 
   const addConjunctionAlert = useCallback((alert: Omit<ConjunctionAlert, "id">) => {
-    setConjunctions((prev) => {
-      const existing = prev.find(
+    setConjunctions((prevConjunctions) => {
+      const existing = prevConjunctions.find(
         (c) => c.satelliteName === alert.satelliteName && c.secondaryId === alert.secondaryId
       )
       const newAlert = { ...alert, id: existing?.id ?? nextAlertId.current++ }
-      const withoutExisting = prev.filter((c) => c.id !== newAlert.id)
+      const withoutExisting = prevConjunctions.filter((c) => c.id !== newAlert.id)
       const updated = [newAlert, ...withoutExisting].slice(0, 15)
 
-      const hasHigh = updated.some((c) => c.risk === "HIGH")
-      const hasMedium = updated.some((c) => c.risk === "MEDIUM")
-      if (hasHigh) setRiskLevel("HIGH")
-      else if (hasMedium) setRiskLevel("MEDIUM")
+      const hasHighRisk = updated.some((c) => c.risk === "HIGH")
+      const hasMediumRisk = updated.some((c) => c.risk === "MEDIUM")
+
+      if (hasHighRisk) setRiskLevel("HIGH")
+      else if (hasMediumRisk) setRiskLevel("MEDIUM")
       else setRiskLevel("LOW")
 
       return updated
@@ -269,10 +302,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export function useAppState() {
+/**
+ * Custom React Hook to consume the global AstroDex state context.
+ * 
+ * @returns {AppState} Global state values and action dispatcher methods.
+ * @throws {Error} If called outside of an `<AppProvider>` tree.
+ * 
+ * @example
+ * ```tsx
+ * const { selectedAsteroid, selectAsteroid } = useAppState();
+ * ```
+ */
+export function useAppState(): AppState {
   const ctx = useContext(AppContext)
-  if (!ctx) throw new Error("useAppState must be used within AppProvider")
+  if (!ctx) {
+    throw new Error("useAppState must be consumed within an <AppProvider>")
+  }
   return ctx
 }
-
-export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
