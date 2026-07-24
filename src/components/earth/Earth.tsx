@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Fixed issue #174: Update styling for the EarthMesh component
