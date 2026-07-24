@@ -52,6 +52,11 @@ export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
   const TAU = Math.PI * 2
   const m = ((M % TAU) + TAU + Math.PI) % TAU - Math.PI
 
+  // Shortcut for circular or very low eccentricity orbits
+  if (e < 1e-6) {
+    return m
+  }
+
   // Robust initial guess.
   let E = e < 0.8 ? m : Math.PI * Math.sign(m || 1)
 
