@@ -57,12 +57,6 @@ export function createProceduralEarthTexture(): HTMLCanvasElement {
     ctx.fill()
 
     // Add some terrain variation
-    const bound = ctx.getImageData(
-      Math.max(0, cx - 0.12 * w),
-      Math.max(0, cy - 0.12 * w),
-      Math.min(w, 0.24 * w),
-      Math.min(h, 0.24 * w)
-    )
     for (let i = 0; i < 80; i++) {
       const tx = cx + (Math.random() - 0.5) * 0.2 * w
       const ty = cy + (Math.random() - 0.5) * 0.2 * w
