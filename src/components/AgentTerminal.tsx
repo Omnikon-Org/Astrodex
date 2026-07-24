@@ -43,11 +43,14 @@ export function AgentTerminal() {
 
   // Initialize logs and start interval on client side only to prevent hydration mismatch
   useEffect(() => {
-    setLogs([
-      { time: getTimestamp(), msg: LOG_MESSAGES[0] },
-      { time: getTimestamp(), msg: LOG_MESSAGES[1] },
-      { time: getTimestamp(), msg: LOG_MESSAGES[2] },
-    ])
+    const timer = setTimeout(() => {
+      setLogs([
+        { time: getTimestamp(), msg: LOG_MESSAGES[0] },
+        { time: getTimestamp(), msg: LOG_MESSAGES[1] },
+        { time: getTimestamp(), msg: LOG_MESSAGES[2] },
+      ])
+    }, 0)
+    return () => clearTimeout(timer)
   }, [])
 
   // Auto-generate log entries

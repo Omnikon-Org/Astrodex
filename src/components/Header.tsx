@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useAppState } from "@/lib/store"
+import { UserProfileModal } from "./UserProfileModal"
+import { IconUserCircle } from "@tabler/icons-react"
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -28,6 +30,7 @@ function LiveClock() {
 
 export function Header() {
   const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
     <header
@@ -137,6 +140,16 @@ export function Header() {
             Back to Earth
           </button>
         )}
+        
+        <div className="h-6 w-px bg-[var(--border-subtle)] mx-2" />
+        
+        <button 
+          onClick={() => setProfileOpen(true)}
+          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--accent-cyan)] transition-colors rounded hover:bg-white/5"
+          aria-label="Open User Profile"
+        >
+          <IconUserCircle size={22} stroke={1.5} />
+        </button>
       </div>
 
       {/* Right: Clock */}
@@ -148,6 +161,8 @@ export function Header() {
           <LiveClock />
         </span>
       </div>
+      
+      <UserProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </header>
   )
 }

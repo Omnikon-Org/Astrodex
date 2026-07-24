@@ -8,7 +8,7 @@ import * as THREE from "three"
 import { Earth } from "./earth/Earth"
 import { CloudLayer } from "./earth/CloudLayer"
 import { Atmosphere } from "./earth/Atmosphere"
-import { AsteroidField, trackedPosition } from "./AsteroidField"
+import { AsteroidField } from "./AsteroidField"
 import { SatelliteSystem } from "./SatelliteSystem"
 import { CameraController } from "./CameraController"
 import { Effects } from "./Effects"
@@ -20,7 +20,7 @@ function SceneContent() {
   const selectedIndexRef = useRef<number | null>(null)
 
   const handleAsteroidClick = useCallback(
-    (data: any) => {
+    (data: import("@/lib/store").AsteroidData) => {
       selectedIndexRef.current = data.index
       selectAsteroid(data)
     },
@@ -54,7 +54,12 @@ function SceneContent() {
 
 export function Scene() {
   return (
-    <div className="fixed inset-0 z-0">
+    <div 
+      className="fixed inset-0 z-0" 
+      role="application" 
+      aria-label="Interactive 3D space scene showing Earth and orbiting asteroids"
+      tabIndex={0}
+    >
       <Canvas
         camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
         gl={{ antialias: true, alpha: false }}
