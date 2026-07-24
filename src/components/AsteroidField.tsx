@@ -18,7 +18,7 @@ import {
 } from "@/lib/kepler"
 
 const ASTEROID_COUNT = 400
-const DEBRIS_COUNT = 200
+const DEBRIS_COUNT = 400
 const TOTAL_COUNT = ASTEROID_COUNT + DEBRIS_COUNT
 
 const ASTEROID_COLORS = ["#8B8B8B", "#A0522D", "#6B6B6B", "#B8860B", "#696969"]
@@ -28,9 +28,9 @@ function generateOrbitalObjectData(index: number): AsteroidData {
   const isDebris = index >= ASTEROID_COUNT
   const type = isDebris ? "debris" : "asteroid"
 
-  // Space Debris is closer to Earth and satellites for higher collision odds
+  // Space Debris is closely packed in LEO (Kessler syndrome simulation)
   const orbitRadius = isDebris
-    ? 1.9 + Math.random() * 2.2
+    ? 1.05 + Math.random() * 0.35
     : 3.8 + Math.random() * 7.5
 
   const speed = (isDebris ? 0.08 + Math.random() * 0.12 : 0.02 + Math.random() * 0.06) * (1 / orbitRadius)
@@ -44,7 +44,7 @@ function generateOrbitalObjectData(index: number): AsteroidData {
     index,
     orbitRadius,
     speed,
-    scale: isDebris ? 0.015 + Math.random() * 0.025 : 0.03 + Math.random() * 0.06,
+    scale: isDebris ? 0.008 + Math.random() * 0.012 : 0.03 + Math.random() * 0.06,
     inclination: isDebris ? (Math.random() - 0.5) * 1.2 : (Math.random() - 0.5) * 0.35,
     distance: `${(orbitRadius * 0.15).toFixed(2)} AU`,
     velocity: "0.0 km/s", // overwritten on first frame from Vis-Viva
