@@ -48,9 +48,19 @@ export const SCENE_TIME_SCALE = 60
  * @param tolerance Convergence threshold on |ΔE|, default 1e-7.
  */
 export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
+  // Instrument the solver: Only runs when a global flag is set (e.g. for profiling)
+  const isInstrumented = typeof window !== "undefined" && (window as any).__INSTRUMENT_KEPLER__
+  let t0 = 0
+  if (isInstrumented) t0 = performance.now()
+
   // Wrap M to [−π, π] so the initial guess is meaningful for any time t.
   const TAU = Math.PI * 2
-  const m = ((M % TAU) + TAU + Math.PI) % TAU - Math.PI
+  const m = (((M % TAU) + TAU + Math.PI) % TAU) - Math.PI
+
+  // Shortcut for circular or very low eccentricity orbits
+  if (e < 1e-6) {
+    return m
+  }
 
   // Robust initial guess.
   let E = e < 0.8 ? m : Math.PI * Math.sign(m || 1)
@@ -61,6 +71,14 @@ export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
     const dE = f / fp
     E -= dE
     if (Math.abs(dE) < tolerance) break
+  }
+
+  if (isInstrumented) {
+    const dt = performance.now() - t0
+    // accumulate in global stats if defined
+    if (!(window as any).__KEPLER_STATS__) (window as any).__KEPLER_STATS__ = { calls: 0, totalMs: 0 }
+    ;(window as any).__KEPLER_STATS__.calls++
+    ;(window as any).__KEPLER_STATS__.totalMs += dt
   }
 
   return E
@@ -135,6 +153,22 @@ export function velocityToKmPerSec(sceneV: number): number {
 export const LEO_DECAY_KM_PER_SEC = 0.05
 
 export const KM_PER_UNIT_CONST = KM_PER_UNIT
+
+export const AU_IN_KM = 149597870.7
+
+/**
+ * Convert kilometers to Astronomical Units (AU).
+ */
+export function kmToAu(km: number): number {
+  return km / AU_IN_KM
+}
+
+/**
+ * Convert Astronomical Units (AU) to kilometers.
+ */
+export function auToKm(au: number): number {
+  return au * AU_IN_KM
+}
 
 /**
  * Calculate the total delta-V (km/s) required for a Hohmann transfer between
