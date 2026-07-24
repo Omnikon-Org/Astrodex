@@ -28,16 +28,22 @@ void main() {
   vec3 normal = normalize(vNormal);
   vec3 viewDir = normalize(-vPosition);
 
-  float fresnel = 1.0 - max(dot(viewDir, normal), 0.0);
-  fresnel = pow(fresnel, 3.0);
-
   vec3 sunDir = normalize(sunDirection);
   float sunFace = dot(normalize(vWorldNormal), sunDir);
-  float daySide = clamp(sunFace * 0.5 + 0.5, 0.0, 1.0);
+  
+  // Sunset glow near terminator
+  float sunsetMix = smoothstep(0.2, -0.1, sunFace) * smoothstep(-0.4, -0.1, sunFace);
+  vec3 dayColor = vec3(0.2, 0.5, 1.0);
+  vec3 sunsetColor = vec3(1.0, 0.4, 0.1);
+  vec3 atmosphereColor = mix(dayColor, sunsetColor, sunsetMix);
 
-  vec3 atmosphereColor = vec3(0.3, 0.6, 1.0);
+  // Thinner, brighter edge (Rayleigh approximation)
+  float fresnel = 1.0 - max(dot(viewDir, normal), 0.0);
+  fresnel = pow(fresnel, 5.0) * 1.5;
 
-  float alpha = fresnel * daySide * 0.5;
+  // Global alpha based on dayside
+  float daySide = smoothstep(-0.2, 0.2, sunFace);
+  float alpha = fresnel * daySide;
 
   gl_FragColor = vec4(atmosphereColor, alpha);
 }
