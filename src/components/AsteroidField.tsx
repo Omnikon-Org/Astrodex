@@ -144,9 +144,13 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       const instanceIndex = isDebris ? i - ASTEROID_COUNT : i
 
       // 1. Keplerian propagation: M = n·t + M0  →  solve Kepler for E
-      if (selectedIdx !== i && simulationRunning) {
+      if (selectedIdx !== i && simulationRunning && ad.orbitRadius > 0) {
         const n = meanMotion(ad.orbitRadius)
-        anglesRef.current[i] = solveKepler(n * t * deltaScaled + ad.meanAnomaly0, ad.eccentricity)
+        anglesRef.current[i] = solveKepler(
+          n * t * deltaScaled + ad.meanAnomaly0,
+          ad.eccentricity,
+          anglesRef.current[i]
+        )
       }
 
       const E = anglesRef.current[i]
