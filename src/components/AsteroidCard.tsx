@@ -1,6 +1,7 @@
 "use client"
 
 import { useAppState } from "@/lib/store"
+import { ClaimButton } from "./ClaimButton"
 
 export function AsteroidCard() {
   const {
@@ -143,24 +144,10 @@ export function AsteroidCard() {
 
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <button
+          <ClaimButton
+            isClaimed={isClaimed}
             onClick={() => claimAsteroid(selectedAsteroid.id)}
-            className="btn-primary"
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "var(--radius-md)",
-              backgroundColor: isClaimed ? "rgba(248, 113, 113, 0.12)" : "rgba(56, 189, 248, 0.12)",
-              borderColor: isClaimed ? "rgba(248, 113, 113, 0.4)" : "rgba(56, 189, 248, 0.4)",
-              color: isClaimed ? "var(--accent-red)" : "var(--accent-cyan)",
-              fontSize: "12px",
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-            }}
-          >
-            {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
-          </button>
+          />
         </div>
       </div>
     </div>
