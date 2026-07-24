@@ -4,7 +4,7 @@ import { useRef, useMemo, useCallback, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
-import { useAppState } from "@/lib/store"
+import { useAppState, simClock } from "@/lib/store"
 import { satellitePositions } from "./SatelliteSystem"
 import {
   solveKepler,
@@ -138,7 +138,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     if (!asteroidMesh || !debrisMesh || !markerMesh) return
 
     const selectedIdx = getSelectedIndex()
-    const t = state.clock.getElapsedTime()
+    const t = simClock.time
     const prevAtRisk = prevAtRiskRef.current
     const deltaScaled = delta * SCENE_TIME_SCALE
     let markerCount = 0

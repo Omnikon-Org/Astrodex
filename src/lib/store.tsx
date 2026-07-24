@@ -22,13 +22,11 @@ interface AppState {
   resetCamera: boolean
   triggerReset: () => void
   clearReset: () => void
-  // Simulation
   simulationRunning: boolean
   toggleSimulation: () => void
+  timeScaleMultiplier: number
+  setTimeScaleMultiplier: (m: number) => void
   riskLevel: "HIGH" | "MEDIUM" | "LOW"
-  setRiskLevel: (level: "HIGH" | "MEDIUM" | "LOW") => void
-  showRiskModal: boolean
-  dismissRiskModal: () => void
   // Panel toggles
   leftSidebarOpen: boolean
   rightSidebarOpen: boolean
@@ -73,8 +71,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
+  const [timeScaleMultiplier, setTimeScaleMultiplier] = useState(1)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
-  const [showRiskModal, setShowRiskModal] = useState(false)
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
@@ -150,15 +148,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setBoostCount((c) => c + 1)
   }, [])
 
-  const handleSetRiskLevel = useCallback((level: "HIGH" | "MEDIUM" | "LOW") => {
-    setRiskLevel(level)
-    if (level === "HIGH") {
-      setShowRiskModal(true)
-    }
-  }, [])
-
-  const dismissRiskModal = useCallback(() => setShowRiskModal(false), [])
-
   const addConjunctionAlert = useCallback((alert: Omit<ConjunctionAlert, "id">) => {
     setConjunctions((prev) => {
       // Check if this combination of satellite and secondary ID is already in the list
@@ -173,70 +162,60 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Update global risk level based on the highest risk in the feed
       const hasHigh = updated.some((c) => c.risk === "HIGH")
       const hasMedium = updated.some((c) => c.risk === "MEDIUM")
-      if (hasHigh) handleSetRiskLevel("HIGH")
+      if (hasHigh) setRiskLevel("HIGH")
       else if (hasMedium) setRiskLevel("MEDIUM")
       else setRiskLevel("LOW")
 
       return updated
     })
-  }, [handleSetRiskLevel])
+  }, [])
 
   const clearConjunctions = useCallback(() => {
     setConjunctions([])
     setRiskLevel("LOW")
   }, [])
 
-  const value = useMemo(() => ({
-    selectedAsteroid,
-    claimedAsteroids,
-    selectAsteroid,
-    claimAsteroid,
-    resetCamera,
-    triggerReset,
-    clearReset,
-    simulationRunning,
-    toggleSimulation,
-    timeScaleMultiplier,
-    setTimeScaleMultiplier,
-    riskLevel,
-    setRiskLevel: handleSetRiskLevel,
-    showRiskModal,
-    dismissRiskModal,
-    leftSidebarOpen,
-    rightSidebarOpen,
-    terminalExpanded,
-    toggleLeftSidebar,
-    toggleRightSidebar,
-    toggleTerminal,
-    searchAsteroidById,
-    registerAsteroidData,
-    filterType,
-    setFilterType,
-    satAltitude,
-    satInclination,
-    satRaan,
-    satEccentricity,
-    updateSatelliteParams,
-    updateSatelliteEccentricity,
-    decayAltitude,
-    boostBurn,
-    boostCount,
-    deltaVCount,
-    triggerDeltaVLog,
-    conjunctions,
-    addConjunctionAlert,
-    clearConjunctions,
-  }), [
-    selectedAsteroid, claimedAsteroids, selectAsteroid, claimAsteroid, resetCamera, triggerReset, clearReset,
-    simulationRunning, toggleSimulation, timeScaleMultiplier, setTimeScaleMultiplier, riskLevel, handleSetRiskLevel, showRiskModal, dismissRiskModal,
-    leftSidebarOpen, rightSidebarOpen, terminalExpanded, toggleLeftSidebar, toggleRightSidebar, toggleTerminal,
-    searchAsteroidById, registerAsteroidData, filterType, setFilterType, satAltitude, satInclination, satRaan,
-    satEccentricity, updateSatelliteParams, updateSatelliteEccentricity, decayAltitude, boostBurn, boostCount,
-    deltaVCount, triggerDeltaVLog, conjunctions, addConjunctionAlert, clearConjunctions
-  ])
-
   return (
-    <AppContext.Provider value={value}>
+    <AppContext.Provider
+      value={{
+        selectedAsteroid,
+        claimedAsteroids,
+        selectAsteroid,
+        claimAsteroid,
+        resetCamera,
+        triggerReset,
+        clearReset,
+        simulationRunning,
+        toggleSimulation,
+        timeScaleMultiplier,
+        setTimeScaleMultiplier,
+        riskLevel,
+        leftSidebarOpen,
+        rightSidebarOpen,
+        terminalExpanded,
+        toggleLeftSidebar,
+        toggleRightSidebar,
+        toggleTerminal,
+        searchAsteroidById,
+        registerAsteroidData,
+        filterType,
+        setFilterType,
+        satAltitude,
+        satInclination,
+        satRaan,
+        satEccentricity,
+        updateSatelliteParams,
+        updateSatelliteEccentricity,
+        decayAltitude,
+        boostBurn,
+        boostCount,
+        deltaVCount,
+        triggerDeltaVLog,
+        conjunctions,
+        addConjunctionAlert,
+        clearConjunctions,
+      }}
+    >
       {children}
     </AppContext.Provider>
   )
@@ -249,3 +228,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Global mutable clock to sync orbital simulations across components
+export const simClock = { time: 0 }

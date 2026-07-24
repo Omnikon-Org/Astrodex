@@ -8,6 +8,11 @@ export function RightSidebar() {
   const {
     rightSidebarOpen,
     toggleRightSidebar,
+    toggleSimulation,
+    simulationRunning,
+    timeScaleMultiplier,
+    setTimeScaleMultiplier,
+    triggerReset,
     satAltitude,
     satInclination,
     satRaan,
@@ -152,6 +157,41 @@ export function RightSidebar() {
               gap: 12,
             }}
           >
+            {/* Time Controls */}
+            <div className="panel-section">
+              <div className="panel-section-title">Time Controls</div>
+              <div className="flex gap-2">
+                <button
+                  onClick={toggleSimulation}
+                  className="flex-1 py-1 px-3 bg-slate-800 hover:bg-slate-700 text-xs text-white rounded border border-slate-700 transition-colors shadow shadow-black/50"
+                >
+                  {simulationRunning ? "PAUSE SIMULATION" : "RESUME SIMULATION"}
+                </button>
+                <button
+                  onClick={triggerReset}
+                  className="py-1 px-3 bg-red-900/50 hover:bg-red-800/80 text-xs text-red-200 rounded border border-red-900 transition-colors shadow shadow-black/50"
+                >
+                  RESET
+                </button>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Time Scale</div>
+                <div className="flex gap-1 bg-slate-900 rounded p-1 border border-slate-800">
+                  {[1, 2, 5, 10].map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setTimeScaleMultiplier(m)}
+                      className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
+                        timeScaleMultiplier === m ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
+                      }`}
+                    >
+                      {m}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Planner Constraints */}
             <div className="panel-section">
               <div className="panel-section-title">Planner Constraints</div>

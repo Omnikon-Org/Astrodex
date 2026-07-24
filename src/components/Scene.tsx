@@ -46,12 +46,6 @@ function SceneContent() {
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 3, 5]} intensity={2} />
       <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
-      
-      {/* Visual Sun */}
-      <mesh position={sunDirection.clone().multiplyScalar(50)}>
-        <sphereGeometry args={[2, 32, 32]} />
-        <meshBasicMaterial color={[10, 9, 8]} toneMapped={false} />
-      </mesh>
       <SimClockUpdater />
 
       <Earth sunDirection={sunDirection} />
