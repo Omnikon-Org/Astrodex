@@ -1,7 +1,9 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useRef, type ReactNode, useEffect } from "react"
 import type { AsteroidData } from "./types"
+import { supabase } from "./supabase"
+import type { User } from "@supabase/supabase-js"
 
 export interface ConjunctionAlert {
   id: number
@@ -14,9 +16,36 @@ export interface ConjunctionAlert {
   satelliteName: string
 }
 
+interface LeaderboardEntry {
+  user_id: string
+  user_name: string
+  avatar_url: string
+  claims_count: number
+}
+
+interface ClaimHistoryEntry {
+  id: string
+  user_id: string
+  user_name: string
+  asteroid_id: number
+  claimed_at: string
+}
+
+interface ClaimOwner {
+  user_id: string
+  user_name: string
+  avatar_url?: string
+}
+
 interface AppState {
+  user: User | null
+  loginWithGithub: () => Promise<void>
+  loginWithGoogle: () => Promise<void>
+  logout: () => Promise<void>
+  leaderboard: LeaderboardEntry[]
+  claimHistory: ClaimHistoryEntry[]
   selectedAsteroid: AsteroidData | null
-  claimedAsteroids: Set<number>
+  claimedAsteroids: Map<number, ClaimOwner>
   selectAsteroid: (a: AsteroidData | null) => void
   claimAsteroid: (id: number) => void
   resetCamera: boolean
@@ -36,7 +65,7 @@ interface AppState {
   // Search by ID
   searchAsteroidById: (id: number) => void
   registerAsteroidData: (data: AsteroidData[]) => void
-
+  asteroidCatalog: AsteroidData[]
   // Space Debris Filters & Satellite Parameters
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
   setFilterType: (f: "ALL" | "ASTEROIDS" | "DEBRIS") => void
@@ -55,9 +84,20 @@ interface AppState {
   /** Increments every time a Δv budget is computed — AgentTerminal watches this. */
   deltaVCount: number
   triggerDeltaVLog: () => void
+  // Cinematic settings
+  cinematicMode: boolean
+  toggleCinematicMode: () => void
+  cameraFov: number
+  setCameraFov: (fov: number) => void
+  autoRotate: boolean
+  toggleAutoRotate: () => void
+  bloomIntensity: number
+  setBloomIntensity: (intensity: number) => void
   conjunctions: ConjunctionAlert[]
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   clearConjunctions: () => void
+  reduceMotion: boolean
+  toggleReduceMotion: () => void
 }
 
 const AppContext = createContext<AppState | null>(null)
@@ -66,11 +106,15 @@ const LEO_FLOOR_KM = 180 // cannot decay below ~180 km (re-entry threshold)
 const LEO_CEILING_KM = 500 // hard upper bound for user-set altitude
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [claimHistory, setClaimHistory] = useState<ClaimHistoryEntry[]>([])
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
-  const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
+  const [claimedAsteroids, setClaimed] = useState<Map<number, ClaimOwner>>(new Map())
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
+  const [reduceMotion, setReduceMotion] = useState(false)
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
@@ -79,25 +123,152 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Space Debris Filters & Satellite Parameters
   const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
-  const [satAltitude, setSatAltitude] = useState(400) // km, LEO default
-  const [satInclination, setSatInclination] = useState(51.63) // degrees — ISS historical value
-  const [satRaan, setSatRaan] = useState(0) // degrees
-  const [satEccentricity, setSatEccentricity] = useState(0.0006) // ≈ circular LEO
+  const [satAltitude, setSatAltitude] = useState(400)
+  const [satInclination, setSatInclination] = useState(51.63)
+  const [satRaan, setSatRaan] = useState(0)
+  const [satEccentricity, setSatEccentricity] = useState(0.0006)
   const [boostCount, setBoostCount] = useState(0)
   const [deltaVCount, setDeltaVCount] = useState(0)
   const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
+  const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
   const nextAlertId = useRef(1)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    // Fetch initial claims with profiles (simulated via view or join)
+    supabase.from('claims_with_profiles').select('*').then(({ data, error }) => {
+      if (!error && data) {
+        const claimMap = new Map<number, ClaimOwner>()
+        for (const row of data) {
+          claimMap.set(row.asteroid_id, {
+            user_id: row.user_id,
+            user_name: row.user_name || 'Unknown',
+            avatar_url: row.avatar_url
+          })
+        }
+        setClaimed(claimMap)
+      }
+    })
+
+    // Fetch leaderboard
+    supabase.rpc('get_leaderboard').then(({ data, error }) => {
+      if (!error && data) {
+        setLeaderboard(data as LeaderboardEntry[])
+      }
+    })
+
+    // Fetch claim history
+    supabase.from('claim_history_view').select('*').order('claimed_at', { ascending: false }).limit(20).then(({ data, error }) => {
+      if (!error && data) {
+        setClaimHistory(data as ClaimHistoryEntry[])
+      }
+    })
+
+    // Subscribe to realtime claims updates
+    const claimsChannel = supabase.channel('claims_channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'claims' }, (payload) => {
+        setClaimed((prev) => {
+          const next = new Map(prev)
+          if (payload.eventType === 'INSERT') {
+            next.set(payload.new.asteroid_id, {
+              user_id: payload.new.user_id,
+              user_name: 'Unknown Explorer' // Would need to fetch profile or wait for broadcast
+            })
+            
+            // Optimistically update history if it's an insert
+            const newHistory: ClaimHistoryEntry = {
+              id: payload.new.id || Math.random().toString(),
+              user_id: payload.new.user_id,
+              user_name: 'Unknown Explorer',
+              asteroid_id: payload.new.asteroid_id,
+              claimed_at: payload.new.claimed_at || new Date().toISOString()
+            }
+            setClaimHistory((h) => [newHistory, ...h].slice(0, 20))
+          } else if (payload.eventType === 'DELETE') {
+            next.delete(payload.old.asteroid_id)
+          }
+          return next
+        })
+      })
+      .subscribe()
+
+    return () => {
+      subscription.unsubscribe()
+      supabase.removeChannel(claimsChannel)
+    }
+  }, [])
+
+  const loginWithGithub = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'github' })
+  }, [])
+
+  const loginWithGoogle = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'google' })
+  }, [])
+
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut()
+  }, [])
+
+  const lastClaimTime = useRef<number>(0)
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
 
-  const claimAsteroid = useCallback((id: number) => {
+  const claimAsteroid = useCallback(async (id: number) => {
+    if (!user) return // Must be logged in
+
+    const now = Date.now()
+    if (now - lastClaimTime.current < 1000) {
+      console.warn("Rate limit: Please wait before claiming again.")
+      return
+    }
+    lastClaimTime.current = now
+
+    const isClaiming = !claimedAsteroids.has(id)
+    const ownerData: ClaimOwner = {
+      user_id: user.id,
+      user_name: user.user_metadata?.user_name || user.email?.split("@")[0] || 'Unknown',
+      avatar_url: user.user_metadata?.avatar_url
+    }
+    
+    // Optimistic UI Update
     setClaimed((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
+      const next = new Map(prev)
+      if (isClaiming) next.set(id, ownerData)
+      else next.delete(id)
       return next
     })
-  }, [])
+
+    try {
+      const { withTimeout } = await import('./supabase')
+      
+      if (isClaiming) {
+        await withTimeout(
+          supabase.from('claims').insert({ asteroid_id: id, user_id: user.id }) as PromiseLike<any>
+        )
+      } else {
+        await withTimeout(
+          supabase.from('claims').delete().eq('asteroid_id', id).eq('user_id', user.id) as PromiseLike<any>
+        )
+      }
+    } catch (error) {
+      console.error("Failed to sync claim:", error)
+      // Rollback Optimistic UI Update
+      setClaimed((prev) => {
+        const next = new Map(prev)
+        if (isClaiming) next.delete(id)
+        else next.set(id, ownerData)
+        return next
+      })
+    }
+  }, [user, claimedAsteroids])
 
   const triggerReset = useCallback(() => {
     setResetCamera(true)
@@ -109,9 +280,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleLeftSidebar = useCallback(() => setLeftSidebarOpen((p) => !p), [])
   const toggleRightSidebar = useCallback(() => setRightSidebarOpen((p) => !p), [])
   const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
+  const toggleReduceMotion = useCallback(() => setReduceMotion((p) => !p), [])
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
+    // Update the ref immediately so searchAsteroidById can access the latest
+    // asteroid data without waiting for the asynchronous React state update.
     asteroidDataRef.current = data
+    setAsteroidCatalog(data)
   }, [])
 
   const searchAsteroidById = useCallback((id: number) => {
@@ -146,18 +321,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setBoostCount((c) => c + 1)
   }, [])
 
+  const toggleCinematicMode = useCallback(() => {
+    setCinematicMode((prev) => {
+      const next = !prev
+      if (next) {
+        setCameraFov(85)
+        setAutoRotate(true)
+        setBloomIntensity(1.8)
+      } else {
+        setCameraFov(75)
+        setAutoRotate(false)
+        setBloomIntensity(1.0)
+      }
+      return next
+    })
+  }, [])
+
+  const toggleAutoRotate = useCallback(() => setAutoRotate((p) => !p), [])
+
   const addConjunctionAlert = useCallback((alert: Omit<ConjunctionAlert, "id">) => {
     setConjunctions((prev) => {
-      // Check if this combination of satellite and secondary ID is already in the list
-      const exists = prev.some(
+      const existing = prev.find(
         (c) => c.satelliteName === alert.satelliteName && c.secondaryId === alert.secondaryId
       )
-      if (exists) return prev
+      const newAlert = { ...alert, id: existing?.id ?? nextAlertId.current++ }
+      const withoutExisting = prev.filter((c) => c.id !== newAlert.id)
+      const updated = [newAlert, ...withoutExisting].slice(0, 15)
 
-      const newAlert = { ...alert, id: nextAlertId.current++ }
-      const updated = [newAlert, ...prev].slice(0, 15) // Keep last 15 alerts
-
-      // Update global risk level based on the highest risk in the feed
       const hasHigh = updated.some((c) => c.risk === "HIGH")
       const hasMedium = updated.some((c) => c.risk === "MEDIUM")
       if (hasHigh) setRiskLevel("HIGH")
@@ -176,6 +366,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        user,
+        loginWithGithub,
+        loginWithGoogle,
+        logout,
+        leaderboard,
+        claimHistory,
         selectedAsteroid,
         claimedAsteroids,
         selectAsteroid,
@@ -194,6 +390,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleTerminal,
         searchAsteroidById,
         registerAsteroidData,
+        asteroidCatalog,
         filterType,
         setFilterType,
         satAltitude,
@@ -207,9 +404,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         boostCount,
         deltaVCount,
         triggerDeltaVLog,
+        cinematicMode,
+        toggleCinematicMode,
+        cameraFov,
+        setCameraFov,
+        autoRotate,
+        toggleAutoRotate,
+        bloomIntensity,
+        setBloomIntensity,
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
+        reduceMotion,
+        toggleReduceMotion,
       }}
     >
       {children}
