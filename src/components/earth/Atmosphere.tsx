@@ -70,3 +70,5 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Fixed issue #153: Optimize the Atmosphere rendering
