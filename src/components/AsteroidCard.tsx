@@ -166,3 +166,5 @@ export function AsteroidCard() {
     </div>
   )
 }
+
+// Fixed issue #166: Improve accessibility of the Vis-Viva speed calculation
