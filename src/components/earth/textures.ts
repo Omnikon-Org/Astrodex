@@ -1,3 +1,11 @@
+/**
+ * Create the daytime Earth albedo map used by the globe shader.
+ *
+ * All generated maps use a 2:1 equirectangular canvas so the same UVs can be
+ * shared by the Earth, cloud, night-light, and specular materials. The shapes
+ * are intentionally illustrative rather than geographic data; random terrain
+ * variation keeps the procedural surface from looking tiled.
+ */
 export function createProceduralEarthTexture(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   canvas.width = 1024
@@ -25,19 +33,100 @@ export function createProceduralEarthTexture(): HTMLCanvasElement {
   // Continent shapes
   const continents = [
     // North America
-    { x: 0.2, y: 0.35, points: [[0,0],[0.06,-0.08],[0.12,-0.06],[0.16,0],[0.14,0.06],[0.1,0.1],[0.04,0.08],[0,0.04]] },
+    {
+      x: 0.2,
+      y: 0.35,
+      points: [
+        [0, 0],
+        [0.06, -0.08],
+        [0.12, -0.06],
+        [0.16, 0],
+        [0.14, 0.06],
+        [0.1, 0.1],
+        [0.04, 0.08],
+        [0, 0.04],
+      ],
+    },
     // South America
-    { x: 0.28, y: 0.55, points: [[0,0],[0.04,-0.06],[0.08,-0.04],[0.08,0.02],[0.06,0.08],[0.02,0.1],[0,0.06]] },
+    {
+      x: 0.28,
+      y: 0.55,
+      points: [
+        [0, 0],
+        [0.04, -0.06],
+        [0.08, -0.04],
+        [0.08, 0.02],
+        [0.06, 0.08],
+        [0.02, 0.1],
+        [0, 0.06],
+      ],
+    },
     // Europe
-    { x: 0.47, y: 0.32, points: [[0,0],[0.04,-0.04],[0.08,-0.02],[0.08,0.02],[0.04,0.04],[0,0.03]] },
+    {
+      x: 0.47,
+      y: 0.32,
+      points: [
+        [0, 0],
+        [0.04, -0.04],
+        [0.08, -0.02],
+        [0.08, 0.02],
+        [0.04, 0.04],
+        [0, 0.03],
+      ],
+    },
     // Africa
-    { x: 0.48, y: 0.48, points: [[0,0],[0.04,-0.06],[0.08,-0.04],[0.1,0],[0.08,0.06],[0.04,0.1],[0,0.08]] },
+    {
+      x: 0.48,
+      y: 0.48,
+      points: [
+        [0, 0],
+        [0.04, -0.06],
+        [0.08, -0.04],
+        [0.1, 0],
+        [0.08, 0.06],
+        [0.04, 0.1],
+        [0, 0.08],
+      ],
+    },
     // Asia
-    { x: 0.6, y: 0.3, points: [[0,0],[0.06,-0.06],[0.14,-0.08],[0.2,-0.04],[0.22,0.02],[0.18,0.08],[0.1,0.1],[0.04,0.06]] },
+    {
+      x: 0.6,
+      y: 0.3,
+      points: [
+        [0, 0],
+        [0.06, -0.06],
+        [0.14, -0.08],
+        [0.2, -0.04],
+        [0.22, 0.02],
+        [0.18, 0.08],
+        [0.1, 0.1],
+        [0.04, 0.06],
+      ],
+    },
     // Australia
-    { x: 0.8, y: 0.6, points: [[0,0],[0.05,-0.03],[0.08,0],[0.06,0.04],[0.02,0.05]] },
+    {
+      x: 0.8,
+      y: 0.6,
+      points: [
+        [0, 0],
+        [0.05, -0.03],
+        [0.08, 0],
+        [0.06, 0.04],
+        [0.02, 0.05],
+      ],
+    },
     // India
-    { x: 0.63, y: 0.42, points: [[0,0],[0.03,-0.04],[0.05,-0.02],[0.05,0.02],[0.02,0.04]] },
+    {
+      x: 0.63,
+      y: 0.42,
+      points: [
+        [0, 0],
+        [0.03, -0.04],
+        [0.05, -0.02],
+        [0.05, 0.02],
+        [0.02, 0.04],
+      ],
+    },
   ]
 
   for (const cont of continents) {
@@ -57,12 +146,6 @@ export function createProceduralEarthTexture(): HTMLCanvasElement {
     ctx.fill()
 
     // Add some terrain variation
-    const bound = ctx.getImageData(
-      Math.max(0, cx - 0.12 * w),
-      Math.max(0, cy - 0.12 * w),
-      Math.min(w, 0.24 * w),
-      Math.min(h, 0.24 * w)
-    )
     for (let i = 0; i < 80; i++) {
       const tx = cx + (Math.random() - 0.5) * 0.2 * w
       const ty = cy + (Math.random() - 0.5) * 0.2 * w
@@ -93,6 +176,11 @@ export function createProceduralEarthTexture(): HTMLCanvasElement {
   return canvas
 }
 
+/**
+ * Create the night-side emissive map. City clusters are layered from dense
+ * urban cores, dimmer suburban halos, and sparse rural/fishing lights so the
+ * shader can blend believable night illumination without external assets.
+ */
 export function createProceduralNightTexture(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   canvas.width = 1024
@@ -106,7 +194,8 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
 
   // ── Urban center clusters with realistic distribution ──
   // Sodium-yellow base: R=255, G=160±30, B=40±20 for warm city glow
-  const cityColor = (bright: number) => `rgba(255, ${150 + Math.floor(Math.random() * 40)}, ${30 + Math.floor(Math.random() * 30)}, ${bright})`
+  const cityColor = (bright: number) =>
+    `rgba(255, ${150 + Math.floor(Math.random() * 40)}, ${30 + Math.floor(Math.random() * 30)}, ${bright})`
 
   const cities = [
     // North America East Coast (dense megalopolis)
@@ -116,16 +205,16 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
     // Mexico City
     { x: 0.18, y: 0.44, r: 30 },
     // Chicago / Great Lakes
-    { x: 0.20, y: 0.32, r: 30 },
+    { x: 0.2, y: 0.32, r: 30 },
     // Houston / Dallas
-    { x: 0.17, y: 0.40, r: 25 },
+    { x: 0.17, y: 0.4, r: 25 },
 
     // Europe — dense
     { x: 0.47, y: 0.33, r: 55 },
     // London / UK
     { x: 0.45, y: 0.29, r: 30 },
     // Scandinavia
-    { x: 0.50, y: 0.24, r: 25 },
+    { x: 0.5, y: 0.24, r: 25 },
     // Iberia
     { x: 0.44, y: 0.38, r: 25 },
     // Italy / Mediterranean
@@ -139,7 +228,7 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
     // Korea
     { x: 0.77, y: 0.31, r: 25 },
     // Taiwan
-    { x: 0.75, y: 0.40, r: 20 },
+    { x: 0.75, y: 0.4, r: 20 },
 
     // South Asia
     // India (Delhi–Mumbai–Kolkata)
@@ -151,20 +240,20 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
     // Jakarta / Singapore
     { x: 0.74, y: 0.48, r: 28 },
     // Bangkok / Vietnam
-    { x: 0.70, y: 0.46, r: 22 },
+    { x: 0.7, y: 0.46, r: 22 },
     // Philippines
     { x: 0.76, y: 0.46, r: 20 },
 
     // South America
     // Brazil (Rio–São Paulo)
-    { x: 0.30, y: 0.58, r: 45 },
+    { x: 0.3, y: 0.58, r: 45 },
     // Argentina (Buenos Aires)
     { x: 0.28, y: 0.65, r: 30 },
     // Colombia / Venezuela
-    { x: 0.27, y: 0.50, r: 25 },
+    { x: 0.27, y: 0.5, r: 25 },
 
     // Middle East / Gulf
-    { x: 0.55, y: 0.40, r: 30 },
+    { x: 0.55, y: 0.4, r: 30 },
     // Iran
     { x: 0.57, y: 0.35, r: 25 },
     // Turkey
@@ -176,11 +265,11 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
     // Egypt / Nile
     { x: 0.52, y: 0.43, r: 22 },
     // Nigeria / Gulf of Guinea
-    { x: 0.49, y: 0.50, r: 20 },
+    { x: 0.49, y: 0.5, r: 20 },
 
     // Oceania
     // Australia east (Sydney–Melbourne)
-    { x: 0.84, y: 0.60, r: 35 },
+    { x: 0.84, y: 0.6, r: 35 },
     // Australia west (Perth)
     { x: 0.78, y: 0.56, r: 18 },
   ]
@@ -221,7 +310,10 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
 
     // Sodium-vapor city glow (warm amber-orange)
     const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 2.8)
-    grad.addColorStop(0, `rgba(255, ${160 + Math.floor(Math.random() * 30)}, ${40 + Math.floor(Math.random() * 30)}, 0.20)`)
+    grad.addColorStop(
+      0,
+      `rgba(255, ${160 + Math.floor(Math.random() * 30)}, ${40 + Math.floor(Math.random() * 30)}, 0.20)`
+    )
     grad.addColorStop(0.4, `rgba(255, 140, 40, 0.08)`)
     grad.addColorStop(1, `rgba(255, 80, 20, 0)`)
     ctx.fillStyle = grad
@@ -256,6 +348,11 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
   return canvas
 }
 
+/**
+ * Create the grayscale specular map consumed by the ocean highlight pass.
+ * Brighter procedural patches represent reflective water while land remains
+ * black, allowing the Earth shader to control the final highlight intensity.
+ */
 export function createProceduralSpecularTexture(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   canvas.width = 1024
@@ -283,6 +380,11 @@ export function createProceduralSpecularTexture(): HTMLCanvasElement {
   return canvas
 }
 
+/**
+ * Create a transparent-looking cloud density map. Horizontal bands provide
+ * latitude-wide cloud systems and radial gradients add storm cells; the
+ * CloudLayer material uses this grayscale texture as a soft alpha mask.
+ */
 export function createProceduralCloudTexture(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   canvas.width = 1024
