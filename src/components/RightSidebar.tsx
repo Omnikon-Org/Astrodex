@@ -2,8 +2,12 @@
 
 import { useState } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
-import { visVivaKmPerSec, LEO_DECAY_KM_PER_SEC, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
-import { Tooltip } from "@/components/Tooltip"
+import {
+  visVivaKmPerSec,
+  LEO_DECAY_KM_PER_SEC,
+  hohmannDeltaVKmPerSec,
+  KM_PER_UNIT_CONST,
+} from "@/lib/kepler"
 
 export function RightSidebar() {
   const {
@@ -53,11 +57,15 @@ export function RightSidebar() {
 
     setStatusText(
       `${icon} Hohmann Δv: ${dVms.toFixed(1)} m/s → ${targetName} ` +
-        (exceeds ? `WARNING: exceeds max ${maxDvVal} m/s!` : `within ${maxDvVal} m/s budget (${maxBurnsVal} burns)`)
+        (exceeds
+          ? `WARNING: exceeds max ${maxDvVal} m/s!`
+          : `within ${maxDvVal} m/s budget (${maxBurnsVal} burns)`)
     )
 
     // Log to console for debugging
-    console.log(`[MANV] Hohmann transfer to ${targetName}: Δv=${dVms.toFixed(2)} m/s, max=${maxDvVal} m/s, burns=${maxBurnsVal}`)
+    console.log(
+      `[MANV] Hohmann transfer to ${targetName}: Δv=${dVms.toFixed(2)} m/s, max=${maxDvVal} m/s, burns=${maxBurnsVal}`
+    )
     triggerDeltaVLog()
 
     setTimeout(() => setStatusText("No pending changes."), 5000)
@@ -87,7 +95,12 @@ export function RightSidebar() {
 
     setSatStatusText(
       "ISS Trajectory Uploaded: " +
-        new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true })
+        new Date().toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        })
     )
     setTimeout(() => setSatStatusText("Telemetry synchronized."), 3000)
   }
@@ -109,21 +122,30 @@ export function RightSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!rightSidebarOpen && (
-        <Tooltip label="Show Constraints Panel" placement="left">
-          <button
-            className="sidebar-toggle sidebar-toggle-right"
-            onClick={toggleRightSidebar}
-            aria-label="Show Constraints Panel"
+        <button
+          className="sidebar-toggle sidebar-toggle-right"
+          onClick={toggleRightSidebar}
+          title="Show Constraints Panel"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-        </Tooltip>
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
       )}
 
       <aside className={`sidebar-right glass-panel ${rightSidebarOpen ? "" : "collapsed"}`}>
-        <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <div
+          style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}
+        >
           {/* Header */}
           <div
             style={{
@@ -136,17 +158,44 @@ export function RightSidebar() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button className="btn-ghost" onClick={toggleRightSidebar} 
-              aria-label="Hide Constraints Panel"
-              style={{ padding: 4, border: "none" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <button
+                className="btn-ghost"
+                onClick={toggleRightSidebar}
+                style={{ padding: 4, border: "none" }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </button>
-              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", color: "var(--text-primary)" }}>
+              <span
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  color: "var(--text-primary)",
+                }}
+              >
                 Constraints
               </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--text-muted)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
               </svg>
             </div>
@@ -169,27 +218,70 @@ export function RightSidebar() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.04em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
                     Max total Δv (m/s)
                   </label>
-                  <input className="mc-input" type="text" value={maxDv} onChange={(e) => setMaxDv(e.target.value)} />
+                  <input
+                    className="mc-input"
+                    type="text"
+                    value={maxDv}
+                    onChange={(e) => setMaxDv(e.target.value)}
+                  />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.04em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
                     Max burns
                   </label>
-                  <input className="mc-input" type="text" value={maxBurns} onChange={(e) => setMaxBurns(e.target.value)} />
+                  <input
+                    className="mc-input"
+                    type="text"
+                    value={maxBurns}
+                    onChange={(e) => setMaxBurns(e.target.value)}
+                  />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.04em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
                     Preferred maneuver axis
                   </label>
-                  <input className="mc-input" type="text" value={maneuverAxis} onChange={(e) => setManeuverAxis(e.target.value)} />
+                  <input
+                    className="mc-input"
+                    type="text"
+                    value={maneuverAxis}
+                    onChange={(e) => setManeuverAxis(e.target.value)}
+                  />
                 </div>
 
-                <button className="btn-primary" onClick={handleApply} style={{ width: "100%", marginTop: 2 }}>
+                <button
+                  className="btn-primary"
+                  onClick={handleApply}
+                  style={{ width: "100%", marginTop: 2 }}
+                >
                   Apply
                 </button>
 
@@ -213,13 +305,34 @@ export function RightSidebar() {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
-                  <label title="Vertical distance of the satellite above the Earth's surface" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.04em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
                     Altitude (km)
                   </label>
-                  <input className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
+                  <input
+                    className="mc-input"
+                    type="text"
+                    value={altitude}
+                    onChange={(e) => setAltitude(e.target.value)}
+                  />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.04em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
                     Speed (km/s)
                   </label>
                   <input
@@ -231,35 +344,86 @@ export function RightSidebar() {
                   />
                 </div>
                 <div>
-                  <label title="The angle between the orbital plane and the Earth's equator" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.04em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
                     Inclination (°)
                   </label>
-                  <input className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
+                  <input
+                    className="mc-input"
+                    type="text"
+                    value={inclination}
+                    onChange={(e) => setInclination(e.target.value)}
+                  />
                 </div>
                 <div>
-                  <label title="Right Ascension of the Ascending Node (RAAN): The orientation of the orbit's ascending node in the equatorial plane" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.04em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
                     RAAN (°)
                   </label>
-                  <input className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
+                  <input
+                    className="mc-input"
+                    type="text"
+                    value={raan}
+                    onChange={(e) => setRaan(e.target.value)}
+                  />
                 </div>
                 <div style={{ gridColumn: "span 2" }}>
-                  <label title="Measures how much the orbit deviates from a perfect circle (0 = circular, >0 = elliptical)" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label
+                    style={{
+                      fontSize: 10,
+                      color: "var(--text-muted)",
+                      letterSpacing: "0.04em",
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
                     Eccentricity (0–0.9)
                   </label>
-                  <input className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
+                  <input
+                    className="mc-input"
+                    type="text"
+                    value={eccentricity}
+                    onChange={(e) => setEccentricity(e.target.value)}
+                  />
                 </div>
 
-                <button className="btn-primary" onClick={handleApplySatellite} style={{ gridColumn: "span 2", marginTop: 4 }}>
+                <button
+                  className="btn-primary"
+                  onClick={handleApplySatellite}
+                  style={{ gridColumn: "span 2", marginTop: 4 }}
+                >
                   Apply Trajectory
                 </button>
               </div>
 
-              <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", marginTop: 6 }}>
+              <p
+                style={{
+                  fontSize: 10,
+                  color: "var(--text-muted)",
+                  textAlign: "center",
+                  marginTop: 6,
+                }}
+              >
                 {satStatusText}
               </p>
 
               <p style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 8, lineHeight: 1.4 }}>
-                Inclination: 0°=equatorial, 90°=polar • RAAN: orbit orientation in 360° • Speed via Vis-Viva.
+                Inclination: 0°=equatorial, 90°=polar • RAAN: orbit orientation in 360° • Speed via
+                Vis-Viva.
               </p>
             </div>
 
@@ -271,14 +435,14 @@ export function RightSidebar() {
                   altitudeHealth === "crit"
                     ? "1px solid rgba(248, 113, 113, 0.35)"
                     : altitudeHealth === "warn"
-                    ? "1px solid rgba(251, 191, 36, 0.35)"
-                    : "1px solid var(--border-subtle)",
+                      ? "1px solid rgba(251, 191, 36, 0.35)"
+                      : "1px solid var(--border-subtle)",
                 background:
                   altitudeHealth === "crit"
                     ? "rgba(248, 113, 113, 0.04)"
                     : altitudeHealth === "warn"
-                    ? "rgba(251, 191, 36, 0.04)"
-                    : undefined,
+                      ? "rgba(251, 191, 36, 0.04)"
+                      : undefined,
               }}
             >
               <h2
@@ -288,8 +452,8 @@ export function RightSidebar() {
                     altitudeHealth === "crit"
                       ? "var(--accent-red)"
                       : altitudeHealth === "warn"
-                      ? "var(--accent-amber)"
-                      : "var(--accent-green)",
+                        ? "var(--accent-amber)"
+                        : "var(--accent-green)",
                 }}
               >
                 LEO Decay Monitor
@@ -304,8 +468,8 @@ export function RightSidebar() {
                       altitudeHealth === "crit"
                         ? "var(--accent-red)"
                         : altitudeHealth === "warn"
-                        ? "var(--accent-amber)"
-                        : "var(--accent-green)",
+                          ? "var(--accent-amber)"
+                          : "var(--accent-green)",
                   }}
                 >
                   {Math.round(satAltitude)} km
@@ -339,8 +503,8 @@ export function RightSidebar() {
                       altitudeHealth === "crit"
                         ? "var(--accent-red)"
                         : altitudeHealth === "warn"
-                        ? "var(--accent-amber)"
-                        : "var(--accent-green)",
+                          ? "var(--accent-amber)"
+                          : "var(--accent-green)",
                     transition: "width 0.3s ease",
                   }}
                 />
@@ -356,13 +520,30 @@ export function RightSidebar() {
                   opacity: satAltitude >= LEO_LIMITS.CEILING ? 0.4 : 1,
                 }}
               >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M12 19V5M5 12l7-7 7 7" />
                 </svg>
                 Boost Burn (+50 km)
               </button>
 
-              <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", marginTop: 6, minHeight: 14 }}>
+              <p
+                style={{
+                  fontSize: 10,
+                  color: "var(--text-muted)",
+                  textAlign: "center",
+                  marginTop: 6,
+                  minHeight: 14,
+                }}
+              >
                 {boostStatus || "Atmospheric drag continuously degrades altitude."}
               </p>
             </div>

@@ -34,24 +34,8 @@ function LiveCoordinates() {
 }
 
 export function AsteroidCard() {
-  const {
-    selectedAsteroid,
-    claimedAsteroids,
-    claimAsteroid,
-    leftSidebarOpen,
-    selectAsteroid,
-  } = useAppState()
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
-
-  useEffect(() => {
-  if (!selectedAsteroid) return
-  closeButtonRef.current?.focus()
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") selectAsteroid(null)
-  }
-  document.addEventListener("keydown", onKeyDown)
-  return () => document.removeEventListener("keydown", onKeyDown)
-}, [selectedAsteroid, selectAsteroid])
+  const { selectedAsteroid, claimedAsteroids, claimAsteroid, leftSidebarOpen, selectAsteroid } =
+    useAppState()
 
   if (!selectedAsteroid) return null
 
@@ -68,11 +52,9 @@ export function AsteroidCard() {
   }
 
   return (
-    <div
+    <section
       className="glass-panel animate-fade-in-left"
-      role="dialog"
-      aria-modal="false"
-      aria-labelledby="asteroid-inspector-title"
+      aria-labelledby="asteroid-card-title"
       style={{
         position: "fixed",
         top: "calc(var(--header-height) + var(--hud-stack-gap))",
@@ -104,23 +86,22 @@ export function AsteroidCard() {
               height: 6,
               borderRadius: "50%",
               backgroundColor: isClaimed ? "var(--accent-green)" : "var(--accent-cyan)",
-              boxShadow: isClaimed
-                ? "0 0 6px var(--accent-green)"
-                : "0 0 6px var(--accent-cyan)",
+              boxShadow: isClaimed ? "0 0 6px var(--accent-green)" : "0 0 6px var(--accent-cyan)",
             }}
           />
-          <span
-            id="asteroid-inspector-title"
+          <h2
+            id="asteroid-card-title"
             style={{
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               color: "var(--text-primary)",
+              margin: 0,
             }}
           >
             Inspector: {selectedAsteroid.name}
-          </span>
+          </h2>
         </div>
         <button
           ref={closeButtonRef}
@@ -128,6 +109,7 @@ export function AsteroidCard() {
           onClick={() => selectAsteroid(null)}
           aria-label="Close asteroid details"
           style={{ padding: 4, border: "none" }}
+          aria-label="Close Inspector"
         >
           <svg
             width="14"
@@ -223,6 +205,6 @@ export function AsteroidCard() {
           </button>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
