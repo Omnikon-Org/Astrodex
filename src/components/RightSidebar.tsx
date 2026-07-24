@@ -2,12 +2,17 @@
 
 import { useState } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
-import { visVivaKmPerSec, LEO_DECAY_KM_PER_SEC, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
+import { visVivaKmPerSec, calculateLEODecayRate, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
 
 export function RightSidebar() {
   const {
     rightSidebarOpen,
     toggleRightSidebar,
+    toggleSimulation,
+    simulationRunning,
+    timeScaleMultiplier,
+    setTimeScaleMultiplier,
+    triggerReset,
     satAltitude,
     satInclination,
     satRaan,
@@ -92,7 +97,9 @@ export function RightSidebar() {
 
   // ── LEO health bar: green above 300 km, amber 200-300 km, red below ──
   const altFraction = (satAltitude - LEO_LIMITS.FLOOR) / (LEO_LIMITS.CEILING - LEO_LIMITS.FLOOR)
-  const decayRate = (LEO_DECAY_KM_PER_SEC * 60).toFixed(2) // km/min
+  // Add some fake variance for the display
+  const thrustVariation = (Math.sin(Date.now() / 1000) * 0.1).toFixed(2)
+  const decayRate = (calculateLEODecayRate(satAltitude) * 60).toFixed(2) // km/min
   const altitudeHealth: "ok" | "warn" | "crit" =
     satAltitude > 300 ? "ok" : satAltitude > 220 ? "warn" : "crit"
 
@@ -150,6 +157,41 @@ export function RightSidebar() {
               gap: 12,
             }}
           >
+            {/* Time Controls */}
+            <div className="panel-section">
+              <div className="panel-section-title">Time Controls</div>
+              <div className="flex gap-2">
+                <button
+                  onClick={toggleSimulation}
+                  className="flex-1 py-1 px-3 bg-slate-800 hover:bg-slate-700 text-xs text-white rounded border border-slate-700 transition-colors shadow shadow-black/50"
+                >
+                  {simulationRunning ? "PAUSE SIMULATION" : "RESUME SIMULATION"}
+                </button>
+                <button
+                  onClick={triggerReset}
+                  className="py-1 px-3 bg-red-900/50 hover:bg-red-800/80 text-xs text-red-200 rounded border border-red-900 transition-colors shadow shadow-black/50"
+                >
+                  RESET
+                </button>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Time Scale</div>
+                <div className="flex gap-1 bg-slate-900 rounded p-1 border border-slate-800">
+                  {[1, 2, 5, 10].map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setTimeScaleMultiplier(m)}
+                      className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
+                        timeScaleMultiplier === m ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
+                      }`}
+                    >
+                      {m}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Planner Constraints */}
             <div className="panel-section">
               <div className="panel-section-title">Planner Constraints</div>
@@ -332,6 +374,16 @@ export function RightSidebar() {
                   }}
                 />
               </div>
+
+                <button
+                  onClick={triggerReset}
+                  className="py-1 px-3 bg-indigo-900/50 hover:bg-indigo-800/80 text-xs text-indigo-200 rounded border border-indigo-900 transition-colors shadow shadow-black/50 flex items-center gap-1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
+                  </svg>
+                  RETURN TO EARTH
+                </button>
 
               <button
                 className="btn-primary"

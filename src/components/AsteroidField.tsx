@@ -4,6 +4,7 @@ import { useRef, useMemo, useCallback, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
+import { checkCollision } from "@/lib/collision"
 import { useAppState } from "@/lib/store"
 import { satellitePositions } from "./SatelliteSystem"
 import {
@@ -14,46 +15,10 @@ import {
   velocityToKmPerSec,
   KM_PER_UNIT_CONST,
 } from "@/lib/kepler"
-
-const ASTEROID_COUNT = 400
-const DEBRIS_COUNT = 200
-const TOTAL_COUNT = ASTEROID_COUNT + DEBRIS_COUNT
+import { ASTEROID_COUNT, DEBRIS_COUNT, TOTAL_COUNT, generateOrbitalObjectData } from "@/lib/dataPipeline"
 
 const ASTEROID_COLORS = ["#8B8B8B", "#A0522D", "#6B6B6B", "#B8860B", "#696969"]
 const DEBRIS_COLORS = ["#ff5500", "#ffaa00", "#00d5ff", "#e100ff", "#ffffff"]
-
-function generateOrbitalObjectData(index: number): AsteroidData {
-  const isDebris = index >= ASTEROID_COUNT
-  const type = isDebris ? "debris" : "asteroid"
-
-  // Space Debris is closer to Earth and satellites for higher collision odds
-  const orbitRadius = isDebris
-    ? 1.9 + Math.random() * 2.2
-    : 3.8 + Math.random() * 7.5
-
-  const speed = (isDebris ? 0.08 + Math.random() * 0.12 : 0.02 + Math.random() * 0.06) * (1 / orbitRadius)
-  const id = index + 1
-  const name = isDebris
-    ? `DEB-${1962 + Math.floor(Math.random() * 63)}-${String(Math.floor(Math.random() * 800)).padStart(3, "0")}A`
-    : `AST-${String(id).padStart(4, "0")}`
-
-  return {
-    id,
-    index,
-    orbitRadius,
-    speed,
-    scale: isDebris ? 0.015 + Math.random() * 0.025 : 0.03 + Math.random() * 0.06,
-    inclination: isDebris ? (Math.random() - 0.5) * 1.2 : (Math.random() - 0.5) * 0.35,
-    distance: `${(orbitRadius * 0.15).toFixed(2)} AU`,
-    velocity: "0.0 km/s", // overwritten on first frame from Vis-Viva
-    claimed: false,
-    type,
-    name,
-    atRisk: false,
-    eccentricity: isDebris ? Math.random() * 0.18 : Math.random() * 0.28,
-    meanAnomaly0: Math.random() * Math.PI * 2,
-  }
-}
 
 const dummy = new THREE.Object3D()
 const colorObj = new THREE.Color()
@@ -179,20 +144,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       targetMesh.setMatrixAt(instanceIndex, dummy.matrix)
 
       // 3. Collision check with satellites
-      let atRisk = false
-      let closestSat = ""
-      let minDistance = Infinity
-
-      for (const s of SAT_POSITIONS) {
-        const d = _objPos.distanceTo(s.pos)
-        if (d < 0.15) {
-          atRisk = true
-          if (d < minDistance) {
-            minDistance = d
-            closestSat = s.name
-          }
-        }
-      }
+      const { atRisk, closestSat, minDistance } = checkCollision(_objPos, SAT_POSITIONS)
 
       ad.atRisk = atRisk
 
@@ -276,8 +228,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         onClick={handleAsteroidClick}
         frustumCulled={false}
       >
-        <dodecahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+        <dodecahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial roughness={0.9} metalness={0.1} flatShading />
       </instancedMesh>
 
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
@@ -288,7 +240,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         frustumCulled={false}
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+        <meshStandardMaterial roughness={0.2} metalness={0.9} envMapIntensity={1.5} />
       </instancedMesh>
     </>
   )
