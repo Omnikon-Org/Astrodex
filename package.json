@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+"analyze": "ANALYZE=true next build",
     "analyze": "ANALYZE=true next build",
     "format": "prettier --write ."
   },
@@ -22,6 +23,7 @@
     "three": "^0.184.0"
   },
   "devDependencies": {
+"@next/bundle-analyzer": "^16.2.11",
     "@next/bundle-analyzer": "^16.2.10",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
