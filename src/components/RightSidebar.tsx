@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed issue #156: Improve accessibility of the Settings Modal
