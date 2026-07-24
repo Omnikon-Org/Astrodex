@@ -295,6 +295,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
+        reduceMotion,
+        toggleReduceMotion,
       }}
     >
       {children}

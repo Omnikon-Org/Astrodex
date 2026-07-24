@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef, useCallback, useEffect, useMemo } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
-import { Stats, Stars } from "@react-three/drei"
+import { useRef, useCallback, useMemo, useEffect } from "react"
+import { Canvas } from "@react-three/fiber"
+import { Stars } from "@react-three/drei"
 import * as THREE from "three"
 
 import { Earth } from "./earth/Earth"
@@ -97,7 +97,7 @@ function SunRig({ sunDirection }: { sunDirection: THREE.Vector3 }) {
 
 function SceneContent() {
   const sunDirection = useMemo(() => new THREE.Vector3(5, 3, 5).normalize(), [])
-  const { selectedAsteroid, selectAsteroid } = useAppState()
+  const { selectAsteroid, searchAsteroidById } = useAppState()
   const selectedIndexRef = useRef<number | null>(null)
 
   const handleAsteroidClick = useCallback(
@@ -113,6 +113,30 @@ function SceneContent() {
   }, [selectedAsteroid])
 
   const getSelectedIndex = useCallback(() => selectedIndexRef.current, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (document.activeElement?.tagName === "INPUT") return
+
+      let currentIndex = selectedIndexRef.current
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+        const nextIndex = currentIndex === null ? 1 : Math.min(currentIndex + 1, 600)
+        selectedIndexRef.current = nextIndex
+        searchAsteroidById(nextIndex)
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+        const prevIndex = currentIndex === null ? 600 : Math.max(currentIndex - 1, 1)
+        selectedIndexRef.current = prevIndex
+        searchAsteroidById(prevIndex)
+      } else if (e.key === "Escape") {
+        selectedIndexRef.current = null
+        selectAsteroid(null)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [searchAsteroidById, selectAsteroid])
 
   return (
     <>
@@ -141,7 +165,11 @@ function SceneContent() {
 
 export function Scene() {
   return (
-    <div className="fixed inset-0 z-0" aria-hidden="true">
+    <div 
+      className="fixed inset-0 z-0" 
+      role="region" 
+      aria-label="Interactive 3D simulation of Earth, satellites, and asteroids in real-time"
+    >
       <Canvas
         camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
         gl={{ antialias: true, alpha: false }}

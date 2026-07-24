@@ -17,9 +17,9 @@
   --border-glow: rgba(255, 255, 255, 0.1);
   --border-focus: rgba(56, 189, 248, 0.4);
   --text-primary: rgba(255, 255, 255, 0.92);
-  --text-secondary: rgba(255, 255, 255, 0.6);
-  --text-muted: rgba(255, 255, 255, 0.48);
-  --text-label: rgba(255, 255, 255, 0.47);
+  --text-secondary: rgba(255, 255, 255, 0.75);
+  --text-muted: rgba(255, 255, 255, 0.55);
+  --text-label: rgba(255, 255, 255, 0.65);
   --accent-cyan: #38bdf8;
   --accent-cyan-dim: rgba(56, 189, 248, 0.15);
   --accent-green: #34d399;
@@ -55,6 +55,11 @@
   box-sizing: border-box;
 }
 
+*:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
 html, body {
   height: 100%;
   background: var(--bg-deep);
@@ -66,20 +71,29 @@ html, body {
 }
 
 /* ─── Custom Scrollbar ─── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid transparent;
+  background-clip: padding-box;
 }
-
 /* ─── Glass Panel ─── */
 .glass-panel {
   background: var(--glass-bg);

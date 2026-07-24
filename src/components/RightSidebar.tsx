@@ -109,17 +109,15 @@ export function RightSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!rightSidebarOpen && (
-        <Tooltip label="Show Constraints Panel" placement="left">
-          <button
-            className="sidebar-toggle sidebar-toggle-right"
-            onClick={toggleRightSidebar}
-            aria-label="Show Constraints Panel"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-        </Tooltip>
+        <button
+          className="sidebar-toggle sidebar-toggle-right"
+          onClick={toggleRightSidebar}
+          title="Show Constraints Panel"
+        >
+          <svg role="img" aria-label="Time travel reverse icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
       )}
 
       <aside className={`sidebar-right glass-panel ${rightSidebarOpen ? "" : "collapsed"}`}>
@@ -136,17 +134,15 @@ export function RightSidebar() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button className="btn-ghost" onClick={toggleRightSidebar} 
-              aria-label="Hide Constraints Panel"
-              style={{ padding: 4, border: "none" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <button className="btn-ghost" onClick={toggleRightSidebar} style={{ padding: 4, border: "none" }}>
+                <svg role="img" aria-label="Time travel forward icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </button>
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", color: "var(--text-primary)" }}>
                 Constraints
               </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg role="img" aria-label="Reset time icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
               </svg>
             </div>
@@ -169,24 +165,24 @@ export function RightSidebar() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="maxDv" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Max total Δv (m/s)
                   </label>
-                  <input className="mc-input" type="text" value={maxDv} onChange={(e) => setMaxDv(e.target.value)} />
+                  <input id="maxDv" className="mc-input" type="text" value={maxDv} onChange={(e) => setMaxDv(e.target.value)} />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="maxBurns" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Max burns
                   </label>
-                  <input className="mc-input" type="text" value={maxBurns} onChange={(e) => setMaxBurns(e.target.value)} />
+                  <input id="maxBurns" className="mc-input" type="text" value={maxBurns} onChange={(e) => setMaxBurns(e.target.value)} />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="maneuverAxis" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Preferred maneuver axis
                   </label>
-                  <input className="mc-input" type="text" value={maneuverAxis} onChange={(e) => setManeuverAxis(e.target.value)} />
+                  <input id="maneuverAxis" className="mc-input" type="text" value={maneuverAxis} onChange={(e) => setManeuverAxis(e.target.value)} />
                 </div>
 
                 <button className="btn-primary" onClick={handleApply} style={{ width: "100%", marginTop: 2 }}>
@@ -213,16 +209,17 @@ export function RightSidebar() {
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div>
-                  <label title="Vertical distance of the satellite above the Earth's surface" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="altitude" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Altitude (km)
                   </label>
-                  <input className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
+                  <input id="altitude" className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
                 </div>
                 <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="speed" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Speed (km/s)
                   </label>
                   <input
+                    id="speed"
                     className="mc-input"
                     type="text"
                     value={displaySpeedKmS.toFixed(2)}
@@ -231,22 +228,22 @@ export function RightSidebar() {
                   />
                 </div>
                 <div>
-                  <label title="The angle between the orbital plane and the Earth's equator" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="inclination" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Inclination (°)
                   </label>
-                  <input className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
+                  <input id="inclination" className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
                 </div>
                 <div>
-                  <label title="Right Ascension of the Ascending Node (RAAN): The orientation of the orbit's ascending node in the equatorial plane" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="raan" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     RAAN (°)
                   </label>
-                  <input className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
+                  <input id="raan" className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
                 </div>
                 <div style={{ gridColumn: "span 2" }}>
-                  <label title="Measures how much the orbit deviates from a perfect circle (0 = circular, >0 = elliptical)" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
+                  <label htmlFor="eccentricity" style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Eccentricity (0–0.9)
                   </label>
-                  <input className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
+                  <input id="eccentricity" className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
                 </div>
 
                 <button className="btn-primary" onClick={handleApplySatellite} style={{ gridColumn: "span 2", marginTop: 4 }}>
@@ -356,7 +353,7 @@ export function RightSidebar() {
                   opacity: satAltitude >= LEO_LIMITS.CEILING ? 0.4 : 1,
                 }}
               >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg role="img" aria-label="Deploy satellite icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 19V5M5 12l7-7 7 7" />
                 </svg>
                 Boost Burn (+50 km)
