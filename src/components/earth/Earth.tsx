@@ -87,6 +87,7 @@ export function Earth({ sunDirection }: EarthProps) {
     const night = new THREE.CanvasTexture(createProceduralNightTexture())
     const spec = new THREE.CanvasTexture(createProceduralSpecularTexture())
     const cloud = new THREE.CanvasTexture(createProceduralCloudTexture())
+
     return {
       dayTexture: { value: day },
       nightTexture: { value: night },

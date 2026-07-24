@@ -49,6 +49,16 @@ export function AgentTerminal() {
   const lastBoostSeen = useRef(boostCount)
   const lastDvSeen = useRef(deltaVCount)
 
+  // Initialize logs and start interval on client side only to prevent hydration mismatch
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLogs([
+      { time: getTimestamp(), msg: LOG_MESSAGES[0] },
+      { time: getTimestamp(), msg: LOG_MESSAGES[1] },
+      { time: getTimestamp(), msg: LOG_MESSAGES[2] },
+    ])
+  }, [])
+
   // Auto-generate log entries
   useEffect(() => {
     const interval = setInterval(() => {

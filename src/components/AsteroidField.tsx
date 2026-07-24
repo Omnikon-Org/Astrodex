@@ -160,91 +160,37 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const asteroidMeshRefs = useRef<TierMeshRefs>([null, null, null])
   const debrisMeshRefs = useRef<TierMeshRefs>([null, null, null])
 
-  const {
-    registerAsteroidData,
-    simulationRunning,
-    filterType,
-    addConjunctionAlert,
-    selectedAsteroid,
-    claimedAsteroids,
-  } = useAppState()
+  // Cached "at risk" state per object — colors are only re-pushed on transitions
+  const prevAtRiskRef = useRef<boolean[]>([])
+
+  const { simulationRunning, filterType, addConjunctionAlert } = useAppState()
 
   // Track alert timestamps per object index to avoid spamming the feed
   const lastAlertTimesRef = useRef<Record<number, number>>({})
 
-  const asteroidLookupRef = useRef<TierLookup>(createTierLookup())
-  const debrisLookupRef = useRef<TierLookup>(createTierLookup())
-  const asteroidPlacementRef = useRef<TierPlacement[]>(
-    Array.from({ length: ASTEROID_COUNT }, () => ({ tierIndex: 0 as LODTierIndex, localIndex: 0 }))
-  )
-  const debrisPlacementRef = useRef<TierPlacement[]>(
-    Array.from({ length: DEBRIS_COUNT }, () => ({ tierIndex: 0 as LODTierIndex, localIndex: 0 }))
-  )
-  const asteroidTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
-  const debrisTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
-  const frameCounterRef = useRef(0)
-  // Paused-time-aware sim clock. R3F's `state.clock.getElapsedTime()` keeps
-  // advancing while `simulationRunning` is false, so on resume every asteroid
-  // and debris piece used to teleport to where it would have been if the sim
-  // had never paused. This ref only advances when simulationRunning is true,
-  // and the mean-anomaly propagation for every one of the 600 objects now
-  // derives its time from here. See issue #550.
-  const simTimeRef = useRef(0)
-
-  const generated = useMemo(() => {
+  const { dataArray, initialAngles } = useMemo(() => {
     const d: AsteroidData[] = []
     const a: number[] = []
     for (let i = 0; i < TOTAL_COUNT; i++) {
       d.push(generateOrbitalObjectData(i))
-      a.push(0) // placeholder; first frame resolves it via Kepler
+      a.push(0)
     }
-    return {
-      data: d,
-      angles: a,
-    }
+    return { dataArray: d, initialAngles: a }
   }, [])
 
-  const data = generated.data
-  const anglesRef = useRef(generated.angles)
-  const dataRef = useRef(data)
-
-  const asteroidGeometries = useMemo(
-    () => [
-      new THREE.SphereGeometry(1, HIGH_DETAIL_SEGMENTS, HIGH_DETAIL_SEGMENTS),
-      new THREE.SphereGeometry(1, MEDIUM_DETAIL_SEGMENTS, MEDIUM_DETAIL_SEGMENTS),
-      new THREE.SphereGeometry(1, LOW_DETAIL_SEGMENTS, LOW_DETAIL_SEGMENTS),
-    ] as [THREE.SphereGeometry, THREE.SphereGeometry, THREE.SphereGeometry],
-    []
-  )
-
-  const debrisGeometries = useMemo(
-    () => [
-      new THREE.SphereGeometry(1, HIGH_DETAIL_SEGMENTS, HIGH_DETAIL_SEGMENTS),
-      new THREE.SphereGeometry(1, MEDIUM_DETAIL_SEGMENTS, MEDIUM_DETAIL_SEGMENTS),
-      new THREE.SphereGeometry(1, LOW_DETAIL_SEGMENTS, LOW_DETAIL_SEGMENTS),
-    ] as [THREE.SphereGeometry, THREE.SphereGeometry, THREE.SphereGeometry],
-    []
-  )
-
-  const asteroidNormalMap = useMemo(() => createAsteroidNormalTexture(), [])
-
-  const trailItems = useMemo(() => {
-    const claimed = data.filter((item) => claimedAsteroids.has(item.id)).slice(0, 12)
-    if (selectedAsteroid && !claimed.some((item) => item.id === selectedAsteroid.id)) {
-      return [selectedAsteroid, ...claimed]
-    }
-    return claimed
-  }, [claimedAsteroids, data, selectedAsteroid])
-
-  const trailGeometries = useMemo(
-    () => trailItems.map((item) => ({ item, geometry: createOrbitTrailGeometry(item) })),
-    [trailItems]
-  )
+  const dataRef = useRef(dataArray)
+  
+  useEffect(() => {
+    dataRef.current = dataArray
+    anglesRef.current = initialAngles
+    prevAtRiskRef.current = new Array(TOTAL_COUNT).fill(false)
+  }, [dataArray, initialAngles])
 
   // Register data in the store on mount
   useEffect(() => {
-    registerAsteroidData(data)
-  }, [data, registerAsteroidData])
+    const { setAsteroidData } = useAppState.getState()
+    setAsteroidData(dataRef.current)
+  }, [])
 
   useEffect(() => {
     const updateColors = (
