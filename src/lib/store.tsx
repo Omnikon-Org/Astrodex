@@ -56,8 +56,13 @@ interface AppState {
   deltaVCount: number
   triggerDeltaVLog: () => void
   conjunctions: ConjunctionAlert[]
+  /** Adds a new conjunction alert to the feed, updating the global risk level if necessary */
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
+  /** Clears all active conjunction alerts and resets global risk level to LOW */
   clearConjunctions: () => void
+  
+  /** History of claims and releases */
+  claimHistory: { id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]
 }
 
 const AppContext = createContext<AppState | null>(null)
@@ -71,6 +76,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
+  const [claimHistory, setClaimHistory] = useState<{ id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]>([])
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
@@ -93,8 +99,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const claimAsteroid = useCallback((id: number) => {
     setClaimed((prev) => {
       const next = new Set(prev)
+      const action = next.has(id) ? "RELEASED" : "CLAIMED"
       if (next.has(id)) next.delete(id)
       else next.add(id)
+      
+      setClaimHistory(h => [...h, { id, action, timestamp: new Date() }])
       return next
     })
   }, [])
@@ -210,6 +219,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
+        claimHistory,
       }}
     >
       {children}
