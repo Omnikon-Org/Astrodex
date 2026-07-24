@@ -65,6 +65,8 @@ export const trackedPosition = { current: new THREE.Vector3() }
 
 // Module-level scratch — reused every frame for 600 instances to avoid GC pressure
 const _objPos = new THREE.Vector3()
+const _frustum = new THREE.Frustum()
+const _projScreenMatrix = new THREE.Matrix4()
 
 // Satellite position lookup table — hoisted out of useFrame so the array
 // literal isn't rebuilt 60 times per second
@@ -137,6 +139,9 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     const markerMesh = markerMeshRef.current
     if (!asteroidMesh || !debrisMesh || !markerMesh) return
 
+    _projScreenMatrix.multiplyMatrices(state.camera.projectionMatrix, state.camera.matrixWorldInverse)
+    _frustum.setFromProjectionMatrix(_projScreenMatrix)
+
     const selectedIdx = getSelectedIndex()
     const t = simClock.time
     const prevAtRisk = prevAtRiskRef.current
@@ -168,17 +173,19 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       
       _objPos.set(pos.x, pos.y, pos.z)
 
-      dummy.position.copy(_objPos)
-      dummy.rotation.x = E * 0.5
-      dummy.rotation.z = E * 0.3
-
       // 2. Filter rendering scale
       let activeScale = ad.scale
       if (filterType === "ASTEROIDS" && isDebris) {
         activeScale = 0
       } else if (filterType === "DEBRIS" && !isDebris) {
         activeScale = 0
+      } else if (i !== selectedIdx && !_frustum.containsPoint(_objPos)) {
+        activeScale = 0
       }
+
+      dummy.position.copy(_objPos)
+      dummy.rotation.x = E * 0.5
+      dummy.rotation.z = E * 0.3
       dummy.scale.setScalar(activeScale)
       dummy.updateMatrix()
 
