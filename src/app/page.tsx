@@ -7,6 +7,7 @@ import { LeftSidebar } from "@/components/LeftSidebar"
 import { RightSidebar } from "@/components/RightSidebar"
 import { AgentTerminal } from "@/components/AgentTerminal"
 import { AsteroidCard } from "@/components/AsteroidCard"
+import { MobileNavbar } from "@/components/MobileNavbar"
 
 const Scene = dynamic(() => import("@/components/Scene").then((m) => ({ default: m.Scene })), {
   ssr: false,
@@ -32,6 +33,7 @@ export default function Home() {
         <LeftSidebar />
         <RightSidebar />
         <AgentTerminal />
+        <MobileNavbar />
         
         {/* Floating Asteroid Inspector */}
         <AsteroidCard />

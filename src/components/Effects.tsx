@@ -1,7 +1,8 @@
 "use client"
 
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing"
+import { EffectComposer, Bloom, Vignette, ChromaticAberration } from "@react-three/postprocessing"
 import { BlendFunction } from "postprocessing"
+import * as THREE from "three"
 
 const BLOOM_CONFIG = {
   intensity: 1.5,
@@ -18,6 +19,12 @@ export function Effects() {
         offset={0.3}
         darkness={0.7}
         blendFunction={BlendFunction.NORMAL}
+      />
+      <ChromaticAberration
+        blendFunction={BlendFunction.NORMAL}
+        offset={new THREE.Vector2(0.002, 0.002)}
+        radialModulation={false}
+        modulationOffset={0}
       />
     </EffectComposer>
   )
