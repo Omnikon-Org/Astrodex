@@ -9,6 +9,7 @@ export function AsteroidCard() {
     claimAsteroid,
     leftSidebarOpen,
     selectAsteroid,
+    addToast,
   } = useAppState()
 
   if (!selectedAsteroid) return null
@@ -144,7 +145,14 @@ export function AsteroidCard() {
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={() => claimAsteroid(selectedAsteroid.id)}
+            onClick={() => {
+              claimAsteroid(selectedAsteroid.id)
+              if (isClaimed) {
+                addToast(`Released claim on ${selectedAsteroid.name}`, "info")
+              } else {
+                addToast(`Mining claim secured on ${selectedAsteroid.name}`, "success")
+              }
+            }}
             className="btn-primary"
             style={{
               width: "100%",

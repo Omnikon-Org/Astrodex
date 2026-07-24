@@ -58,6 +58,11 @@ interface AppState {
   conjunctions: ConjunctionAlert[]
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   clearConjunctions: () => void
+
+  // Toasts
+  toasts: { id: number; message: string; type: "success" | "error" | "info" }[]
+  addToast: (message: string, type?: "success" | "error" | "info") => void
+  removeToast: (id: number) => void
 }
 
 const AppContext = createContext<AppState | null>(null)
@@ -87,6 +92,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [deltaVCount, setDeltaVCount] = useState(0)
   const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
   const nextAlertId = useRef(1)
+
+  const [toasts, setToasts] = useState<{ id: number; message: string; type: "success" | "error" | "info" }[]>([])
+  const nextToastId = useRef(1)
+
+  const addToast = useCallback((message: string, type: "success" | "error" | "info" = "info") => {
+    const id = nextToastId.current++
+    setToasts((prev) => [...prev, { id, message, type }])
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id))
+    }, 4000)
+  }, [])
+
+  const removeToast = useCallback((id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id))
+  }, [])
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
 
@@ -210,6 +230,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
+        toasts,
+        addToast,
+        removeToast,
       }}
     >
       {children}
