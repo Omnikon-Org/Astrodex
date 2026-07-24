@@ -1,37 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
 import { useAppState } from "@/lib/store"
-import { trackedPosition } from "./AsteroidField"
-
-function LiveCoordinates() {
-  const xRef = useRef<HTMLSpanElement>(null)
-  const yRef = useRef<HTMLSpanElement>(null)
-  const zRef = useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    let frameId: number
-    const update = () => {
-      if (xRef.current && yRef.current && zRef.current) {
-        xRef.current.innerText = trackedPosition.current.x.toFixed(2)
-        yRef.current.innerText = trackedPosition.current.y.toFixed(2)
-        zRef.current.innerText = trackedPosition.current.z.toFixed(2)
-      }
-      frameId = requestAnimationFrame(update)
-    }
-    frameId = requestAnimationFrame(update)
-    return () => cancelAnimationFrame(frameId)
-  }, [])
-
-  return (
-    <div className="kv-row">
-      <span className="kv-label">Live Coordinates</span>
-      <span className="kv-value" style={{ fontVariantNumeric: "tabular-nums" }}>
-        X: <span ref={xRef}>0.00</span> Y: <span ref={yRef}>0.00</span> Z: <span ref={zRef}>0.00</span>
-      </span>
-    </div>
-  )
-}
 
 export function AsteroidCard() {
   const {
@@ -41,57 +10,64 @@ export function AsteroidCard() {
     leftSidebarOpen,
     selectAsteroid,
   } = useAppState()
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
-
-  useEffect(() => {
-  if (!selectedAsteroid) return
-  closeButtonRef.current?.focus()
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") selectAsteroid(null)
-  }
-  document.addEventListener("keydown", onKeyDown)
-  return () => document.removeEventListener("keydown", onKeyDown)
-}, [selectedAsteroid, selectAsteroid])
 
   if (!selectedAsteroid) return null
 
   const isClaimed = claimedAsteroids.has(selectedAsteroid.id)
-  const handleClaimToggle = () => {
-    if (isClaimed) {
-      const confirmed = window.confirm(`Release the mining claim for ${selectedAsteroid.name}?`)
-      if (!confirmed) return
-    } else {
-      const confirmed = window.confirm(`File a mining claim for ${selectedAsteroid.name}?`)
-      if (!confirmed) return
-    }
-    claimAsteroid(selectedAsteroid.id)
-  }
 
   return (
     <div
-      className="fixed z-42 w-[300px] bg-[#0a101ce6] backdrop-blur-[20px] border border-sky-400/20 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] transition-all duration-300 ease-out animate-fade-in-left"
+      className="glass-panel animate-fade-in-left"
       style={{
+        position: "fixed",
         top: "calc(var(--header-height) + 16px)",
         left: leftSidebarOpen ? "calc(var(--sidebar-width) + 24px)" : "24px",
+        width: "300px",
+        zIndex: 42,
+        boxShadow: "0 10px 40px rgba(0, 0, 0, 0.6)",
+        border: "1px solid rgba(56, 189, 248, 0.2)",
+        background: "rgba(10, 16, 28, 0.9)",
+        transition: "left 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-        <div className="flex items-center gap-2">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "12px 16px",
+          borderBottom: "1px solid var(--border-subtle)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div
-            className={`w-1.5 h-1.5 rounded-full ${
-              isClaimed
-                ? "bg-emerald-400 shadow-[0_0_6px_#34d399]"
-                : "bg-sky-400 shadow-[0_0_6px_#38bdf8]"
-            }`}
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              backgroundColor: isClaimed ? "var(--accent-green)" : "var(--accent-cyan)",
+              boxShadow: isClaimed
+                ? "0 0 6px var(--accent-green)"
+                : "0 0 6px var(--accent-cyan)",
+            }}
           />
-          <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-white/90">
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "var(--text-primary)",
+            }}
+          >
             Inspector: {selectedAsteroid.name}
           </span>
         </div>
         <button
-          className="inline-flex items-center justify-center p-1 bg-transparent border-none text-white/60 cursor-pointer transition-all duration-200 hover:text-white/90"
+          className="btn-ghost"
           onClick={() => selectAsteroid(null)}
+          style={{ padding: 4, border: "none" }}
         >
           <svg
             width="14"
@@ -110,70 +86,120 @@ export function AsteroidCard() {
       </div>
 
       {/* Content */}
-      <div className="px-4 py-3.5">
+      <div style={{ padding: "14px 16px" }}>
         {/* Claim Status Badge */}
         {isClaimed && (
-          <div className="flex items-center justify-between mb-3 px-2.5 py-1.5 rounded-md bg-emerald-400/10 border border-emerald-400/20 text-emerald-400 text-[10px] font-semibold tracking-[0.04em]">
+          <div
+            style={{
+              marginBottom: 12,
+              padding: "6px 10px",
+              borderRadius: "var(--radius-sm)",
+              background: "rgba(52, 211, 153, 0.08)",
+              border: "1px solid rgba(52, 211, 153, 0.2)",
+              color: "var(--accent-green)",
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: "0.04em",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <span>STATUS: CLAIMED & SECURED</span>
-            <span className="text-[9px] opacity-80">SEC-REG</span>
+            <span style={{ fontSize: 9, opacity: 0.8 }}>SEC-REG</span>
           </div>
         )}
 
         {/* Orbit Visual Diagram Placeholder or Stats */}
-        <div className="bg-white/5 border border-white/5 rounded-md p-3 mb-3.5">
-          <div className="text-[10px] font-bold tracking-widest uppercase text-white/60 mb-2.5">
-            Orbital Mechanics
+        <div className="panel-section" style={{ marginBottom: 14 }}>
+          <div className="panel-section-title">Orbital Mechanics</div>
+          <div className="kv-row">
+            <span className="kv-label">Semi-Major Axis</span>
+            <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
           </div>
-          <div className="flex justify-between items-center py-1 text-xs border-t border-white/5 first:border-t-0 mt-0 pt-0">
-            <span className="text-white/40 text-[11px]">Semi-Major Axis</span>
-            <span className="text-white/90 font-mono text-xs font-medium">
-              {(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU
-            </span>
+          <div className="kv-row">
+            <span className="kv-label">Mean Orbit Radius</span>
+            <span className="kv-value">{selectedAsteroid.orbitRadius.toFixed(2)} R⊕</span>
           </div>
-          <div className="flex justify-between items-center py-1 text-xs border-t border-white/5">
-            <span className="text-white/40 text-[11px]">Mean Orbit Radius</span>
-            <span className="text-white/90 font-mono text-xs font-medium">
-              {selectedAsteroid.orbitRadius.toFixed(2)} R⊕
-            </span>
-          </div>
-          <div className="flex justify-between items-center py-1 text-xs border-t border-white/5">
-            <span className="text-white/40 text-[11px]">Inclination Angle</span>
-            <span className="text-white/90 font-mono text-xs font-medium">
+          <div className="kv-row">
+            <span className="kv-label">Inclination Angle</span>
+            <span className="kv-value">
               {(selectedAsteroid.inclination * (180 / Math.PI)).toFixed(1)}°
             </span>
           </div>
-          <div className="flex justify-between items-center py-1 text-xs border-t border-white/5">
-            <span className="text-white/40 text-[11px]">Object Velocity</span>
-            <span className="text-white/90 font-mono text-xs font-medium">
-              {selectedAsteroid.velocity}
-            </span>
+          <div className="kv-row">
+            <span className="kv-label">Object Velocity</span>
+            <span className="kv-value">{selectedAsteroid.velocity}</span>
           </div>
-          <div className="flex justify-between items-center py-1 text-xs border-t border-white/5">
-            <span className="text-white/40 text-[11px]">Est. Diameter</span>
-            <span className="text-white/90 font-mono text-xs font-medium">
-              {(selectedAsteroid.scale * 120).toFixed(1)} km
-            </span>
+          <div className="kv-row">
+            <span className="kv-label">Est. Diameter</span>
+            <span className="kv-value">{(selectedAsteroid.scale * 120).toFixed(1)} km</span>
           </div>
-          <div className="flex justify-between items-center py-1 text-xs border-t border-white/5">
-            <span className="text-white/40 text-[11px]">Relative Dist.</span>
-            <span className="text-white/90 font-mono text-xs font-medium">
-              {selectedAsteroid.distance}
-            </span>
+          <div className="kv-row">
+            <span className="kv-label">Relative Dist.</span>
+            <span className="kv-value">{selectedAsteroid.distance}</span>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-2">
-          <button
-            onClick={() => claimAsteroid(selectedAsteroid.id)}
-            className={`w-full p-2.5 rounded-lg border text-xs font-bold tracking-[0.06em] uppercase cursor-pointer transition-all duration-200 hover:shadow-lg ${
-              isClaimed
-                ? "bg-red-400/10 border-red-400/40 text-red-400 hover:bg-red-400/20"
-                : "bg-sky-400/10 border-sky-400/40 text-sky-400 hover:bg-sky-400/20"
-            }`}
-          >
-            {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
-          </button>
+        {/* Mining Claim Form */}
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", marginBottom: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Mining Claim Operations
+          </div>
+          
+          {isClaimed ? (
+            <button
+              className="mc-button"
+              onClick={() => claimAsteroid(selectedAsteroid.id)}
+              style={{
+                width: "100%",
+                padding: "10px 0",
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                backgroundColor: "rgba(248, 113, 113, 0.12)",
+                borderColor: "rgba(248, 113, 113, 0.4)",
+                color: "var(--accent-red)",
+                textTransform: "uppercase",
+                transition: "all 0.2s ease"
+              }}
+            >
+              Release Mining Claim
+            </button>
+          ) : (
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                claimAsteroid(selectedAsteroid.id);
+              }}
+              style={{ display: "flex", gap: 8, alignItems: "center", width: "100%" }}
+            >
+              <input
+                type="text"
+                className="mc-input"
+                placeholder="Enter Corporate ID"
+                required
+                style={{ flex: 1, padding: "8px 12px", height: "36px" }}
+              />
+              <button
+                type="submit"
+                className="mc-button"
+                style={{
+                  padding: "0 16px",
+                  height: "36px",
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  backgroundColor: "rgba(56, 189, 248, 0.12)",
+                  borderColor: "rgba(56, 189, 248, 0.4)",
+                  color: "var(--accent-cyan)",
+                  textTransform: "uppercase",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                File Claim
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>
