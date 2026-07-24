@@ -2,9 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useAppState } from "@/lib/store"
-import { SearchCommand } from "./SearchCommand"
-import { UserProfileModal } from "./UserProfileModal"
-import { Leaderboard } from "./Leaderboard"
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -30,7 +27,8 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, reduceMotion, toggleReduceMotion } = useAppState()
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } =
+    useAppState()
 
   return (
     <header
@@ -83,8 +81,6 @@ export function Header() {
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
         <button className="btn-primary" onClick={toggleSimulation}>
           <svg
-            role="img"
-            aria-label={simulationRunning ? "Pause icon" : "Play icon"}
             width="12"
             height="12"
             viewBox="0 0 24 24"
@@ -106,12 +102,14 @@ export function Header() {
           {simulationRunning ? "Pause Simulation" : "Run Simulation"}
         </button>
 
-        <div role="status" className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+        <div
+          className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}
+        >
           Risk: {riskLevel}
         </div>
 
         {/* Connection indicator */}
-        <div role="status" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
           <div
             style={{
               width: 6,
@@ -136,41 +134,57 @@ export function Header() {
 
         {selectedAsteroid && (
           <button className="btn-ghost" onClick={triggerReset}>
-            <svg role="img" aria-label="Back icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back to Earth
           </button>
         )}
 
-        <button 
-          className="btn-ghost" 
-          onClick={toggleReduceMotion}
-          aria-pressed={reduceMotion}
-          title={reduceMotion ? "Enable Motion" : "Reduce Motion"}
-        >
-          {reduceMotion ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-          ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-          )}
-          {reduceMotion ? "Motion: Reduced" : "Motion: Full"}
+        <button className="btn-ghost" onClick={toggleCinematicMode} aria-pressed={cinematicMode}>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 7h16M4 17h16M7 4v16M17 4v16" />
+          </svg>
+          {cinematicMode ? "Exit Cinema" : "Cinema"}
+        </button>
+
+        <button className="btn-ghost" onClick={onToggleHud} aria-pressed={!hudVisible}>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            {hudVisible ? (
+              <>
+                <path d="M3 3l18 18" />
+                <path d="M10.6 10.6A2 2 0 0 0 12 14a2 2 0 0 0 1.4-.6" />
+                <path d="M9.9 4.2A10.6 10.6 0 0 1 12 4c5 0 9 5 9 8a8.7 8.7 0 0 1-2.1 3.9" />
+                <path d="M6.1 6.1C4.2 7.4 3 9.6 3 12c0 3 4 8 9 8 1.4 0 2.7-.4 3.9-1" />
+              </>
+            ) : (
+              <>
+                <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="3" />
+              </>
+            )}
+          </svg>
+          HUD
         </button>
       </div>
 
-      {/* Right: Clock & User */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-            Last updated:
-          </span>
-          <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
-            <LiveClock />
-          </span>
-        </div>
-        <SearchCommand />
-        <Leaderboard />
-        <UserProfileModal />
+      {/* Right: Clock */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
+          Last updated:
+        </span>
+        <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+          <LiveClock />
+        </span>
       </div>
     </header>
   )

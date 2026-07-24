@@ -34,24 +34,8 @@ function LiveCoordinates() {
 }
 
 export function AsteroidCard() {
-  const {
-    selectedAsteroid,
-    claimedAsteroids,
-    claimAsteroid,
-    leftSidebarOpen,
-    selectAsteroid,
-  } = useAppState()
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
-
-  useEffect(() => {
-  if (!selectedAsteroid) return
-  closeButtonRef.current?.focus()
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") selectAsteroid(null)
-  }
-  document.addEventListener("keydown", onKeyDown)
-  return () => document.removeEventListener("keydown", onKeyDown)
-}, [selectedAsteroid, selectAsteroid])
+  const { selectedAsteroid, claimedAsteroids, claimAsteroid, leftSidebarOpen, selectAsteroid } =
+    useAppState()
 
   if (!selectedAsteroid) return null
 
@@ -102,9 +86,7 @@ export function AsteroidCard() {
               height: 6,
               borderRadius: "50%",
               backgroundColor: isClaimed ? "var(--accent-green)" : "var(--accent-cyan)",
-              boxShadow: isClaimed
-                ? "0 0 6px var(--accent-green)"
-                : "0 0 6px var(--accent-cyan)",
+              boxShadow: isClaimed ? "0 0 6px var(--accent-green)" : "0 0 6px var(--accent-cyan)",
             }}
           />
           <h2

@@ -95,7 +95,27 @@ function HomeShell() {
 export default function Home() {
   return (
     <AppProvider>
-      <HomeShell />
+      <main
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          background: "#000005",
+        }}
+      >
+        {/* Background 3D Space Scene */}
+        <Scene />
+
+        {/* HUD UI Layout Components */}
+        <Header />
+        <LeftSidebar />
+        <RightSidebar />
+        <AgentTerminal />
+
+        {/* Floating Asteroid Inspector */}
+        <AsteroidCard />
+      </main>
     </AppProvider>
   )
 }

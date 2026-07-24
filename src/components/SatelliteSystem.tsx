@@ -111,8 +111,14 @@ export function SatelliteSystem() {
     () => createOrbitGeometry(issRadius, satEccentricity, satInclination, satRaan),
     [issRadius, satEccentricity, satInclination, satRaan]
   )
-  const envisatOrbitGeo = useMemo(() => createOrbitGeometry(envisatRadius, 0.0006, 98.54, 120), [envisatRadius])
-  const hubbleOrbitGeo = useMemo(() => createOrbitGeometry(hubbleRadius, 0.0003, 28.5, 45), [hubbleRadius])
+  const envisatOrbitGeo = useMemo(
+    () => createOrbitGeometry(envisatRadius, 0.0006, 98.54, 120),
+    [envisatRadius]
+  )
+  const hubbleOrbitGeo = useMemo(
+    () => createOrbitGeometry(hubbleRadius, 0.0003, 28.5, 45),
+    [hubbleRadius]
+  )
 
   useFrame((_state, delta) => {
     if (!simulationRunning) return

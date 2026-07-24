@@ -55,7 +55,7 @@ export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
 
   // Wrap M to [−π, π] so the initial guess is meaningful for any time t.
   const TAU = Math.PI * 2
-  const m = ((M % TAU) + TAU + Math.PI) % TAU - Math.PI
+  const m = (((M % TAU) + TAU + Math.PI) % TAU) - Math.PI
 
   // Shortcut for circular or very low eccentricity orbits
   if (e < 1e-6) {
