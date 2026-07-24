@@ -141,6 +141,22 @@ export const LEO_DECAY_KM_PER_SEC = 0.05
 
 export const KM_PER_UNIT_CONST = KM_PER_UNIT
 
+export const AU_IN_KM = 149597870.7
+
+/**
+ * Convert kilometers to Astronomical Units (AU).
+ */
+export function kmToAu(km: number): number {
+  return km / AU_IN_KM
+}
+
+/**
+ * Convert Astronomical Units (AU) to kilometers.
+ */
+export function auToKm(au: number): number {
+  return au * AU_IN_KM
+}
+
 /**
  * Calculate the total delta-V (km/s) required for a Hohmann transfer between
  * two coplanar circular orbits around Earth.
