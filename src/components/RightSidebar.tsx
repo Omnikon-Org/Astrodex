@@ -193,8 +193,8 @@ export function RightSidebar() {
             </div>
 
             {/* Planner Constraints */}
-            <div className="panel-section">
-              <div className="panel-section-title">Planner Constraints</div>
+            <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]">
+              <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Planner Constraints</div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
@@ -230,13 +230,13 @@ export function RightSidebar() {
 
             {/* Manual Satellite (3D Orbit) */}
             <div
-              className="panel-section"
+              className="bg-[rgba(255,255,255,0.02)] border rounded-[var(--radius-md)] p-[12px]"
               style={{
                 border: "1px solid rgba(56, 189, 248, 0.15)",
                 background: "rgba(56, 189, 248, 0.03)",
               }}
             >
-              <div className="panel-section-title" style={{ color: "var(--accent-cyan)" }}>
+              <div className="text-[10px] font-bold tracking-[0.1em] uppercase mb-[10px]" style={{ color: "var(--accent-cyan)" }}>
                 Manual Satellite (3D Orbit)
               </div>
 
@@ -294,7 +294,7 @@ export function RightSidebar() {
 
             {/* ─── LEO Orbital Decay Monitor ─── */}
             <div
-              className="panel-section"
+              className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]"
               style={{
                 border:
                   altitudeHealth === "crit"
@@ -311,7 +311,7 @@ export function RightSidebar() {
               }}
             >
               <div
-                className="panel-section-title"
+                className="text-[10px] font-bold tracking-[0.1em] uppercase mb-[10px]"
                 style={{
                   color:
                     altitudeHealth === "crit"

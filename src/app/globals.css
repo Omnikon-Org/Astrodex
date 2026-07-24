@@ -87,43 +87,6 @@ html, body {
   border: 1px solid var(--glass-border);
 }
 
-/* ─── Panel Sections ─── */
-.panel-section {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 12px;
-}
-
-.skeleton-loader {
-  background: linear-gradient(
-    90deg,
-    rgba(56, 189, 248, 0.05) 25%,
-    rgba(56, 189, 248, 0.15) 50%,
-    rgba(56, 189, 248, 0.05) 75%
-  );
-  background-size: 200% 100%;
-  animation: skeletonPulse 1.5s infinite linear;
-}
-
-@keyframes skeletonPulse {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-.panel-section-title {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 10px;
-}
-
 /* ─── Mission Control Inputs ─── */
 .mc-input {
   width: 100%;

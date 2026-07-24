@@ -112,8 +112,8 @@ export function AsteroidCard() {
         )}
 
         {/* Orbit Visual Diagram Placeholder or Stats */}
-        <div className="panel-section" style={{ marginBottom: 14 }}>
-          <div className="panel-section-title">Orbital Mechanics</div>
+        <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]" style={{ marginBottom: 14 }}>
+          <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Orbital Mechanics</div>
           <div className="kv-row">
             <Tooltip content="Average distance from the central body (AU)">
               <span className="kv-label cursor-help border-b border-dotted border-gray-500">Semi-Major Axis</span>
