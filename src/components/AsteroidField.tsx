@@ -8,7 +8,9 @@ import { useAppState } from "@/lib/store"
 import { satellitePositions } from "./SatelliteSystem"
 import {
   solveKepler,
+  getOrbitalPosition,
   visViva,
+  visVivaKmPerSec,
   meanMotion,
   SCENE_TIME_SCALE,
   velocityToKmPerSec,
@@ -147,24 +149,24 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       const instanceIndex = isDebris ? i - ASTEROID_COUNT : i
 
       // 1. Keplerian propagation: M = n·t + M0  →  solve Kepler for E
-      if (selectedIdx !== i && simulationRunning) {
+      if (selectedIdx !== i && simulationRunning && ad.orbitRadius > 0) {
         const n = meanMotion(ad.orbitRadius)
-        anglesRef.current[i] = solveKepler(n * t * deltaScaled + ad.meanAnomaly0, ad.eccentricity)
+        anglesRef.current[i] = solveKepler(
+          n * t * deltaScaled + ad.meanAnomaly0,
+          ad.eccentricity,
+          anglesRef.current[i]
+        )
       }
 
       const E = anglesRef.current[i]
       const a = ad.orbitRadius
       const e = ad.eccentricity
-      const cosE = Math.cos(E)
-      const sinE = Math.sin(E)
-      const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+      const inc = ad.inclination // Already in radians
 
-      // In-plane perifocal coordinates of the ellipse
-      const xPlane = a * (cosE - e)
-      const zPlane = a * sqrt1me2 * sinE
-
-      // Apply inclination tilt to break the orbit out of the xz plane
-      _objPos.set(xPlane, zPlane * ad.inclination, zPlane)
+      // Compute true 3D orbital position (defaults RAAN to 0 for asteroids since it's not in AsteroidData yet)
+      const pos = getOrbitalPosition(a, e, E, inc, 0)
+      
+      _objPos.set(pos.x, pos.y, pos.z)
 
       dummy.position.copy(_objPos)
       dummy.rotation.x = E * 0.5
@@ -283,13 +285,25 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     [onAsteroidClick]
   )
 
+  const handlePointerOver = useCallback((e: any) => {
+    e.stopPropagation()
+    document.body.style.cursor = 'pointer'
+  }, [])
+
+  const handlePointerOut = useCallback((e: any) => {
+    e.stopPropagation()
+    document.body.style.cursor = 'auto'
+  }, [])
+
   return (
     <>
       {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
         ref={asteroidMeshRef}
-        args={[null as any, null as any, ASTEROID_COUNT]}
+        args={[undefined, undefined, ASTEROID_COUNT]}
         onClick={handleAsteroidClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
         frustumCulled={false}
       >
         <dodecahedronGeometry args={[1, 0]} />
@@ -299,8 +313,10 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
       <instancedMesh
         ref={debrisMeshRef}
-        args={[null as any, null as any, DEBRIS_COUNT]}
+        args={[undefined, undefined, DEBRIS_COUNT]}
         onClick={handleDebrisClick}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
         frustumCulled={false}
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />

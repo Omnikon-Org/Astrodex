@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
-import { visVivaKmPerSec, LEO_DECAY_KM_PER_SEC, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
+import { visVivaKmPerSec, calculateLEODecayRate, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
 
 export function RightSidebar() {
   const {
@@ -92,7 +92,9 @@ export function RightSidebar() {
 
   // ── LEO health bar: green above 300 km, amber 200-300 km, red below ──
   const altFraction = (satAltitude - LEO_LIMITS.FLOOR) / (LEO_LIMITS.CEILING - LEO_LIMITS.FLOOR)
-  const decayRate = (LEO_DECAY_KM_PER_SEC * 60).toFixed(2) // km/min
+  // Add some fake variance for the display
+  const thrustVariation = (Math.sin(Date.now() / 1000) * 0.1).toFixed(2)
+  const decayRate = (calculateLEODecayRate(satAltitude) * 60).toFixed(2) // km/min
   const altitudeHealth: "ok" | "warn" | "crit" =
     satAltitude > 300 ? "ok" : satAltitude > 220 ? "warn" : "crit"
 
@@ -332,6 +334,16 @@ export function RightSidebar() {
                   }}
                 />
               </div>
+
+                <button
+                  onClick={triggerReset}
+                  className="py-1 px-3 bg-indigo-900/50 hover:bg-indigo-800/80 text-xs text-indigo-200 rounded border border-indigo-900 transition-colors shadow shadow-black/50 flex items-center gap-1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
+                  </svg>
+                  RETURN TO EARTH
+                </button>
 
               <button
                 className="btn-primary"

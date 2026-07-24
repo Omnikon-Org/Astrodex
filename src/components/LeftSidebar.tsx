@@ -13,6 +13,7 @@ export function LeftSidebar() {
     setFilterType,
     conjunctions,
     addConjunctionAlert,
+    dataLoaded,
   } = useAppState()
   const [searchId, setSearchId] = useState("")
   const [riskFilter, setRiskFilter] = useState<"ALL" | "HIGH" | "MEDIUM" | "LOW">("ALL") 
@@ -24,7 +25,7 @@ export function LeftSidebar() {
 
   // Pre-seed some conjunctions at start if empty
   useEffect(() => {
-    if (conjunctions.length === 0) {
+    if (conjunctions.length === 0 && dataLoaded) {
       addConjunctionAlert({
         tca: "now",
         missKm: "43.2",
@@ -44,7 +45,7 @@ export function LeftSidebar() {
         satelliteName: "Envisat",
       })
     }
-  }, [conjunctions.length, addConjunctionAlert])
+  }, [conjunctions.length, addConjunctionAlert, dataLoaded])
 
   const handleSearch = useCallback(() => {
     const id = parseInt(searchId, 10)
@@ -187,7 +188,15 @@ export function LeftSidebar() {
             {/* Live Target Details */}
             <div className="panel-section">
               <div className="panel-section-title">Live Target Details</div>
-              {selectedAsteroid ? (
+              {!dataLoaded ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <div className="skeleton-loader" style={{ height: "14px", width: "100%", borderRadius: "2px" }} />
+                  <div className="skeleton-loader" style={{ height: "14px", width: "90%", borderRadius: "2px" }} />
+                  <div className="skeleton-loader" style={{ height: "14px", width: "95%", borderRadius: "2px" }} />
+                  <div className="skeleton-loader" style={{ height: "14px", width: "85%", borderRadius: "2px" }} />
+                  <div className="skeleton-loader" style={{ height: "14px", width: "92%", borderRadius: "2px" }} />
+                </div>
+              ) : selectedAsteroid ? (
                 <div>
                   <div className="kv-row">
                     <span className="kv-label">Designator</span>
@@ -270,7 +279,22 @@ export function LeftSidebar() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredConjunctions.map((c) => (
+                    {!dataLoaded ? (
+                      Array.from({ length: 4 }).map((_, i) => (
+                        <tr key={i}>
+                          <td>
+                            <div className="skeleton-loader" style={{ height: "12px", width: "80px", marginBottom: "4px" }} />
+                            <div className="skeleton-loader" style={{ height: "10px", width: "60px" }} />
+                          </td>
+                          <td>
+                            <div className="skeleton-loader" style={{ height: "12px", width: "40px" }} />
+                          </td>
+                          <td>
+                            <div className="skeleton-loader" style={{ height: "18px", width: "40px", borderRadius: "10px" }} />
+                          </td>
+                        </tr>
+                      ))
+                    ) : filteredConjunctions.map((c) => (
                       <tr key={c.id}>
                         <td>
                           <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{c.satelliteName}</div>
