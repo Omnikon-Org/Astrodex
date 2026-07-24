@@ -123,6 +123,17 @@ git remote add upstream https://github.com/SourabhX16/astrodex.git
 npm install
 ```
 
+### Environment Variables
+
+AstroDex requires a Supabase instance for claiming asteroids.
+
+1. Create a project on [Supabase](https://supabase.com).
+2. Copy the `.env.example` file to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+3. Update `.env.local` with your Supabase Project URL and Anon Key.
+
 ### Running Locally
 
 ```bash
