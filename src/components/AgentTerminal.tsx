@@ -181,8 +181,6 @@ export function AgentTerminal() {
           ref={scrollRef}
           role="log"
           aria-live="polite"
-          aria-relevant="additions text"
-          aria-label="Agent terminal notifications"
           style={{
             flex: 1,
             overflowY: "auto",
