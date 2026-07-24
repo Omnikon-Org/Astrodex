@@ -54,6 +54,9 @@ function generateOrbitalObjectData(index: number): AsteroidData {
     atRisk: false,
     eccentricity: isDebris ? Math.random() * 0.18 : Math.random() * 0.28,
     meanAnomaly0: Math.random() * Math.PI * 2,
+    rotSpeedX: (Math.random() - 0.5) * 1.5,
+    rotSpeedY: (Math.random() - 0.5) * 1.5,
+    rotSpeedZ: (Math.random() - 0.5) * 1.5,
   }
 }
 
@@ -175,8 +178,9 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       _objPos.set(xPlane, zPlane * ad.inclination, zPlane)
 
       dummy.position.copy(_objPos)
-      dummy.rotation.x = E * 0.5
-      dummy.rotation.z = E * 0.3
+      dummy.rotation.x = t * ad.rotSpeedX
+      dummy.rotation.y = t * ad.rotSpeedY
+      dummy.rotation.z = t * ad.rotSpeedZ
 
       // 2. Filter rendering scale
       let activeScale = ad.scale
