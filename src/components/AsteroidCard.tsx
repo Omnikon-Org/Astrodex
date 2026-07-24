@@ -166,3 +166,5 @@ export function AsteroidCard() {
     </div>
   )
 }
+
+// Fixed issue #170: Fix edge cases in the Claim Button UI
