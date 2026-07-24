@@ -33,9 +33,12 @@ interface AppState {
   toggleLeftSidebar: () => void
   toggleRightSidebar: () => void
   toggleTerminal: () => void
-  // Search by ID
+  // Search by ID or Name
+  searchAsteroid: (query: string) => void
   searchAsteroidById: (id: number) => void
   registerAsteroidData: (data: AsteroidData[]) => void
+  dataLoaded: boolean
+  setDataLoaded: (loaded: boolean) => void
 
   // Space Debris Filters & Satellite Parameters
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
@@ -78,6 +81,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const asteroidDataRef = useRef<AsteroidData[]>([])
 
   // Space Debris Filters & Satellite Parameters
+  const [dataLoaded, setDataLoaded] = useState(false)
+
+  // Simulate asteroid data fetching delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDataLoaded(true)
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [])
+
   const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
   const [satAltitude, setSatAltitude] = useState(400) // km, LEO default
   const [satInclination, setSatInclination] = useState(51.63) // degrees — ISS historical value
@@ -116,6 +129,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const searchAsteroidById = useCallback((id: number) => {
     const found = asteroidDataRef.current.find((a) => a.id === id)
+    if (found) {
+      setSelectedAsteroid(found)
+    }
+  }, [])
+
+  const searchAsteroid = useCallback((query: string) => {
+    const lowerQuery = query.toLowerCase()
+    const found = asteroidDataRef.current.find((a) => a.name.toLowerCase().includes(lowerQuery) || a.id.toString() === query)
     if (found) {
       setSelectedAsteroid(found)
     }
@@ -192,8 +213,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleLeftSidebar,
         toggleRightSidebar,
         toggleTerminal,
+        searchAsteroid,
         searchAsteroidById,
         registerAsteroidData,
+        dataLoaded,
+        setDataLoaded,
         filterType,
         setFilterType,
         satAltitude,
