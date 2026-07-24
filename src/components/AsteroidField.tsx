@@ -82,6 +82,7 @@ interface AsteroidFieldProps {
 export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFieldProps) {
   const asteroidMeshRef = useRef<THREE.InstancedMesh>(null)
   const debrisMeshRef = useRef<THREE.InstancedMesh>(null)
+  const markerMeshRef = useRef<THREE.InstancedMesh>(null)
   const anglesRef = useRef<number[]>([])
 
   // Cached "at risk" state per object — colors are only re-pushed on transitions
@@ -133,12 +134,14 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   useFrame((state, delta) => {
     const asteroidMesh = asteroidMeshRef.current
     const debrisMesh = debrisMeshRef.current
-    if (!asteroidMesh || !debrisMesh) return
+    const markerMesh = markerMeshRef.current
+    if (!asteroidMesh || !debrisMesh || !markerMesh) return
 
     const selectedIdx = getSelectedIndex()
     const t = state.clock.getElapsedTime()
     const prevAtRisk = prevAtRiskRef.current
     const deltaScaled = delta * SCENE_TIME_SCALE
+    let markerCount = 0
 
     for (let i = 0; i < TOTAL_COUNT; i++) {
       const ad = dataRef.current[i]
@@ -200,6 +203,15 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
 
       ad.atRisk = atRisk
 
+      if (atRisk && activeScale > 0 && markerCount < 50) {
+        dummy.position.copy(_objPos)
+        dummy.scale.setScalar(isDebris ? 0.3 : 0.6)
+        dummy.quaternion.copy(state.camera.quaternion)
+        dummy.updateMatrix()
+        markerMesh.setMatrixAt(markerCount, dummy.matrix)
+        markerCount++
+      }
+
       // Handle conjunction alerts in the store (throttle to once per 8 seconds per object)
       if (atRisk && simulationRunning && activeScale > 0) {
         const lastAlert = lastAlertTimesRef.current[i] || 0
@@ -251,6 +263,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
 
     asteroidMesh.instanceMatrix.needsUpdate = true
     debrisMesh.instanceMatrix.needsUpdate = true
+    markerMesh.count = markerCount
+    markerMesh.instanceMatrix.needsUpdate = true
     if (asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
     if (debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
   })
@@ -307,6 +321,12 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
         <meshStandardMaterial roughness={0.4} metalness={0.8} />
+      </instancedMesh>
+
+      {/* ─── Conjunction Markers ─── */}
+      <instancedMesh ref={markerMeshRef} args={[undefined, undefined, 50]} frustumCulled={false}>
+        <ringGeometry args={[0.7, 1, 32]} />
+        <meshBasicMaterial color="#ff0044" transparent opacity={0.6} depthTest={false} side={THREE.DoubleSide} />
       </instancedMesh>
     </>
   )
