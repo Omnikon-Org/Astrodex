@@ -100,17 +100,15 @@ export function LeftSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!leftSidebarOpen && (
-        <Tooltip label="Show Target Panel" placement="right">
-          <button
-            className="sidebar-toggle sidebar-toggle-left"
-            onClick={toggleLeftSidebar}
-            aria-label="Show Target Panel"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-        </Tooltip>
+        <button
+          className="sidebar-toggle sidebar-toggle-left"
+          onClick={toggleLeftSidebar}
+          title="Show Target Panel"
+        >
+          <svg role="img" aria-label="Search icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
       )}
 
       <aside className={`sidebar-left glass-panel ${leftSidebarOpen ? "" : "collapsed"}`}>
@@ -134,7 +132,7 @@ export function LeftSidebar() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg role="img" aria-label="Active indicator icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3" />
                 <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
               </svg>
@@ -143,7 +141,7 @@ export function LeftSidebar() {
               </span>
             </div>
             <button className="btn-ghost" onClick={toggleLeftSidebar} style={{ padding: 4, border: "none" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg role="img" aria-label="Target icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 18l-6-6 6-6" />
               </svg>
             </button>
@@ -165,10 +163,12 @@ export function LeftSidebar() {
               <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
                 Filter Catalog
               </label>
-              <div style={{ display: "flex", background: "var(--bg-input)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: 2 }}>
+              <div role="tablist" style={{ display: "flex", background: "var(--bg-input)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: 2 }}>
                 {(["ALL", "ASTEROIDS", "DEBRIS"] as const).map((tab) => (
                   <button
                     key={tab}
+                    role="tab"
+                    aria-selected={filterType === tab}
                     onClick={() => setFilterType(tab)}
                     style={{
                       flex: 1,
@@ -192,11 +192,12 @@ export function LeftSidebar() {
 
             {/* Search */}
             <div>
-              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
+              <label htmlFor="searchCatalog" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
                 Select Catalog Item By ID
               </label>
               <div style={{ display: "flex", gap: 6 }}>
                 <input
+                  id="searchCatalog"
                   className="mc-input"
                   type="text"
                   placeholder="ID 1–600"
@@ -206,7 +207,7 @@ export function LeftSidebar() {
                   style={{ flex: 1 }}
                 />
                 <button className="btn-ghost" onClick={handleSearch} style={{ whiteSpace: "nowrap" }}>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg role="img" aria-label="Clear target icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="11" cy="11" r="8" />
                     <path d="M21 21l-4.35-4.35" />
                   </svg>
@@ -350,16 +351,19 @@ export function LeftSidebar() {
                   </thead>
                   <tbody>
                     {filteredConjunctions.map((c) => (
-                      <tr key={c.id}>
+                      <tr key={c.id} style={{
+                        background: c.risk === "HIGH" ? "rgba(248, 113, 113, 0.1)" : c.risk === "MEDIUM" ? "rgba(251, 191, 36, 0.1)" : "transparent",
+                        transition: "background 0.3s ease"
+                      }}>
                         <td>
                           <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{c.satelliteName}</div>
                           <div style={{ fontSize: 9, color: c.type === "debris" ? "var(--accent-amber)" : "var(--text-muted)" }}>
                             vs {c.secondaryName}
                           </div>
                         </td>
-                        <td>{c.missKm} km</td>
+                        <td style={{ fontFamily: "var(--font-mono)", fontWeight: 500 }}>{c.missKm} km</td>
                         <td>
-                          <span className={`badge ${c.risk === "HIGH" ? "badge-high" : c.risk === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+                          <span className={`badge ${c.risk === "HIGH" ? "badge-high" : c.risk === "MEDIUM" ? "badge-medium" : "badge-low"}`} style={{ padding: "4px 8px", borderRadius: "var(--radius-lg)" }}>
                             {c.risk}
                           </span>
                         </td>
