@@ -55,16 +55,17 @@ interface CloudLayerProps {
 export function CloudLayer({ sunDirection }: CloudLayerProps) {
   const meshRef = useRef<THREE.Mesh>(null)
 
-  const uniformsRef = useRef({
-    cloudTexture: { value: null as unknown as THREE.Texture },
-    sunDirection: { value: sunDirection.clone() },
+  const [uniforms] = useState(() => {
+    const tex = new THREE.CanvasTexture(createProceduralCloudTexture())
+    return {
+      cloudTexture: { value: tex },
+      sunDirection: { value: sunDirection.clone() },
+    }
   })
 
   useEffect(() => {
-    const tex = new THREE.CanvasTexture(createProceduralCloudTexture())
-    uniformsRef.current.cloudTexture.value = tex
-    uniformsRef.current.sunDirection.value.copy(sunDirection)
-  }, [sunDirection])
+    uniforms.sunDirection.value.copy(sunDirection)
+  }, [sunDirection, uniforms])
 
   useFrame((_, delta) => {
     if (meshRef.current) {
@@ -76,7 +77,7 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     <mesh ref={meshRef}>
       <sphereGeometry args={[1.85, 48, 48]} />
       <shaderMaterial
-        uniforms={uniformsRef.current}
+        uniforms={uniforms}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
         transparent
