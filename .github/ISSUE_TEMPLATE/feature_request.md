@@ -6,6 +6,9 @@ labels: enhancement
 ---
 
 ## 💡 The Pitch
+
 ## 🤔 Why do we need this?
+
 ## 🛠️ Proposed Solution
+
 ## 🚫 Alternatives Considered
