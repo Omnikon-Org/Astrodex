@@ -102,7 +102,7 @@ function SceneContent() {
   const selectedIndexRef = useRef<number | null>(null)
 
   const handleAsteroidClick = useCallback(
-    (data: AsteroidData) => {
+    (data: import("@/lib/types").AsteroidData) => {
       selectedIndexRef.current = data.index
       selectAsteroid(data)
     },

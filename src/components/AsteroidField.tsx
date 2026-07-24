@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useMemo, useCallback, useEffect } from "react"
-import { useFrame, type ThreeEvent } from "@react-three/fiber"
+import { useFrame, ThreeEvent } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
 import { useAppState } from "@/lib/store"
@@ -485,8 +485,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     }
   })
 
-  const handleMeshClick = useCallback(
-    (typeIndex: ObjectTypeIndex, tierIndex: LODTierIndex, e: ThreeEvent<MouseEvent>) => {
+  const handleAsteroidClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
 
       const lookup = typeIndex === 0 ? asteroidLookupRef.current : debrisLookupRef.current
@@ -498,12 +498,13 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     [onAsteroidClick]
   )
 
-  const handleAsteroidHighClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 0, e), [handleMeshClick])
-  const handleAsteroidMediumClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 1, e), [handleMeshClick])
-  const handleAsteroidLowClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 2, e), [handleMeshClick])
-  const handleDebrisHighClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 0, e), [handleMeshClick])
-  const handleDebrisMediumClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 1, e), [handleMeshClick])
-  const handleDebrisLowClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 2, e), [handleMeshClick])
+  const handleDebrisClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      if (e.instanceId === undefined) return
+      onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
+    },
+    [onAsteroidClick]
+  )
 
   return (
     <>
@@ -523,72 +524,18 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       })}
 
       <instancedMesh
-        ref={(mesh) => {
-          asteroidMeshRefs.current[0] = mesh
-        }}
-        args={[asteroidGeometries[0], undefined, ASTEROID_COUNT]}
-        count={0}
-        onClick={handleAsteroidHighClick}
+        ref={asteroidMeshRef}
+        args={[undefined as any, undefined as any, ASTEROID_COUNT]}
+        onClick={handleAsteroidClick}
         frustumCulled={false}
       >
         <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_HIGH} />
       </instancedMesh>
 
       <instancedMesh
-        ref={(mesh) => {
-          asteroidMeshRefs.current[1] = mesh
-        }}
-        args={[asteroidGeometries[1], undefined, ASTEROID_COUNT]}
-        count={0}
-        onClick={handleAsteroidMediumClick}
-        frustumCulled={false}
-      >
-        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_MEDIUM} />
-      </instancedMesh>
-
-      <instancedMesh
-        ref={(mesh) => {
-          asteroidMeshRefs.current[2] = mesh
-        }}
-        args={[asteroidGeometries[2], undefined, ASTEROID_COUNT]}
-        count={0}
-        onClick={handleAsteroidLowClick}
-        frustumCulled={false}
-      >
-        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_LOW} />
-      </instancedMesh>
-
-      <instancedMesh
-        ref={(mesh) => {
-          debrisMeshRefs.current[0] = mesh
-        }}
-        args={[debrisGeometries[0], undefined, DEBRIS_COUNT]}
-        count={0}
-        onClick={handleDebrisHighClick}
-        frustumCulled={false}
-      >
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
-      </instancedMesh>
-
-      <instancedMesh
-        ref={(mesh) => {
-          debrisMeshRefs.current[1] = mesh
-        }}
-        args={[debrisGeometries[1], undefined, DEBRIS_COUNT]}
-        count={0}
-        onClick={handleDebrisMediumClick}
-        frustumCulled={false}
-      >
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
-      </instancedMesh>
-
-      <instancedMesh
-        ref={(mesh) => {
-          debrisMeshRefs.current[2] = mesh
-        }}
-        args={[debrisGeometries[2], undefined, DEBRIS_COUNT]}
-        count={0}
-        onClick={handleDebrisLowClick}
+        ref={debrisMeshRef}
+        args={[undefined as any, undefined as any, DEBRIS_COUNT]}
+        onClick={handleDebrisClick}
         frustumCulled={false}
       >
         <meshStandardMaterial roughness={0.4} metalness={0.8} />
