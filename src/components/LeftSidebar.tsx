@@ -192,11 +192,12 @@ export function LeftSidebar() {
 
             {/* Search */}
             <div>
-              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
+              <label htmlFor="searchCatalog" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
                 Select Catalog Item By ID
               </label>
               <div style={{ display: "flex", gap: 6 }}>
                 <input
+                  id="searchCatalog"
                   className="mc-input"
                   type="text"
                   placeholder="ID 1–600"
