@@ -7,7 +7,8 @@ import { LeftSidebar } from "@/components/LeftSidebar"
 import { RightSidebar } from "@/components/RightSidebar"
 import { AgentTerminal } from "@/components/AgentTerminal"
 import { AsteroidCard } from "@/components/AsteroidCard"
-import { SettingsModal } from "@/components/SettingsModal"
+
+import { RiskModal } from "@/components/RiskModal"
 
 const Scene = dynamic(() => import("@/components/Scene").then((m) => ({ default: m.Scene })), {
   ssr: false,
@@ -38,7 +39,7 @@ export default function Home() {
         <AsteroidCard />
 
         {/* Global Modals */}
-        <SettingsModal />
+        <RiskModal />
       </main>
     </AppProvider>
   )
