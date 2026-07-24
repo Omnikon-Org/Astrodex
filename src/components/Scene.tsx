@@ -2,7 +2,7 @@
 
 import { useRef, useCallback, useMemo, useEffect } from "react"
 import { Canvas } from "@react-three/fiber"
-import { Stars } from "@react-three/drei"
+import { Stars, Loader } from "@react-three/drei"
 import * as THREE from "three"
 
 import { Earth } from "./earth/Earth"
@@ -176,6 +176,12 @@ export function Scene() {
       >
         <SceneContent />
       </Canvas>
+      <Loader
+        containerStyles={{ background: "rgba(10, 16, 28, 0.95)" }}
+        innerStyles={{ width: "300px", border: "1px solid rgba(56, 189, 248, 0.4)", background: "rgba(0,0,0,0)" }}
+        barStyles={{ background: "var(--accent-cyan)", height: "4px" }}
+        dataInterpolation={(p) => `Astrodex Booting... ${p.toFixed(0)}%`}
+      />
     </div>
   )
 }
