@@ -1,6 +1,7 @@
 "use client"
 
 import { useAppState } from "@/lib/store"
+import { Tooltip } from "./Tooltip"
 
 export function AsteroidCard() {
   const {
@@ -114,7 +115,9 @@ export function AsteroidCard() {
         <div className="panel-section" style={{ marginBottom: 14 }}>
           <div className="panel-section-title">Orbital Mechanics</div>
           <div className="kv-row">
-            <span className="kv-label">Semi-Major Axis</span>
+            <Tooltip content="Average distance from the central body (AU)">
+              <span className="kv-label cursor-help border-b border-dotted border-gray-500">Semi-Major Axis</span>
+            </Tooltip>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
           </div>
           <div className="kv-row">
