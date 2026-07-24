@@ -100,7 +100,7 @@ export function AgentTerminal() {
   }, [logs, terminalExpanded])
 
   return (
-    <div
+    <section
       className="glass-panel-flat"
       style={{
         position: "fixed",
@@ -223,6 +223,6 @@ export function AgentTerminal() {
           </span>
         </div>
       )}
-    </div>
+    </section>
   )
 }
