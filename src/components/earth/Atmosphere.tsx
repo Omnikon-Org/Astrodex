@@ -58,7 +58,7 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   })
 
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={meshRef} renderOrder={3}>
       <sphereGeometry args={[2.0, 64, 64]} />
       <shaderMaterial
         uniforms={uniforms}

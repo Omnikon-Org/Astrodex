@@ -109,7 +109,7 @@ export function Earth({ sunDirection }: EarthProps) {
   })
 
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={meshRef} renderOrder={1}>
       <sphereGeometry args={[1.8, 64, 64]} />
       <shaderMaterial
         uniforms={uniforms}

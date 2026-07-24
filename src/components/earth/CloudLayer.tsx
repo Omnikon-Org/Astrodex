@@ -83,7 +83,7 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   })
 
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={meshRef} renderOrder={2}>
       <sphereGeometry args={[1.85, 48, 48]} />
       <shaderMaterial
         uniforms={uniforms}
