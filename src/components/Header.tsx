@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useAppState } from "@/lib/store"
-import { ProfileModal } from "./ProfileModal"
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -39,11 +38,8 @@ export function Header() {
     loginWithGoogle,
     logout
   } = useAppState()
-  
-  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
-    <>
     <header
       className="glass-panel-flat"
       style={{
@@ -196,11 +192,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <div className="flex items-center gap-3">
-              <button 
-                onClick={() => setProfileOpen(true)}
-                className="flex items-center gap-2 bg-transparent border-none cursor-pointer hover:bg-white/5 px-2 py-1 rounded-lg transition-colors"
-                title="View Profile"
-              >
+              <div className="flex items-center gap-2">
                 {user.user_metadata?.avatar_url ? (
                   <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-6 h-6 rounded-full border border-white/10" />
                 ) : (
@@ -211,7 +203,7 @@ export function Header() {
                 <span className="text-xs text-white/80 font-medium hidden sm:block">
                   {user.user_metadata?.user_name || user.email?.split("@")[0]}
                 </span>
-              </button>
+              </div>
               <button 
                 onClick={logout}
                 className="text-[10px] uppercase tracking-wider text-white/40 hover:text-red-400 transition-colors"
@@ -246,7 +238,5 @@ export function Header() {
         </div>
       </div>
     </header>
-    <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
-    </>
   )
 }
