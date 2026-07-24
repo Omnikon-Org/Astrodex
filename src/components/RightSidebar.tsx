@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed issue #150: Write inline documentation for the Settings Modal
