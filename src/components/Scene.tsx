@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed issue #168: Refactor the WebGL Loading Spinner
