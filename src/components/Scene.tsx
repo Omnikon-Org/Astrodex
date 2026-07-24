@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef, useCallback, useMemo } from "react"
+import { Suspense, useRef, useCallback, useMemo } from "react"
 import { Canvas } from "@react-three/fiber"
-import { Stars } from "@react-three/drei"
+import { Stars, Loader } from "@react-three/drei"
 import * as THREE from "three"
 
 import { Earth } from "./earth/Earth"
@@ -54,13 +54,23 @@ function SceneContent() {
 
 export function Scene() {
   return (
-    <div className="fixed inset-0 z-0">
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
-        gl={{ antialias: true, alpha: false }}
-      >
-        <SceneContent />
-      </Canvas>
-    </div>
+    <>
+      <div className="fixed inset-0 z-0">
+        <Canvas
+          camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
+          gl={{ antialias: true, alpha: false }}
+        >
+          <Suspense fallback={null}>
+            <SceneContent />
+          </Suspense>
+        </Canvas>
+      </div>
+      <Loader 
+        containerStyles={{ background: '#000008' }} 
+        innerStyles={{ width: '300px' }} 
+        barStyles={{ background: 'var(--accent-cyan)' }} 
+        dataInterpolation={(p) => `Loading Space Assets ${p.toFixed(0)}%`} 
+      />
+    </>
   )
 }
