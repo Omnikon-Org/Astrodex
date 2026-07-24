@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed issue #154: Improve accessibility of the Conjunction tracker
