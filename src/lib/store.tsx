@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useRef, useMemo, type ReactNode } from "react"
 import type { AsteroidData } from "./types"
 
 export interface ConjunctionAlert {
@@ -173,45 +173,53 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setRiskLevel("LOW")
   }, [])
 
+  const contextValue = useMemo(() => ({
+    selectedAsteroid,
+    claimedAsteroids,
+    selectAsteroid,
+    claimAsteroid,
+    resetCamera,
+    triggerReset,
+    clearReset,
+    simulationRunning,
+    toggleSimulation,
+    riskLevel,
+    leftSidebarOpen,
+    rightSidebarOpen,
+    terminalExpanded,
+    toggleLeftSidebar,
+    toggleRightSidebar,
+    toggleTerminal,
+    searchAsteroidById,
+    registerAsteroidData,
+    filterType,
+    setFilterType,
+    satAltitude,
+    satInclination,
+    satRaan,
+    satEccentricity,
+    updateSatelliteParams,
+    updateSatelliteEccentricity,
+    decayAltitude,
+    boostBurn,
+    boostCount,
+    deltaVCount,
+    triggerDeltaVLog,
+    conjunctions,
+    addConjunctionAlert,
+    clearConjunctions,
+  }), [
+    selectedAsteroid, claimedAsteroids, resetCamera, simulationRunning, riskLevel,
+    leftSidebarOpen, rightSidebarOpen, terminalExpanded, filterType, satAltitude,
+    satInclination, satRaan, satEccentricity, boostCount, deltaVCount, conjunctions,
+    selectAsteroid, claimAsteroid, triggerReset, clearReset, toggleSimulation,
+    toggleLeftSidebar, toggleRightSidebar, toggleTerminal, searchAsteroidById,
+    registerAsteroidData, updateSatelliteParams, updateSatelliteEccentricity,
+    decayAltitude, boostBurn, triggerDeltaVLog, addConjunctionAlert, clearConjunctions
+  ])
+
   return (
-    <AppContext.Provider
-      value={{
-        selectedAsteroid,
-        claimedAsteroids,
-        selectAsteroid,
-        claimAsteroid,
-        resetCamera,
-        triggerReset,
-        clearReset,
-        simulationRunning,
-        toggleSimulation,
-        riskLevel,
-        leftSidebarOpen,
-        rightSidebarOpen,
-        terminalExpanded,
-        toggleLeftSidebar,
-        toggleRightSidebar,
-        toggleTerminal,
-        searchAsteroidById,
-        registerAsteroidData,
-        filterType,
-        setFilterType,
-        satAltitude,
-        satInclination,
-        satRaan,
-        satEccentricity,
-        updateSatelliteParams,
-        updateSatelliteEccentricity,
-        decayAltitude,
-        boostBurn,
-        boostCount,
-        deltaVCount,
-        triggerDeltaVLog,
-        conjunctions,
-        addConjunctionAlert,
-        clearConjunctions,
-      }}
-    >
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   )
@@ -224,3 +232,5 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Fixed issue #190: Optimize the AppProvider context
