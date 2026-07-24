@@ -8,7 +8,7 @@ import {
   solveKepler,
   meanMotion,
   SCENE_TIME_SCALE,
-  LEO_DECAY_KM_PER_SEC,
+  calculateLEODecayRate,
   kmToSceneUnits,
 } from "@/lib/kepler"
 
@@ -128,7 +128,9 @@ export function SatelliteSystem() {
     const tempPos = new THREE.Vector3()
 
     // LEO atmospheric drag — slowly drop the ISS altitude in real time
-    decayAltitude(LEO_DECAY_KM_PER_SEC * delta)
+    if (simulationRunning) {
+      decayAltitude(calculateLEODecayRate(satAltitude) * delta)
+    }
 
     // Mean motions
     const nIss = meanMotion(issRadius)
