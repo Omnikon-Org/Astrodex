@@ -68,11 +68,9 @@ export function AsteroidCard() {
   }
 
   return (
-    <div
+    <section
       className="glass-panel animate-fade-in-left"
-      role="dialog"
-      aria-modal="false"
-      aria-labelledby="asteroid-inspector-title"
+      aria-labelledby="asteroid-card-title"
       style={{
         position: "fixed",
         top: "calc(var(--header-height) + var(--hud-stack-gap))",
@@ -109,18 +107,19 @@ export function AsteroidCard() {
                 : "0 0 6px var(--accent-cyan)",
             }}
           />
-          <span
-            id="asteroid-inspector-title"
+          <h2
+            id="asteroid-card-title"
             style={{
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               color: "var(--text-primary)",
+              margin: 0,
             }}
           >
             Inspector: {selectedAsteroid.name}
-          </span>
+          </h2>
         </div>
         <button
           ref={closeButtonRef}
@@ -224,6 +223,6 @@ export function AsteroidCard() {
           </button>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
