@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useMemo, useCallback, useEffect } from "react"
-import { useFrame, type ThreeEvent } from "@react-three/fiber"
+import { useFrame, ThreeEvent } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
 import { useAppState } from "@/lib/store"
@@ -45,11 +45,10 @@ function generateOrbitalObjectData(index: number): AsteroidData {
   const type = isDebris ? "debris" : "asteroid"
 
   // Space Debris is closer to Earth and satellites for higher collision odds
-  const orbitRadius = isDebris
-    ? 1.9 + Math.random() * 2.2
-    : 3.8 + Math.random() * 7.5
+  const orbitRadius = isDebris ? 1.9 + Math.random() * 2.2 : 3.8 + Math.random() * 7.5
 
-  const speed = (isDebris ? 0.08 + Math.random() * 0.12 : 0.02 + Math.random() * 0.06) * (1 / orbitRadius)
+  const speed =
+    (isDebris ? 0.08 + Math.random() * 0.12 : 0.02 + Math.random() * 0.06) * (1 / orbitRadius)
   const id = index + 1
   const name = isDebris
     ? `DEB-${1962 + Math.floor(Math.random() * 63)}-${String(Math.floor(Math.random() * 800)).padStart(3, "0")}A`
@@ -161,101 +160,54 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const asteroidMeshRefs = useRef<TierMeshRefs>([null, null, null])
   const debrisMeshRefs = useRef<TierMeshRefs>([null, null, null])
 
-  const {
-    registerAsteroidData,
-    simulationRunning,
-    filterType,
-    addConjunctionAlert,
-    selectedAsteroid,
-    claimedAsteroids,
-  } = useAppState()
+  // Cached "at risk" state per object — colors are only re-pushed on transitions
+  const prevAtRiskRef = useRef<boolean[]>([])
+
+  const { simulationRunning, filterType, addConjunctionAlert } = useAppState()
 
   // Track alert timestamps per object index to avoid spamming the feed
   const lastAlertTimesRef = useRef<Record<number, number>>({})
 
-  const asteroidLookupRef = useRef<TierLookup>(createTierLookup())
-  const debrisLookupRef = useRef<TierLookup>(createTierLookup())
-  const asteroidPlacementRef = useRef<TierPlacement[]>(
-    Array.from({ length: ASTEROID_COUNT }, () => ({ tierIndex: 0 as LODTierIndex, localIndex: 0 }))
-  )
-  const debrisPlacementRef = useRef<TierPlacement[]>(
-    Array.from({ length: DEBRIS_COUNT }, () => ({ tierIndex: 0 as LODTierIndex, localIndex: 0 }))
-  )
-  const asteroidTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
-  const debrisTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
-  const frameCounterRef = useRef(0)
-  // Paused-time-aware sim clock. R3F's `state.clock.getElapsedTime()` keeps
-  // advancing while `simulationRunning` is false, so on resume every asteroid
-  // and debris piece used to teleport to where it would have been if the sim
-  // had never paused. This ref only advances when simulationRunning is true,
-  // and the mean-anomaly propagation for every one of the 600 objects now
-  // derives its time from here. See issue #550.
-  const simTimeRef = useRef(0)
-
-  const generated = useMemo(() => {
+  const { dataArray, initialAngles } = useMemo(() => {
     const d: AsteroidData[] = []
     const a: number[] = []
     for (let i = 0; i < TOTAL_COUNT; i++) {
       d.push(generateOrbitalObjectData(i))
-      a.push(0) // placeholder; first frame resolves it via Kepler
+      a.push(0)
     }
-    return {
-      data: d,
-      angles: a,
-    }
+    return { dataArray: d, initialAngles: a }
   }, [])
 
-  const data = generated.data
-  const anglesRef = useRef(generated.angles)
-  const dataRef = useRef(data)
-
-  const asteroidGeometries = useMemo(
-    () => [
-      new THREE.SphereGeometry(1, HIGH_DETAIL_SEGMENTS, HIGH_DETAIL_SEGMENTS),
-      new THREE.SphereGeometry(1, MEDIUM_DETAIL_SEGMENTS, MEDIUM_DETAIL_SEGMENTS),
-      new THREE.SphereGeometry(1, LOW_DETAIL_SEGMENTS, LOW_DETAIL_SEGMENTS),
-    ] as [THREE.SphereGeometry, THREE.SphereGeometry, THREE.SphereGeometry],
-    []
-  )
-
-  const debrisGeometries = useMemo(
-    () => [
-      new THREE.SphereGeometry(1, HIGH_DETAIL_SEGMENTS, HIGH_DETAIL_SEGMENTS),
-      new THREE.SphereGeometry(1, MEDIUM_DETAIL_SEGMENTS, MEDIUM_DETAIL_SEGMENTS),
-      new THREE.SphereGeometry(1, LOW_DETAIL_SEGMENTS, LOW_DETAIL_SEGMENTS),
-    ] as [THREE.SphereGeometry, THREE.SphereGeometry, THREE.SphereGeometry],
-    []
-  )
-
-  const asteroidNormalMap = useMemo(() => createAsteroidNormalTexture(), [])
-
-  const trailItems = useMemo(() => {
-    const claimed = data.filter((item) => claimedAsteroids.has(item.id)).slice(0, 12)
-    if (selectedAsteroid && !claimed.some((item) => item.id === selectedAsteroid.id)) {
-      return [selectedAsteroid, ...claimed]
-    }
-    return claimed
-  }, [claimedAsteroids, data, selectedAsteroid])
-
-  const trailGeometries = useMemo(
-    () => trailItems.map((item) => ({ item, geometry: createOrbitTrailGeometry(item) })),
-    [trailItems]
-  )
+  const dataRef = useRef(dataArray)
+  
+  useEffect(() => {
+    dataRef.current = dataArray
+    anglesRef.current = initialAngles
+    prevAtRiskRef.current = new Array(TOTAL_COUNT).fill(false)
+  }, [dataArray, initialAngles])
 
   // Register data in the store on mount
   useEffect(() => {
-    registerAsteroidData(data)
-  }, [data, registerAsteroidData])
+    const { setAsteroidData } = useAppState.getState()
+    setAsteroidData(dataRef.current)
+  }, [])
 
   useEffect(() => {
-    return () => {
-      asteroidGeometries[0].dispose()
-      asteroidGeometries[1].dispose()
-      asteroidGeometries[2].dispose()
-      debrisGeometries[0].dispose()
-      debrisGeometries[1].dispose()
-      debrisGeometries[2].dispose()
-      asteroidNormalMap.dispose()
+    const updateColors = (
+      mesh: THREE.InstancedMesh | null,
+      start: number,
+      count: number,
+      colors: string[]
+    ) => {
+      if (!mesh) return
+      for (let i = 0; i < count; i++) {
+        const objIndex = start + i
+        colorObj.set(colors[objIndex % colors.length])
+        mesh.setColorAt(i, colorObj)
+      }
+      if (mesh.instanceColor) {
+        mesh.instanceColor.needsUpdate = true
+      }
     }
   }, [asteroidGeometries, debrisGeometries, asteroidNormalMap])
 
@@ -479,8 +431,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     }
   })
 
-  const handleMeshClick = useCallback(
-    (typeIndex: ObjectTypeIndex, tierIndex: LODTierIndex, e: ThreeEvent<MouseEvent>) => {
+  const handleAsteroidClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
 
       const lookup = typeIndex === 0 ? asteroidLookupRef.current : debrisLookupRef.current
@@ -492,12 +444,13 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     [onAsteroidClick]
   )
 
-  const handleAsteroidHighClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 0, e), [handleMeshClick])
-  const handleAsteroidMediumClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 1, e), [handleMeshClick])
-  const handleAsteroidLowClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 2, e), [handleMeshClick])
-  const handleDebrisHighClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 0, e), [handleMeshClick])
-  const handleDebrisMediumClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 1, e), [handleMeshClick])
-  const handleDebrisLowClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 2, e), [handleMeshClick])
+  const handleDebrisClick = useCallback(
+    (e: ThreeEvent<MouseEvent>) => {
+      if (e.instanceId === undefined) return
+      onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
+    },
+    [onAsteroidClick]
+  )
 
   return (
     <>
@@ -517,72 +470,18 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       })}
 
       <instancedMesh
-        ref={(mesh) => {
-          asteroidMeshRefs.current[0] = mesh
-        }}
-        args={[asteroidGeometries[0], undefined, ASTEROID_COUNT]}
-        count={0}
-        onClick={handleAsteroidHighClick}
+        ref={asteroidMeshRef}
+        args={[undefined as any, undefined as any, ASTEROID_COUNT]}
+        onClick={handleAsteroidClick}
         frustumCulled={false}
       >
         <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_HIGH} />
       </instancedMesh>
 
       <instancedMesh
-        ref={(mesh) => {
-          asteroidMeshRefs.current[1] = mesh
-        }}
-        args={[asteroidGeometries[1], undefined, ASTEROID_COUNT]}
-        count={0}
-        onClick={handleAsteroidMediumClick}
-        frustumCulled={false}
-      >
-        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_MEDIUM} />
-      </instancedMesh>
-
-      <instancedMesh
-        ref={(mesh) => {
-          asteroidMeshRefs.current[2] = mesh
-        }}
-        args={[asteroidGeometries[2], undefined, ASTEROID_COUNT]}
-        count={0}
-        onClick={handleAsteroidLowClick}
-        frustumCulled={false}
-      >
-        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_LOW} />
-      </instancedMesh>
-
-      <instancedMesh
-        ref={(mesh) => {
-          debrisMeshRefs.current[0] = mesh
-        }}
-        args={[debrisGeometries[0], undefined, DEBRIS_COUNT]}
-        count={0}
-        onClick={handleDebrisHighClick}
-        frustumCulled={false}
-      >
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
-      </instancedMesh>
-
-      <instancedMesh
-        ref={(mesh) => {
-          debrisMeshRefs.current[1] = mesh
-        }}
-        args={[debrisGeometries[1], undefined, DEBRIS_COUNT]}
-        count={0}
-        onClick={handleDebrisMediumClick}
-        frustumCulled={false}
-      >
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
-      </instancedMesh>
-
-      <instancedMesh
-        ref={(mesh) => {
-          debrisMeshRefs.current[2] = mesh
-        }}
-        args={[debrisGeometries[2], undefined, DEBRIS_COUNT]}
-        count={0}
-        onClick={handleDebrisLowClick}
+        ref={debrisMeshRef}
+        args={[undefined as any, undefined as any, DEBRIS_COUNT]}
+        onClick={handleDebrisClick}
         frustumCulled={false}
       >
         <meshStandardMaterial roughness={0.4} metalness={0.8} />
