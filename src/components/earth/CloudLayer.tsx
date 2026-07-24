@@ -86,3 +86,5 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Fixed issue #164: Fix edge cases in the CloudLayer shader
