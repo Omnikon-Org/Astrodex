@@ -14,10 +14,12 @@ const vertexShader = `
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
+varying vec3 vWorldNormal;
 
 void main() {
   vUv = uv;
   vNormal = normalize(normalMatrix * normal);
+  vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
   vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
@@ -33,12 +35,14 @@ uniform vec3 sunDirection;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
+varying vec3 vWorldNormal;
 
 void main() {
-  vec3 normal = normalize(vNormal);
+  vec3 normal = normalize(vNormal); // For specular
+  vec3 worldNormal = normalize(vWorldNormal);
   vec3 sunDir = normalize(sunDirection);
 
-  float NdotL = dot(normal, sunDir);
+  float NdotL = dot(worldNormal, sunDir);
 
   vec3 dayColor = texture2D(dayTexture, vUv).rgb;
   vec3 nightColor = texture2D(nightTexture, vUv).rgb;
@@ -57,7 +61,7 @@ void main() {
   vec3 twilightColor = vec3(0.9, 0.4, 0.1) * twilight * 0.5;
 
   vec3 warmNight = nightColor * vec3(1.55, 1.05, 0.55) * 0.20;
-  vec3 color = mix(warmNight, dayColor, dayMix);
+  vec3 color = mix(warmNight, dayColor * shadowFactor, dayMix);
   color += twilightColor;
 
   vec3 viewDir = normalize(-vPosition);
@@ -109,7 +113,7 @@ export function Earth({ sunDirection }: EarthProps) {
   })
 
   return (
-    <mesh ref={meshRef}>
+    <mesh ref={meshRef} renderOrder={1}>
       <sphereGeometry args={[1.8, 64, 64]} />
       <shaderMaterial
         uniforms={uniforms}

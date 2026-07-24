@@ -67,6 +67,8 @@ interface AppState {
   conjunctions: ConjunctionAlert[]
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   clearConjunctions: () => void
+  reduceMotion: boolean
+  toggleReduceMotion: () => void
 }
 
 const AppContext = createContext<AppState | null>(null)
@@ -80,6 +82,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
+  const [reduceMotion, setReduceMotion] = useState(false)
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
@@ -134,6 +137,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleLeftSidebar = useCallback(() => setLeftSidebarOpen((p) => !p), [])
   const toggleRightSidebar = useCallback(() => setRightSidebarOpen((p) => !p), [])
   const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
+  const toggleReduceMotion = useCallback(() => setReduceMotion((p) => !p), [])
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
     // Update the ref immediately so searchAsteroidById can access the latest
@@ -262,6 +266,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
+        reduceMotion,
+        toggleReduceMotion,
       }}
     >
       {children}
