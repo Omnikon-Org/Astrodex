@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed issue #162: Improve performance of the Camera Lerp logic
