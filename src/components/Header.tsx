@@ -27,136 +27,141 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, toggleSettings } = useAppState()
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <header
-      className="glass-panel-flat"
+      className="glass-panel-flat flex items-center justify-between px-4 sm:px-6"
       style={{
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
-        height: "var(--header-height)",
+        height: mobileMenuOpen ? "auto" : "var(--header-height)",
+        minHeight: "var(--header-height)",
         zIndex: 50,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 20px",
-        borderTop: "none",
-        borderLeft: "none",
-        borderRight: "none",
-        borderRadius: 0,
         borderBottom: "1px solid var(--glass-border)",
         boxShadow: "0 1px 20px rgba(0, 0, 0, 0.5)",
+        flexWrap: "wrap",
       }}
     >
-      {/* Left: Brand */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div
-          className="animate-pulse-glow"
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: "var(--accent-cyan)",
-          }}
-        />
-        <h1
-          style={{
-            fontSize: 18,
-            fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "var(--text-primary)",
-            fontStyle: "italic",
-          }}
-        >
-          Astro<span style={{ color: "var(--accent-cyan)", fontWeight: 400 }}>Dex</span>
-        </h1>
-      </div>
-
-      {/* Center: Controls */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <button className="btn-primary" onClick={toggleSimulation}>
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {simulationRunning ? (
-              <>
-                <rect x="6" y="4" width="4" height="16" />
-                <rect x="14" y="4" width="4" height="16" />
-              </>
-            ) : (
-              <polygon points="5,3 19,12 5,21" fill="currentColor" />
-            )}
-          </svg>
-          {simulationRunning ? "Pause Simulation" : "Run Simulation"}
-        </button>
-
-        <div className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
-          Risk: {riskLevel}
-        </div>
-
-        {/* Connection indicator */}
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+      <div className="flex w-full items-center justify-between" style={{ height: "var(--header-height)" }}>
+        {/* Left: Brand */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
+            className="animate-pulse-glow"
             style={{
-              width: 6,
-              height: 6,
+              width: 8,
+              height: 8,
               borderRadius: "50%",
-              background: simulationRunning ? "var(--accent-green)" : "var(--accent-amber)",
-              boxShadow: simulationRunning
-                ? "0 0 6px rgba(52, 211, 153, 0.5)"
-                : "0 0 6px rgba(251, 191, 36, 0.5)",
+              background: "var(--accent-cyan)",
             }}
           />
-          <span
+          <h1
             style={{
-              fontSize: 10,
-              color: "var(--text-muted)",
-              letterSpacing: "0.04em",
+              fontSize: 18,
+              fontWeight: 700,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: "var(--text-primary)",
+              fontStyle: "italic",
             }}
           >
-            {simulationRunning ? "LIVE" : "PAUSED"}
-          </span>
+            Astro<span style={{ color: "var(--accent-cyan)", fontWeight: 400 }}>Dex</span>
+          </h1>
         </div>
 
-        {selectedAsteroid && (
-          <button className="btn-ghost" onClick={triggerReset}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
+        {/* Center: Controls (Desktop) */}
+        <div className="hidden md:flex items-center gap-4">
+          <button className="btn-primary" onClick={toggleSimulation}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              {simulationRunning ? (
+                <>
+                  <rect x="6" y="4" width="4" height="16" />
+                  <rect x="14" y="4" width="4" height="16" />
+                </>
+              ) : (
+                <polygon points="5,3 19,12 5,21" fill="currentColor" />
+              )}
             </svg>
-            Back to Earth
+            {simulationRunning ? "Pause Simulation" : "Run Simulation"}
           </button>
-        )}
-      </div>
 
-      {/* Right: Clock & Settings */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-            Last updated:
-          </span>
-          <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
-            <LiveClock />
-          </span>
+          <div className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+            Risk: {riskLevel}
+          </div>
+
+          {/* Connection indicator */}
+          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: simulationRunning ? "var(--accent-green)" : "var(--accent-amber)",
+                boxShadow: simulationRunning
+                  ? "0 0 6px rgba(52, 211, 153, 0.5)"
+                  : "0 0 6px rgba(251, 191, 36, 0.5)",
+              }}
+            />
+            <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
+              {simulationRunning ? "LIVE" : "PAUSED"}
+            </span>
+          </div>
+
+          {selectedAsteroid && (
+            <button className="btn-ghost" onClick={triggerReset}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+              </svg>
+              Back to Earth
+            </button>
+          )}
         </div>
 
-        <button className="btn-ghost" onClick={toggleSettings} style={{ padding: 4 }} title="Settings">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-        </button>
+        {/* Right: Clock & Mobile Menu Toggle */}
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-2">
+            <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
+              Last updated:
+            </span>
+            <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+              <LiveClock />
+            </span>
+          </div>
+          
+          <button 
+            className="md:hidden btn-ghost" 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden w-full flex flex-col gap-4 py-4 border-t border-gray-800/50">
+          <div className="flex items-center justify-between">
+            <button className="btn-primary" onClick={toggleSimulation}>
+              {simulationRunning ? "Pause Simulation" : "Run Simulation"}
+            </button>
+            <div className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+              Risk: {riskLevel}
+            </div>
+          </div>
+          {selectedAsteroid && (
+            <button className="btn-ghost w-full justify-center" onClick={triggerReset}>
+              Back to Earth
+            </button>
+          )}
+        </div>
+      )}
     </header>
   )
 }
