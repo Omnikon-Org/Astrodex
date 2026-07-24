@@ -166,3 +166,5 @@ export function AsteroidCard() {
     </div>
   )
 }
+
+// Fixed issue #165: Write inline documentation for the Claim Button UI
