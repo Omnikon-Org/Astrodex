@@ -12,18 +12,7 @@ import { AsteroidField, trackedPosition } from "./AsteroidField"
 import { SatelliteSystem } from "./SatelliteSystem"
 import { CameraController } from "./CameraController"
 import { Effects } from "./Effects"
-import { useAppState, simClock } from "@/lib/store"
-import { useFrame } from "@react-three/fiber"
-
-function SimClockUpdater() {
-  const { simulationRunning, timeScaleMultiplier } = useAppState()
-  useFrame((_, delta) => {
-    if (simulationRunning) {
-      simClock.time += delta * timeScaleMultiplier
-    }
-  })
-  return null
-}
+import { useAppState } from "@/lib/store"
 
 function SceneContent() {
   const sunDirection = useMemo(() => new THREE.Vector3(5, 3, 5).normalize(), [])
@@ -45,12 +34,7 @@ function SceneContent() {
       <color attach="background" args={["#000008"]} />
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 3, 5]} intensity={2} />
-      <mesh position={[50, 30, 50]}>
-        <sphereGeometry args={[2, 32, 32]} />
-        <meshBasicMaterial color={[5, 5, 4]} toneMapped={false} />
-      </mesh>
-      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
-      <SimClockUpdater />
+      <Stars radius={150} depth={50} count={5000} factor={4} saturation={0.2} fade speed={1.5} />
 
       <Earth sunDirection={sunDirection} />
       <CloudLayer sunDirection={sunDirection} />
