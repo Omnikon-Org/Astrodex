@@ -170,16 +170,16 @@ AsteroidField.useFrame
 
 ## Orbital Physics Module
 
-All Keplerian / Vis-Viva / decay math lives in `src/lib/kepler.ts` and is unit-tested against the standard gravitational parameter `μ_Earth = 3.986×10⁵ km³/s²`.  The scene uses a presentation-tuned `μ_scene = 0.005` so LEO completes an orbit in tens of seconds while preserving relative physics between objects of differing orbital radii.
+All Keplerian / Vis-Viva / decay math lives in `src/lib/kepler.ts` and is unit-tested against the standard gravitational parameter `μ_Earth = 3.986×10⁵ km³/s²`. The scene uses a presentation-tuned `μ_scene = 0.005` so LEO completes an orbit in tens of seconds while preserving relative physics between objects of differing orbital radii.
 
-| Function | Purpose |
-|---|---|
-| `solveKepler(M, e)` | Newton-Raphson solver for `M = E − e·sin(E)` |
-| `meanMotion(a)` | `√(μ_scene / a³)` in rad/s |
-| `visViva(r, a)` | `√(μ·(2/r − 1/a))` in scene units/s |
-| `visVivaKmPerSec(rKm, aKm)` | Same formula, returns real km/s for HUD |
+| Function                            | Purpose                                             |
+| ----------------------------------- | --------------------------------------------------- |
+| `solveKepler(M, e)`                 | Newton-Raphson solver for `M = E − e·sin(E)`        |
+| `meanMotion(a)`                     | `√(μ_scene / a³)` in rad/s                          |
+| `visViva(r, a)`                     | `√(μ·(2/r − 1/a))` in scene units/s                 |
+| `visVivaKmPerSec(rKm, aKm)`         | Same formula, returns real km/s for HUD             |
 | `kmToSceneUnits` / `sceneUnitsToKm` | 3543 km per unit (Earth radius 6378 km = 1.8 units) |
-| `LEO_DECAY_KM_PER_SEC` | 0.05 km/s of real time |
+| `LEO_DECAY_KM_PER_SEC`              | 0.05 km/s of real time                              |
 
 ---
 
@@ -227,7 +227,7 @@ interface AppState {
   toggleTerminal: () => void
   searchAsteroidById: (id: number) => void
   registerAsteroidData: (data: AsteroidData[]) => void
-  
+
   // Dynamic Space Debris filters & Satellite Trajectories
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
   setFilterType: (f: "ALL" | "ASTEROIDS" | "DEBRIS") => void
