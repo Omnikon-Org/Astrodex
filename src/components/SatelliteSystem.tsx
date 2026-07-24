@@ -6,50 +6,12 @@ import * as THREE from "three"
 import { useAppState } from "@/lib/store"
 import {
   solveKepler,
+  getOrbitalPosition,
   meanMotion,
   SCENE_TIME_SCALE,
   calculateLEODecayRate,
   kmToSceneUnits,
 } from "@/lib/kepler"
-
-/**
- * Helper to compute 3D coordinate on an inclined orbit at eccentric anomaly E.
- *
- * Perifocal coordinates (assuming ω = 0):
- *   x_pf = a·(cos E − e)
- *   y_pf = a·√(1−e²)·sin E
- * Then rotated by inclination i about the line of nodes, and by RAAN Ω
- * about the polar axis.
- */
-export function getEllipticalOrbitPosition(
-  a: number,
-  e: number,
-  E: number,
-  incDeg: number,
-  raanDeg: number,
-  target = new THREE.Vector3()
-) {
-  const inc = (incDeg * Math.PI) / 180
-  const raan = (raanDeg * Math.PI) / 180
-  const cosE = Math.cos(E)
-  const sinE = Math.sin(E)
-  const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
-
-  const x_pf = a * (cosE - e)
-  const y_pf = a * sqrt1me2 * sinE
-
-  // Inclination rotation about the line of nodes (x_pf axis)
-  const x1 = x_pf
-  const y1 = y_pf * Math.sin(inc)
-  const z1 = y_pf * Math.cos(inc)
-
-  // RAAN rotation about the polar (y) axis
-  const x = x1 * Math.cos(raan) - z1 * Math.sin(raan)
-  const z = x1 * Math.sin(raan) + z1 * Math.cos(raan)
-  const y = y1
-
-  return target.set(x, y, z)
-}
 
 /** Circular-orbit convenience wrapper preserved for backwards compatibility. */
 export function getOrbitPosition(
@@ -60,6 +22,20 @@ export function getOrbitPosition(
   target = new THREE.Vector3()
 ) {
   return getEllipticalOrbitPosition(radius, 0, theta, inclinationDeg, raanDeg, target)
+}
+
+export function getEllipticalOrbitPosition(
+  a: number,
+  e: number,
+  E: number,
+  incDeg: number,
+  raanDeg: number,
+  target = new THREE.Vector3()
+) {
+  const incRad = (incDeg * Math.PI) / 180
+  const raanRad = (raanDeg * Math.PI) / 180
+  const pos = getOrbitalPosition(a, e, E, incRad, raanRad)
+  return target.set(pos.x, pos.y, pos.z)
 }
 
 /** Generate geometry path points for visual orbit rings (sweeps E uniformly). */
