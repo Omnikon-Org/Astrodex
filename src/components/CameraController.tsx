@@ -13,10 +13,37 @@ const _lookTarget = new THREE.Vector3()
 
 export function CameraController() {
   const { camera } = useThree()
-  const { selectedAsteroid, resetCamera, clearReset } = useAppState()
+  const { selectedAsteroid, resetCamera, clearReset, searchAsteroidById } = useAppState()
   const targetPos = useRef(EARTH_POSITION.clone())
   const targetLook = useRef(EARTH_TARGET.clone())
   const hasSelection = useRef(false)
+
+  // Keyboard navigation for accessibility
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        clearReset()
+        // actually reset the camera
+        hasSelection.current = false
+        targetPos.current.copy(EARTH_POSITION)
+        targetLook.current.copy(EARTH_TARGET)
+        return
+      }
+      
+      if (!selectedAsteroid) return
+
+      if (e.key === "ArrowRight") {
+        const nextId = selectedAsteroid.id < 600 ? selectedAsteroid.id + 1 : 1
+        searchAsteroidById(nextId)
+      } else if (e.key === "ArrowLeft") {
+        const prevId = selectedAsteroid.id > 1 ? selectedAsteroid.id - 1 : 600
+        searchAsteroidById(prevId)
+      }
+    }
+    
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [selectedAsteroid, searchAsteroidById, clearReset])
 
   useEffect(() => {
     if (resetCamera) {
@@ -50,3 +77,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed issue #195: Improve accessibility of the Camera Lerp logic
