@@ -109,17 +109,15 @@ export function RightSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!rightSidebarOpen && (
-        <Tooltip label="Show Constraints Panel" placement="left">
-          <button
-            className="sidebar-toggle sidebar-toggle-right"
-            onClick={toggleRightSidebar}
-            aria-label="Show Constraints Panel"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-        </Tooltip>
+        <button
+          className="sidebar-toggle sidebar-toggle-right"
+          onClick={toggleRightSidebar}
+          title="Show Constraints Panel"
+        >
+          <svg role="img" aria-label="Time travel reverse icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
       )}
 
       <aside className={`sidebar-right glass-panel ${rightSidebarOpen ? "" : "collapsed"}`}>
@@ -136,17 +134,15 @@ export function RightSidebar() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button className="btn-ghost" onClick={toggleRightSidebar} 
-              aria-label="Hide Constraints Panel"
-              style={{ padding: 4, border: "none" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <button className="btn-ghost" onClick={toggleRightSidebar} style={{ padding: 4, border: "none" }}>
+                <svg role="img" aria-label="Time travel forward icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </button>
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", color: "var(--text-primary)" }}>
                 Constraints
               </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg role="img" aria-label="Reset time icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
               </svg>
             </div>
@@ -356,7 +352,7 @@ export function RightSidebar() {
                   opacity: satAltitude >= LEO_LIMITS.CEILING ? 0.4 : 1,
                 }}
               >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg role="img" aria-label="Deploy satellite icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 19V5M5 12l7-7 7 7" />
                 </svg>
                 Boost Burn (+50 km)

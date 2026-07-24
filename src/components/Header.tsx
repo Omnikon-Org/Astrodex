@@ -85,6 +85,8 @@ export function Header({ hudVisible, onToggleHud }: HeaderProps) {
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
         <button className="btn-primary" onClick={toggleSimulation}>
           <svg
+            role="img"
+            aria-label={simulationRunning ? "Pause icon" : "Play icon"}
             width="12"
             height="12"
             viewBox="0 0 24 24"
@@ -136,7 +138,7 @@ export function Header({ hudVisible, onToggleHud }: HeaderProps) {
 
         {selectedAsteroid && (
           <button className="btn-ghost" onClick={triggerReset}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg role="img" aria-label="Back icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back to Earth
