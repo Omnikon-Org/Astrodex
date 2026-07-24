@@ -16,7 +16,18 @@
  */
 
 const MU_EARTH_KM = 3.986e5 // km³/s²
+const MU_SCENE = 0.005
 const KM_PER_UNIT = 3543 // 1 scene unit = 3543 km (Earth radius 6378 km = 1.8 units)
+
+function visVivaSpeed(mu: number, radius: number, semiMajorAxis: number): number {
+  if (!Number.isFinite(radius) || !Number.isFinite(semiMajorAxis) || radius <= 0 || semiMajorAxis <= 0) {
+    return 0
+  }
+
+  const radicand = mu * (2 / radius - 1 / semiMajorAxis)
+
+  return Math.sqrt(Math.max(0, radicand))
+}
 
 /**
  * Time scaling factor: scene seconds per real second.
@@ -37,9 +48,19 @@ export const SCENE_TIME_SCALE = 60
  * @param tolerance Convergence threshold on |ΔE|, default 1e-7.
  */
 export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
+  // Instrument the solver: Only runs when a global flag is set (e.g. for profiling)
+  const isInstrumented = typeof window !== "undefined" && (window as any).__INSTRUMENT_KEPLER__
+  let t0 = 0
+  if (isInstrumented) t0 = performance.now()
+
   // Wrap M to [−π, π] so the initial guess is meaningful for any time t.
   const TAU = Math.PI * 2
-  const m = ((M % TAU) + TAU + Math.PI) % TAU - Math.PI
+  const m = (((M % TAU) + TAU + Math.PI) % TAU) - Math.PI
+
+  // Shortcut for circular or very low eccentricity orbits
+  if (e < 1e-6) {
+    return m
+  }
 
   // Robust initial guess.
   let E = e < 0.8 ? m : Math.PI * Math.sign(m || 1)
@@ -50,6 +71,14 @@ export function solveKepler(M: number, e: number, tolerance = 1e-7): number {
     const dE = f / fp
     E -= dE
     if (Math.abs(dE) < tolerance) break
+  }
+
+  if (isInstrumented) {
+    const dt = performance.now() - t0
+    // accumulate in global stats if defined
+    if (!(window as any).__KEPLER_STATS__) (window as any).__KEPLER_STATS__ = { calls: 0, totalMs: 0 }
+    ;(window as any).__KEPLER_STATS__.calls++
+    ;(window as any).__KEPLER_STATS__.totalMs += dt
   }
 
   return E
@@ -67,7 +96,6 @@ export function meanMotion(a: number): number {
   // (a ≈ 1.91 units, 400 km altitude) yields a period of ~60 scene-seconds
   // when scaled by SCENE_TIME_SCALE.  Derived empirically:
   //   μ_scene = 0.005  →  n(1.91) ≈ 0.0267 rad/s,  period ≈ 235 s raw.
-  const MU_SCENE = 0.005
   return Math.sqrt(MU_SCENE / (a * a * a))
 }
 
@@ -79,8 +107,7 @@ export function meanMotion(a: number): number {
  *     v = sqrt( μ·(2/r − 1/a) )
  */
 export function visViva(r: number, a: number): number {
-  const MU_SCENE = 0.005
-  return Math.sqrt(Math.max(0, MU_SCENE * (2 / r - 1 / a)))
+  return visVivaSpeed(MU_SCENE, r, a)
 }
 
 /**
@@ -88,7 +115,7 @@ export function visViva(r: number, a: number): number {
  * Inspector telemetry readout where users expect km/s.
  */
 export function visVivaKmPerSec(rKm: number, aKm: number): number {
-  return Math.sqrt(Math.max(0, MU_EARTH_KM * (2 / rKm - 1 / aKm)))
+  return visVivaSpeed(MU_EARTH_KM, rKm, aKm)
 }
 
 /**
@@ -126,6 +153,22 @@ export function velocityToKmPerSec(sceneV: number): number {
 export const LEO_DECAY_KM_PER_SEC = 0.05
 
 export const KM_PER_UNIT_CONST = KM_PER_UNIT
+
+export const AU_IN_KM = 149597870.7
+
+/**
+ * Convert kilometers to Astronomical Units (AU).
+ */
+export function kmToAu(km: number): number {
+  return km / AU_IN_KM
+}
+
+/**
+ * Convert Astronomical Units (AU) to kilometers.
+ */
+export function auToKm(au: number): number {
+  return au * AU_IN_KM
+}
 
 /**
  * Calculate the total delta-V (km/s) required for a Hohmann transfer between
