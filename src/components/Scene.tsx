@@ -35,7 +35,7 @@ function SceneContent() {
       <color attach="background" args={["#000008"]} />
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 3, 5]} intensity={2} />
-      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+      <Stars radius={150} depth={50} count={5000} factor={4} saturation={0.2} fade speed={1.5} />
 
       <Earth sunDirection={sunDirection} />
       <CloudLayer sunDirection={sunDirection} />
