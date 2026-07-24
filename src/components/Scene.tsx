@@ -11,6 +11,7 @@ import { Atmosphere } from "./earth/Atmosphere"
 import { AsteroidField } from "./AsteroidField"
 import { SatelliteSystem } from "./SatelliteSystem"
 import { CameraController } from "./CameraController"
+import { useEffect, useMemo, useRef, useCallback } from "react"
 import { Effects } from "./Effects"
 import { useAppState } from "@/lib/store"
 import type { AsteroidData } from "@/lib/types"
@@ -96,6 +97,14 @@ function SunRig({ sunDirection }: { sunDirection: THREE.Vector3 }) {
 }
 
 function SceneContent() {
+  useEffect(() => {
+    const isInstrumented = typeof window !== "undefined" && (window as any).__INSTRUMENT_SCENE__
+    if (isInstrumented) {
+      performance.mark("SceneContent-Mount-Start")
+      return () => performance.mark("SceneContent-Unmount")
+    }
+  }, [])
+
   const sunDirection = useMemo(() => new THREE.Vector3(5, 3, 5).normalize(), [])
   const { selectAsteroid, searchAsteroidById } = useAppState()
   const selectedIndexRef = useRef<number | null>(null)
