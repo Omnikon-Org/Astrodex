@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useAppState } from "@/lib/store"
+import { SearchCommand } from "./SearchCommand"
+import { UserProfileModal } from "./UserProfileModal"
+import { Leaderboard } from "./Leaderboard"
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -27,7 +30,7 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, reduceMotion, toggleReduceMotion } = useAppState()
 
   return (
     <header
@@ -42,7 +45,7 @@ export function Header() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 20px",
+        padding: "0 var(--header-x-padding)",
         borderTop: "none",
         borderLeft: "none",
         borderRight: "none",
@@ -80,6 +83,8 @@ export function Header() {
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
         <button className="btn-primary" onClick={toggleSimulation}>
           <svg
+            role="img"
+            aria-label={simulationRunning ? "Pause icon" : "Play icon"}
             width="12"
             height="12"
             viewBox="0 0 24 24"
@@ -101,12 +106,12 @@ export function Header() {
           {simulationRunning ? "Pause Simulation" : "Run Simulation"}
         </button>
 
-        <div className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+        <div role="status" className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
           Risk: {riskLevel}
         </div>
 
         {/* Connection indicator */}
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <div role="status" style={{ display: "flex", alignItems: "center", gap: 5 }}>
           <div
             style={{
               width: 6,
@@ -131,22 +136,41 @@ export function Header() {
 
         {selectedAsteroid && (
           <button className="btn-ghost" onClick={triggerReset}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg role="img" aria-label="Back icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back to Earth
           </button>
         )}
+
+        <button 
+          className="btn-ghost" 
+          onClick={toggleReduceMotion}
+          aria-pressed={reduceMotion}
+          title={reduceMotion ? "Enable Motion" : "Reduce Motion"}
+        >
+          {reduceMotion ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          )}
+          {reduceMotion ? "Motion: Reduced" : "Motion: Full"}
+        </button>
       </div>
 
-      {/* Right: Clock */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-          Last updated:
-        </span>
-        <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
-          <LiveClock />
-        </span>
+      {/* Right: Clock & User */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
+            Last updated:
+          </span>
+          <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+            <LiveClock />
+          </span>
+        </div>
+        <SearchCommand />
+        <Leaderboard />
+        <UserProfileModal />
       </div>
     </header>
   )

@@ -3,6 +3,11 @@
 import { useState, useEffect, useRef } from "react"
 import { useAppState } from "@/lib/store"
 
+type LogEntry = {
+  time: string
+  msg: string
+}
+
   const LOG_MESSAGES = [
     "[SYS] Orbital propagator initialized — 600 objects tracked",
     "[CONJ] Scanning primary object catalog for close approaches...",
@@ -33,22 +38,21 @@ function getTimestamp() {
   })
 }
 
+function createInitialLogs() {
+  return [
+    { time: getTimestamp(), msg: LOG_MESSAGES[0] },
+    { time: getTimestamp(), msg: LOG_MESSAGES[1] },
+    { time: getTimestamp(), msg: LOG_MESSAGES[2] },
+  ]
+}
+
 export function AgentTerminal() {
   const { terminalExpanded, toggleTerminal, boostCount, deltaVCount } = useAppState()
-  const [logs, setLogs] = useState<Array<{ time: string; msg: string }>>([])
+  const [logs, setLogs] = useState<LogEntry[]>(createInitialLogs)
   const scrollRef = useRef<HTMLDivElement>(null)
   const indexRef = useRef(3)
   const lastBoostSeen = useRef(boostCount)
   const lastDvSeen = useRef(deltaVCount)
-
-  // Initialize logs and start interval on client side only to prevent hydration mismatch
-  useEffect(() => {
-    setLogs([
-      { time: getTimestamp(), msg: LOG_MESSAGES[0] },
-      { time: getTimestamp(), msg: LOG_MESSAGES[1] },
-      { time: getTimestamp(), msg: LOG_MESSAGES[2] },
-    ])
-  }, [])
 
   // Auto-generate log entries
   useEffect(() => {
@@ -96,7 +100,7 @@ export function AgentTerminal() {
   }, [logs, terminalExpanded])
 
   return (
-    <div
+    <section
       className="glass-panel-flat"
       style={{
         position: "fixed",
@@ -118,6 +122,9 @@ export function AgentTerminal() {
       {/* Toggle bar */}
       <button
         onClick={toggleTerminal}
+        aria-controls="agent-terminal-log"
+        aria-expanded={terminalExpanded}
+        aria-label={terminalExpanded ? "Collapse agent terminal notifications" : "Expand agent terminal notifications"}
         style={{
           display: "flex",
           alignItems: "center",
@@ -134,7 +141,7 @@ export function AgentTerminal() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg role="img" aria-label="Terminal prompt icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="4 17 10 11 4 5" />
             <line x1="12" y1="19" x2="20" y2="19" />
           </svg>
@@ -148,6 +155,8 @@ export function AgentTerminal() {
           )}
         </div>
         <svg
+          role="img"
+          aria-label="Send message icon"
           width="14"
           height="14"
           viewBox="0 0 24 24"
@@ -168,7 +177,10 @@ export function AgentTerminal() {
       {/* Terminal content */}
       {terminalExpanded && (
         <div
+          id="agent-terminal-log"
           ref={scrollRef}
+          role="log"
+          aria-live="polite"
           style={{
             flex: 1,
             overflowY: "auto",
@@ -211,6 +223,6 @@ export function AgentTerminal() {
           </span>
         </div>
       )}
-    </div>
+    </section>
   )
 }

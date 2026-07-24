@@ -1,6 +1,40 @@
 "use client"
+import { useState } from "react"
 
+import { useEffect, useRef } from "react"
 import { useAppState } from "@/lib/store"
+import { trackedPosition } from "./AsteroidField"
+
+function LiveCoordinates() {
+  const xRef = useRef<HTMLSpanElement>(null)
+  const yRef = useRef<HTMLSpanElement>(null)
+  const zRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    let frameId: number
+    const update = () => {
+      if (xRef.current && yRef.current && zRef.current) {
+        xRef.current.innerText = trackedPosition.current.x.toFixed(2)
+        yRef.current.innerText = trackedPosition.current.y.toFixed(2)
+        zRef.current.innerText = trackedPosition.current.z.toFixed(2)
+      }
+      frameId = requestAnimationFrame(update)
+    }
+    frameId = requestAnimationFrame(update)
+    return () => cancelAnimationFrame(frameId)
+  }, [])
+
+  return (
+    <div className="kv-row">
+      <span className="kv-label">Live Coordinates</span>
+      <span className="kv-value" style={{ fontVariantNumeric: "tabular-nums" }}>
+        X: <span ref={xRef}>0.00</span> Y: <span ref={yRef}>0.00</span> Z: <span ref={zRef}>0.00</span>
+      </span>
+    </div>
+  )
+}
+
+import FocusLock from "react-focus-lock"
 
 export function AsteroidCard() {
   const {
@@ -10,19 +44,35 @@ export function AsteroidCard() {
     leftSidebarOpen,
     selectAsteroid,
   } = useAppState()
+  
+  const [announcement, setAnnouncement] = useState("")
 
   if (!selectedAsteroid) return null
 
   const isClaimed = claimedAsteroids.has(selectedAsteroid.id)
+  const handleClaimToggle = () => {
+    if (isClaimed) {
+      const confirmed = window.confirm(`Release the mining claim for ${selectedAsteroid.name}?`)
+      if (!confirmed) return
+    } else {
+      const confirmed = window.confirm(`File a mining claim for ${selectedAsteroid.name}?`)
+      if (!confirmed) return
+    }
+    claimAsteroid(selectedAsteroid.id)
+  }
 
   return (
-    <div
-      className="glass-panel animate-fade-in-left"
-      style={{
+    <FocusLock returnFocus>
+      <div
+        className="glass-panel animate-fade-in-left"
+        aria-labelledby="asteroid-card-title"
+        style={{
         position: "fixed",
-        top: "calc(var(--header-height) + 16px)",
-        left: leftSidebarOpen ? "calc(var(--sidebar-width) + 24px)" : "24px",
-        width: "300px",
+        top: "calc(var(--header-height) + var(--hud-stack-gap))",
+        left: leftSidebarOpen
+          ? "calc(var(--sidebar-width) + var(--hud-inspector-gap))"
+          : "var(--hud-inspector-gap)",
+        width: "var(--inspector-width)",
         zIndex: 42,
         boxShadow: "0 10px 40px rgba(0, 0, 0, 0.6)",
         border: "1px solid rgba(56, 189, 248, 0.2)",
@@ -53,6 +103,7 @@ export function AsteroidCard() {
             }}
           />
           <span
+            id="asteroid-inspector-title"
             style={{
               fontSize: 11,
               fontWeight: 700,
@@ -65,11 +116,15 @@ export function AsteroidCard() {
           </span>
         </div>
         <button
+          ref={closeButtonRef}
           className="btn-ghost"
           onClick={() => selectAsteroid(null)}
+          aria-label="Close asteroid details"
           style={{ padding: 4, border: "none" }}
         >
           <svg
+            role="img"
+            aria-label="Close icon"
             width="14"
             height="14"
             viewBox="0 0 24 24"
@@ -113,7 +168,7 @@ export function AsteroidCard() {
         {/* Orbit Visual Diagram Placeholder or Stats */}
         <div className="panel-section" style={{ marginBottom: 14 }}>
           <div className="panel-section-title">Orbital Mechanics</div>
-          <div className="kv-row">
+          <div className="kv-row" title="The semi-major axis (a) is one half of the major axis of the elliptical orbit, representing the mean distance from the primary body.">
             <span className="kv-label">Semi-Major Axis</span>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
           </div>
@@ -121,7 +176,7 @@ export function AsteroidCard() {
             <span className="kv-label">Mean Orbit Radius</span>
             <span className="kv-value">{selectedAsteroid.orbitRadius.toFixed(2)} R⊕</span>
           </div>
-          <div className="kv-row">
+          <div className="kv-row" title="The angle between the asteroid's orbital plane and the ecliptic plane.">
             <span className="kv-label">Inclination Angle</span>
             <span className="kv-value">
               {(selectedAsteroid.inclination * (180 / Math.PI)).toFixed(1)}°
@@ -144,7 +199,10 @@ export function AsteroidCard() {
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={() => claimAsteroid(selectedAsteroid.id)}
+            onClick={() => {
+              claimAsteroid(selectedAsteroid.id)
+              setAnnouncement(isClaimed ? `Mining claim released for ${selectedAsteroid.name}` : `Mining claim filed for ${selectedAsteroid.name}`)
+            }}
             className="btn-primary"
             style={{
               width: "100%",
@@ -162,7 +220,11 @@ export function AsteroidCard() {
             {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
           </button>
         </div>
+        <div aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
+          {announcement}
+        </div>
       </div>
     </div>
+    </FocusLock>
   )
 }

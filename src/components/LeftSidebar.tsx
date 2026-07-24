@@ -2,6 +2,10 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAppState } from "@/lib/store"
+import { Tooltip } from "@/components/Tooltip"
+
+type SortMode = "id" | "name" | "distance" | "risk"
+const PAGE_SIZE = 8
 
 export function LeftSidebar() {
   const {
@@ -13,14 +17,39 @@ export function LeftSidebar() {
     setFilterType,
     conjunctions,
     addConjunctionAlert,
+    asteroidCatalog,
   } = useAppState()
   const [searchId, setSearchId] = useState("")
   const [riskFilter, setRiskFilter] = useState<"ALL" | "HIGH" | "MEDIUM" | "LOW">("ALL") 
+  const [sortMode, setSortMode] = useState<SortMode>("id")
+  const [pageState, setPageState] = useState({ key: "ALL:id", page: 1 })
 
   const filteredConjunctions = useMemo(() => {
   if (riskFilter === "ALL") return conjunctions
   return conjunctions.filter((c) => c.risk === riskFilter)
   }, [conjunctions, riskFilter])
+
+  const sortedCatalog = useMemo(() => {
+    const visible = asteroidCatalog.filter((item) => {
+      if (filterType === "ASTEROIDS") return item.type === "asteroid"
+      if (filterType === "DEBRIS") return item.type === "debris"
+      return true
+    })
+    return [...visible].sort((a, b) => {
+      if (sortMode === "name") return a.name.localeCompare(b.name)
+      if (sortMode === "distance") return a.orbitRadius - b.orbitRadius
+      if (sortMode === "risk") return Number(Boolean(b.atRisk)) - Number(Boolean(a.atRisk)) || a.id - b.id
+      return a.id - b.id
+    })
+  }, [asteroidCatalog, filterType, sortMode])
+
+  const catalogKey = `${filterType}:${sortMode}`
+  const totalPages = Math.max(1, Math.ceil(sortedCatalog.length / PAGE_SIZE))
+  const page = pageState.key === catalogKey ? Math.min(pageState.page, totalPages) : 1
+  const catalogPage = sortedCatalog.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const setCatalogPage = (nextPage: number) => {
+    setPageState({ key: catalogKey, page: Math.max(1, Math.min(totalPages, nextPage)) })
+  }
 
   // Pre-seed some conjunctions at start if empty
   useEffect(() => {
@@ -76,7 +105,7 @@ export function LeftSidebar() {
           onClick={toggleLeftSidebar}
           title="Show Target Panel"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg role="img" aria-label="Search icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 18l6-6-6-6" />
           </svg>
         </button>
@@ -103,7 +132,7 @@ export function LeftSidebar() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg role="img" aria-label="Active indicator icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3" />
                 <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
               </svg>
@@ -112,7 +141,7 @@ export function LeftSidebar() {
               </span>
             </div>
             <button className="btn-ghost" onClick={toggleLeftSidebar} style={{ padding: 4, border: "none" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg role="img" aria-label="Target icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 18l-6-6 6-6" />
               </svg>
             </button>
@@ -134,10 +163,12 @@ export function LeftSidebar() {
               <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
                 Filter Catalog
               </label>
-              <div style={{ display: "flex", background: "var(--bg-input)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: 2 }}>
+              <div role="tablist" style={{ display: "flex", background: "var(--bg-input)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: 2 }}>
                 {(["ALL", "ASTEROIDS", "DEBRIS"] as const).map((tab) => (
                   <button
                     key={tab}
+                    role="tab"
+                    aria-selected={filterType === tab}
                     onClick={() => setFilterType(tab)}
                     style={{
                       flex: 1,
@@ -161,11 +192,12 @@ export function LeftSidebar() {
 
             {/* Search */}
             <div>
-              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
+              <label htmlFor="searchCatalog" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
                 Select Catalog Item By ID
               </label>
               <div style={{ display: "flex", gap: 6 }}>
                 <input
+                  id="searchCatalog"
                   className="mc-input"
                   type="text"
                   placeholder="ID 1–600"
@@ -175,7 +207,7 @@ export function LeftSidebar() {
                   style={{ flex: 1 }}
                 />
                 <button className="btn-ghost" onClick={handleSearch} style={{ whiteSpace: "nowrap" }}>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg role="img" aria-label="Clear target icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="11" cy="11" r="8" />
                     <path d="M21 21l-4.35-4.35" />
                   </svg>
@@ -184,9 +216,57 @@ export function LeftSidebar() {
               </div>
             </div>
 
+            {/* Catalog Browser */}
+            <div className="panel-section">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <div className="panel-section-title" style={{ marginBottom: 0 }}>Catalog Browser</div>
+                <select
+                  className="mc-input"
+                  aria-label="Sort catalog"
+                  value={sortMode}
+                  onChange={(e) => setSortMode(e.target.value as SortMode)}
+                  style={{ width: 112, padding: "5px 7px", fontSize: 10 }}
+                >
+                  <option value="id">ID</option>
+                  <option value="name">Name</option>
+                  <option value="distance">Distance</option>
+                  <option value="risk">Risk</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {catalogPage.map((item) => (
+                  <button
+                    key={item.id}
+                    className="catalog-row"
+                    onClick={() => searchAsteroidById(item.id)}
+                    aria-label={`Select ${item.name}`}
+                  >
+                    <span>
+                      <strong>{item.name}</strong>
+                      <small>{item.type === "debris" ? "Debris" : "Asteroid"} / {(item.orbitRadius * 0.15).toFixed(2)} AU</small>
+                    </span>
+                    <span className={item.atRisk ? "catalog-risk catalog-risk-on" : "catalog-risk"}>{item.atRisk ? "RISK" : `#${item.id}`}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 10 }}>
+                <button className="btn-ghost" onClick={() => setCatalogPage(page - 1)} disabled={page === 1}>
+                  Prev
+                </button>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}>
+                  {page}/{totalPages}
+                </span>
+                <button className="btn-ghost" onClick={() => setCatalogPage(page + 1)} disabled={page === totalPages}>
+                  Next
+                </button>
+              </div>
+            </div>
+
             {/* Live Target Details */}
             <div className="panel-section">
-              <div className="panel-section-title">Live Target Details</div>
+              <h2 className="panel-section-title">Live Target Details</h2>
               {selectedAsteroid ? (
                 <div>
                   <div className="kv-row">
@@ -226,7 +306,7 @@ export function LeftSidebar() {
             {/* Conjunction Feed */}
             <div className="panel-section" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <div className="panel-section-title" style={{ marginBottom: 0 }}>Conjunction Alerter</div>
+                <h2 className="panel-section-title" style={{ marginBottom: 0 }}>Conjunction Alerter</h2>
                   <div
                     style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}
                     title={riskFilter !== "ALL" ? `${filteredConjunctions.length} of ${conjunctions.length} total` : undefined}
@@ -271,16 +351,19 @@ export function LeftSidebar() {
                   </thead>
                   <tbody>
                     {filteredConjunctions.map((c) => (
-                      <tr key={c.id}>
+                      <tr key={c.id} style={{
+                        background: c.risk === "HIGH" ? "rgba(248, 113, 113, 0.1)" : c.risk === "MEDIUM" ? "rgba(251, 191, 36, 0.1)" : "transparent",
+                        transition: "background 0.3s ease"
+                      }}>
                         <td>
                           <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{c.satelliteName}</div>
                           <div style={{ fontSize: 9, color: c.type === "debris" ? "var(--accent-amber)" : "var(--text-muted)" }}>
                             vs {c.secondaryName}
                           </div>
                         </td>
-                        <td>{c.missKm} km</td>
+                        <td style={{ fontFamily: "var(--font-mono)", fontWeight: 500 }}>{c.missKm} km</td>
                         <td>
-                          <span className={`badge ${c.risk === "HIGH" ? "badge-high" : c.risk === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+                          <span className={`badge ${c.risk === "HIGH" ? "badge-high" : c.risk === "MEDIUM" ? "badge-medium" : "badge-low"}`} style={{ padding: "4px 8px", borderRadius: "var(--radius-lg)" }}>
                             {c.risk}
                           </span>
                         </td>
