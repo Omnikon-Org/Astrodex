@@ -182,6 +182,8 @@ export function Scene() {
       <Canvas
         camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
         gl={{ antialias: true, alpha: false }}
+        aria-label="Interactive 3D space scene showing Earth and asteroids"
+        fallback={<div>Interactive 3D space scene showing Earth and asteroids</div>}
       >
         <SceneContent />
       </Canvas>
