@@ -122,9 +122,7 @@ export function AgentTerminal() {
       {/* Toggle bar */}
       <button
         onClick={toggleTerminal}
-        aria-controls="agent-terminal-log"
-        aria-expanded={terminalExpanded}
-        aria-label={terminalExpanded ? "Collapse agent terminal notifications" : "Expand agent terminal notifications"}
+        aria-label={terminalExpanded ? "Collapse Agent Terminal" : "Expand Agent Terminal"}
         style={{
           display: "flex",
           alignItems: "center",

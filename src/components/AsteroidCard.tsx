@@ -127,6 +127,7 @@ export function AsteroidCard() {
           onClick={() => selectAsteroid(null)}
           aria-label="Close asteroid details"
           style={{ padding: 4, border: "none" }}
+          aria-label="Close Inspector"
         >
           <svg
             width="14"
