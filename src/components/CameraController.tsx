@@ -44,6 +44,16 @@ export function CameraController() {
     }
 
     camera.position.lerp(targetPos.current, 3 * delta)
+    
+    const dist = camera.position.distanceTo(targetPos.current)
+    if (dist > 0.5) {
+      const shakeAmt = Math.min(dist * 0.002, 0.02)
+      const t = _.clock.getElapsedTime() * 30
+      camera.position.x += Math.sin(t) * shakeAmt
+      camera.position.y += Math.cos(t * 1.2) * shakeAmt
+      camera.position.z += Math.sin(t * 0.8) * shakeAmt
+    }
+
     _lookTarget.copy(targetLook.current)
     camera.lookAt(_lookTarget)
   })
