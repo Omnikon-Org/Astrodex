@@ -133,7 +133,7 @@ export function Header() {
         </div>
 
         {selectedAsteroid && (
-          <button className="btn-ghost" onClick={triggerReset}>
+          <button className="btn-ghost" onClick={triggerReset} aria-label="Reset Camera to Earth">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
