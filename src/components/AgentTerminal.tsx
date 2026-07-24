@@ -3,31 +3,26 @@
 import { useState, useEffect, useRef } from "react"
 import { useAppState } from "@/lib/store"
 
-type LogEntry = {
-  time: string
-  msg: string
-}
+const LOG_MESSAGES = [
+  "[SYS] Orbital propagator initialized — 600 objects tracked",
+  "[CONJ] Scanning primary object catalog for close approaches...",
+  "[MANV] Δv budget: 0.35 m/s remaining across 1 burn window",
+  "[CONJ] WARNING: High-risk conjunction detected — TCA imminent",
+  "[TRK] Camera locked on AST-0042 — range: 1.2 AU",
+  "[SYS] Ephemeris data refreshed — epoch: J2000.0",
+  "[CONJ] Secondary screening complete — 6 events in queue",
+  "[MANV] Burn window opens in 4h 22m — inclination change Δi=2.1°",
+  "[TRK] Asteroid field density: 12.4 objects / AU³",
+  "[SYS] Post-processing bloom intensity adjusted to 1.5",
+  "[CONJ] Miss distance refined: 0.04 km — probability of collision: 1.2e-4",
+  "[TRK] Orbit class distribution: NEO 34%, MBA 52%, TNO 14%",
+  "[MANV] Optimal transfer orbit computed — Hohmann with plane change",
+  "[SYS] Atmosphere shader recompiled — Fresnel edge glow active",
+  "[CONJ] All-clear window: next 6h 15m — no close approaches",
+]
 
-  const LOG_MESSAGES = [
-    "[SYS] Orbital propagator initialized — 600 objects tracked",
-    "[CONJ] Scanning primary object catalog for close approaches...",
-    "[MANV] Δv budget: 0.35 m/s remaining across 1 burn window",
-    "[CONJ] WARNING: High-risk conjunction detected — TCA imminent",
-    "[TRK] Camera locked on AST-0042 — range: 1.2 AU",
-    "[SYS] Ephemeris data refreshed — epoch: J2000.0",
-    "[CONJ] Secondary screening complete — 6 events in queue",
-    "[MANV] Burn window opens in 4h 22m — inclination change Δi=2.1°",
-    "[TRK] Asteroid field density: 12.4 objects / AU³",
-    "[SYS] Post-processing bloom intensity adjusted to 1.5",
-    "[CONJ] Miss distance refined: 0.04 km — probability of collision: 1.2e-4",
-    "[TRK] Orbit class distribution: NEO 34%, MBA 52%, TNO 14%",
-    "[MANV] Optimal transfer orbit computed — Hohmann with plane change",
-    "[SYS] Atmosphere shader recompiled — Fresnel edge glow active",
-    "[CONJ] All-clear window: next 6h 15m — no close approaches",
-  ]
-
-  const BOOST_LOG = (km: number) => `[MANV] Boost burn executed — +${km} km altitude restored (ISS)`
-  const DV_LOG = (dv: string) => `[MANV] Δv budget computed — Hohmann transfer: ${dv} m/s required`
+const BOOST_LOG = (km: number) => `[MANV] Boost burn executed — +${km} km altitude restored (ISS)`
+const DV_LOG = (dv: string) => `[MANV] Δv budget computed — Hohmann transfer: ${dv} m/s required`
 
 function getTimestamp() {
   return new Date().toLocaleTimeString("en-US", {
@@ -100,7 +95,7 @@ export function AgentTerminal() {
   }, [logs, terminalExpanded])
 
   return (
-    <div
+    <footer
       className="glass-panel-flat"
       style={{
         position: "fixed",
@@ -122,9 +117,7 @@ export function AgentTerminal() {
       {/* Toggle bar */}
       <button
         onClick={toggleTerminal}
-        aria-controls="agent-terminal-log"
-        aria-expanded={terminalExpanded}
-        aria-label={terminalExpanded ? "Collapse agent terminal notifications" : "Expand agent terminal notifications"}
+        aria-label={terminalExpanded ? "Collapse Agent Terminal" : "Expand Agent Terminal"}
         style={{
           display: "flex",
           alignItems: "center",
@@ -141,15 +134,37 @@ export function AgentTerminal() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--accent-cyan)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="4 17 10 11 4 5" />
             <line x1="12" y1="19" x2="20" y2="19" />
           </svg>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+            }}
+          >
             Agent Terminal
           </span>
           {!terminalExpanded && logs.length > 0 && (
-            <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}>
+            <span
+              style={{
+                fontSize: 10,
+                color: "var(--text-muted)",
+                fontFamily: "var(--font-mono), monospace",
+              }}
+            >
               — {logs[logs.length - 1].msg.substring(0, 60)}...
             </span>
           )}
@@ -205,12 +220,12 @@ export function AgentTerminal() {
                   color: log.msg.includes("WARNING")
                     ? "var(--accent-red)"
                     : log.msg.startsWith("[CONJ]")
-                    ? "var(--accent-amber)"
-                    : log.msg.startsWith("[MANV]")
-                    ? "var(--accent-green)"
-                    : log.msg.startsWith("[TRK]")
-                    ? "var(--accent-cyan)"
-                    : "var(--text-secondary)",
+                      ? "var(--accent-amber)"
+                      : log.msg.startsWith("[MANV]")
+                        ? "var(--accent-green)"
+                        : log.msg.startsWith("[TRK]")
+                          ? "var(--accent-cyan)"
+                          : "var(--text-secondary)",
                 }}
               >
                 {log.msg}
@@ -223,6 +238,6 @@ export function AgentTerminal() {
           </span>
         </div>
       )}
-    </div>
+    </footer>
   )
 }

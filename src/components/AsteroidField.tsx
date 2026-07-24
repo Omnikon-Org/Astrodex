@@ -45,11 +45,10 @@ function generateOrbitalObjectData(index: number): AsteroidData {
   const type = isDebris ? "debris" : "asteroid"
 
   // Space Debris is closer to Earth and satellites for higher collision odds
-  const orbitRadius = isDebris
-    ? 1.9 + Math.random() * 2.2
-    : 3.8 + Math.random() * 7.5
+  const orbitRadius = isDebris ? 1.9 + Math.random() * 2.2 : 3.8 + Math.random() * 7.5
 
-  const speed = (isDebris ? 0.08 + Math.random() * 0.12 : 0.02 + Math.random() * 0.06) * (1 / orbitRadius)
+  const speed =
+    (isDebris ? 0.08 + Math.random() * 0.12 : 0.02 + Math.random() * 0.06) * (1 / orbitRadius)
   const id = index + 1
   const name = isDebris
     ? `DEB-${1962 + Math.floor(Math.random() * 63)}-${String(Math.floor(Math.random() * 800)).padStart(3, "0")}A`
@@ -248,14 +247,21 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   }, [data, registerAsteroidData])
 
   useEffect(() => {
-    return () => {
-      asteroidGeometries[0].dispose()
-      asteroidGeometries[1].dispose()
-      asteroidGeometries[2].dispose()
-      debrisGeometries[0].dispose()
-      debrisGeometries[1].dispose()
-      debrisGeometries[2].dispose()
-      asteroidNormalMap.dispose()
+    const updateColors = (
+      mesh: THREE.InstancedMesh | null,
+      start: number,
+      count: number,
+      colors: string[]
+    ) => {
+      if (!mesh) return
+      for (let i = 0; i < count; i++) {
+        const objIndex = start + i
+        colorObj.set(colors[objIndex % colors.length])
+        mesh.setColorAt(i, colorObj)
+      }
+      if (mesh.instanceColor) {
+        mesh.instanceColor.needsUpdate = true
+      }
     }
   }, [asteroidGeometries, debrisGeometries, asteroidNormalMap])
 
