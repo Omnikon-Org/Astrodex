@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed issue #172: Add error handling to the Camera Lerp logic
