@@ -1,37 +1,7 @@
 "use client"
 
-import { useEffect, useRef } from "react"
 import { useAppState } from "@/lib/store"
-import { trackedPosition } from "./AsteroidField"
-
-function LiveCoordinates() {
-  const xRef = useRef<HTMLSpanElement>(null)
-  const yRef = useRef<HTMLSpanElement>(null)
-  const zRef = useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    let frameId: number
-    const update = () => {
-      if (xRef.current && yRef.current && zRef.current) {
-        xRef.current.innerText = trackedPosition.current.x.toFixed(2)
-        yRef.current.innerText = trackedPosition.current.y.toFixed(2)
-        zRef.current.innerText = trackedPosition.current.z.toFixed(2)
-      }
-      frameId = requestAnimationFrame(update)
-    }
-    frameId = requestAnimationFrame(update)
-    return () => cancelAnimationFrame(frameId)
-  }, [])
-
-  return (
-    <div className="kv-row">
-      <span className="kv-label">Live Coordinates</span>
-      <span className="kv-value" style={{ fontVariantNumeric: "tabular-nums" }}>
-        X: <span ref={xRef}>0.00</span> Y: <span ref={yRef}>0.00</span> Z: <span ref={zRef}>0.00</span>
-      </span>
-    </div>
-  )
-}
+import { Tooltip } from "./Tooltip"
 
 export function AsteroidCard() {
   const {
@@ -41,45 +11,19 @@ export function AsteroidCard() {
     leftSidebarOpen,
     selectAsteroid,
   } = useAppState()
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
-
-  useEffect(() => {
-  if (!selectedAsteroid) return
-  closeButtonRef.current?.focus()
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") selectAsteroid(null)
-  }
-  document.addEventListener("keydown", onKeyDown)
-  return () => document.removeEventListener("keydown", onKeyDown)
-}, [selectedAsteroid, selectAsteroid])
 
   if (!selectedAsteroid) return null
 
   const isClaimed = claimedAsteroids.has(selectedAsteroid.id)
-  const handleClaimToggle = () => {
-    if (isClaimed) {
-      const confirmed = window.confirm(`Release the mining claim for ${selectedAsteroid.name}?`)
-      if (!confirmed) return
-    } else {
-      const confirmed = window.confirm(`File a mining claim for ${selectedAsteroid.name}?`)
-      if (!confirmed) return
-    }
-    claimAsteroid(selectedAsteroid.id)
-  }
 
   return (
     <div
       className="glass-panel animate-fade-in-left"
-      role="dialog"
-      aria-modal="false"
-      aria-labelledby="asteroid-inspector-title"
       style={{
         position: "fixed",
-        top: "calc(var(--header-height) + var(--hud-stack-gap))",
-        left: leftSidebarOpen
-          ? "calc(var(--sidebar-width) + var(--hud-inspector-gap))"
-          : "var(--hud-inspector-gap)",
-        width: "var(--inspector-width)",
+        top: "calc(var(--header-height) + 16px)",
+        left: leftSidebarOpen ? "calc(var(--sidebar-width) + 24px)" : "24px",
+        width: "300px",
         zIndex: 42,
         boxShadow: "0 10px 40px rgba(0, 0, 0, 0.6)",
         border: "1px solid rgba(56, 189, 248, 0.2)",
@@ -110,7 +54,6 @@ export function AsteroidCard() {
             }}
           />
           <span
-            id="asteroid-inspector-title"
             style={{
               fontSize: 11,
               fontWeight: 700,
@@ -123,10 +66,8 @@ export function AsteroidCard() {
           </span>
         </div>
         <button
-          ref={closeButtonRef}
           className="btn-ghost"
           onClick={() => selectAsteroid(null)}
-          aria-label="Close asteroid details"
           style={{ padding: 4, border: "none" }}
         >
           <svg
@@ -171,10 +112,12 @@ export function AsteroidCard() {
         )}
 
         {/* Orbit Visual Diagram Placeholder or Stats */}
-        <div className="panel-section" style={{ marginBottom: 14 }}>
-          <h3 className="panel-section-title">Orbital Mechanics</h3>
+        <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]" style={{ marginBottom: 14 }}>
+          <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Orbital Mechanics</div>
           <div className="kv-row">
-            <span className="kv-label">Semi-Major Axis</span>
+            <Tooltip content="Average distance from the central body (AU)">
+              <span className="kv-label cursor-help border-b border-dotted border-gray-500">Semi-Major Axis</span>
+            </Tooltip>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
           </div>
           <div className="kv-row">
@@ -201,26 +144,65 @@ export function AsteroidCard() {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <button
-            onClick={handleClaimToggle}
-            className="btn-primary"
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "var(--radius-md)",
-              backgroundColor: isClaimed ? "rgba(248, 113, 113, 0.12)" : "rgba(56, 189, 248, 0.12)",
-              borderColor: isClaimed ? "rgba(248, 113, 113, 0.4)" : "rgba(56, 189, 248, 0.4)",
-              color: isClaimed ? "var(--accent-red)" : "var(--accent-cyan)",
-              fontSize: "12px",
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-            }}
-          >
-            {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
-          </button>
+        {/* Mining Claim Form */}
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", marginBottom: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Mining Claim Operations
+          </div>
+          
+          {isClaimed ? (
+            <button
+              className="mc-button"
+              onClick={() => claimAsteroid(selectedAsteroid.id)}
+              style={{
+                width: "100%",
+                padding: "10px 0",
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                backgroundColor: "rgba(248, 113, 113, 0.12)",
+                borderColor: "rgba(248, 113, 113, 0.4)",
+                color: "var(--accent-red)",
+                textTransform: "uppercase",
+                transition: "all 0.2s ease"
+              }}
+            >
+              Release Mining Claim
+            </button>
+          ) : (
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                claimAsteroid(selectedAsteroid.id);
+              }}
+              style={{ display: "flex", gap: 8, alignItems: "center", width: "100%" }}
+            >
+              <input
+                type="text"
+                className="mc-input"
+                placeholder="Enter Corporate ID"
+                required
+                style={{ flex: 1, padding: "8px 12px", height: "36px" }}
+              />
+              <button
+                type="submit"
+                className="mc-button"
+                style={{
+                  padding: "0 16px",
+                  height: "36px",
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  backgroundColor: "rgba(56, 189, 248, 0.12)",
+                  borderColor: "rgba(56, 189, 248, 0.4)",
+                  color: "var(--accent-cyan)",
+                  textTransform: "uppercase",
+                  whiteSpace: "nowrap",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                File Claim
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

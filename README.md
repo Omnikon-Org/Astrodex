@@ -1,3 +1,10 @@
+# AstroDex 🌌
+
+**Interactive 3D Asteroid & Orbital Explorer**
+
+AstroDex is a real-time, cinematic 3D space mission control simulator that lets you explore 600+ asteroids and orbital debris in Earth's orbit. Track near-Earth conjunctions, inspect Keplerian orbital parameters, deploy manual satellites, and file mining claims right from your browser.
+
+## Features
 ![AstroDex Badge](https://img.shields.io/badge/AstroDex-Space%20Situational%20Awareness-0f172a?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMzOGJkZjgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwYXRoIGQ9Ik0xMiAyYTEwIDEwIDAgMCAxIDAgMjAiLz48cGF0aCBkPSJNMTIgMmExMCAxMCAwIDAgMCAwIDIwIi8+PC9zdmc+)
 
 # 🌌 AstroDex — Space Objects & Debris Explorer
@@ -12,12 +19,29 @@ Visualize asteroids, track orbital debris, and monitor conjunction threats with 
 [![Stars](https://img.shields.io/github/stars/Omnikon-Org/Astrodex?style=flat-square&color=fbbf24)](https://github.com/Omnikon-Org/Astrodex/stargazers)
 [![Forks](https://img.shields.io/github/forks/Omnikon-Org/Astrodex?style=flat-square&color=818cf8)](https://github.com/Omnikon-Org/Astrodex/network/members)
 
----
+- 🌍 **Cinematic Earth View**: Custom GLSL shaders for Earth, atmosphere, and cloud layers.
+- 🚀 **600+ Instanced Asteroids/Debris**: Procedurally generated asteroids on Keplerian elliptical orbits.
+- 🎯 **Click-to-Inspect & Camera Tracking**: Seamlessly select asteroids in 3D space, tracking them dynamically with smooth camera lerping.
+- ⚠️ **Real-time Conjunction Detection**: Live alerts when objects pass within a dangerous proximity to Earth.
+- 🛰️ **LEO Orbital Decay**: Monitor satellite altitudes and receive warnings as orbits decay towards the critical limit.
+- 💎 **Claim System**: File simulated mining claims on valuable asteroids.
+- ♿ **Accessible UI**: Keyboard navigation, screen-reader support, "reduce motion" toggles, and semantic HTML layouts for the HUD.
+- 🔍 **SEO Optimized**: Canonical URLs, Open Graph tags, JSON-LD structured data, and dynamic sitemaps.
 
-## 🔗 Live Demo
+## Tech Stack
 
-> **👉 [https://astrodex-nine.vercel.app](https://astrodex-nine.vercel.app)**
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **3D Rendering**:
+  - [Three.js (r184)](https://threejs.org/)
+  - [React Three Fiber v9](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction)
+  - [@react-three/drei v10](https://github.com/pmndrs/drei)
+  - [@react-three/postprocessing v3](https://github.com/pmndrs/react-postprocessing) (Bloom, Vignette)
+- **State Management**: React Context (`src/lib/store.tsx`)
+- **Physics/Math**: Custom Orbital Mechanics Engine (`src/lib/kepler.ts`)
 
+## Getting Started
 Open in a Chromium-based browser (Chrome, Edge, Brave) for the best WebGL experience. A dedicated GPU is recommended for smooth 60 fps rendering of 600+ orbital objects.
 
 ---
@@ -25,16 +49,19 @@ Open in a Chromium-based browser (Chrome, Edge, Brave) for the best WebGL experi
 ## 📸 Screenshots
 
 ### Mission Control Dashboard
+
 The full HUD overlay with 3D Earth, asteroid field, satellite orbits, and real-time conjunction alerts.
 
 ![AstroDex Main Dashboard](docs/screenshots/main-dashboard.png)
 
 ### Asteroid Filter & Conjunction Alerter
+
 Filter the orbital catalog by object type. The Conjunction Alerter panel displays live close-approach events with miss distance and risk classification.
 
 ![AstroDex Asteroid Filter](docs/screenshots/asteroid-filter.png)
 
 ### Agent Terminal (Expanded)
+
 The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenings, maneuver burns, and orbital tracking data.
 
 ![AstroDex Agent Terminal](docs/screenshots/agent-terminal.png)
@@ -44,20 +71,20 @@ The expandable Agent Terminal logs real-time sensor sweeps, conjunction screenin
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Framework** | [Next.js 16](https://nextjs.org/) (App Router) | Server/client rendering, routing, and build tooling |
-| **UI Library** | [React 19](https://react.dev/) | Component-based UI architecture |
-| **3D Engine** | [Three.js](https://threejs.org/) | WebGL rendering, geometries, and materials |
-| **React ↔ 3D** | [React Three Fiber (R3F)](https://r3f.docs.pmnd.rs/) | Declarative Three.js in React |
-| **3D Helpers** | [@react-three/drei](https://drei.docs.pmnd.rs/) | Stars, camera controls, and instanced mesh utilities |
-| **Post-Processing** | [@react-three/postprocessing](https://github.com/pmndrs/postprocessing) | Bloom, vignette, and cinematic effects |
-| **Shaders** | Custom GLSL | Earth day/night rendering, atmosphere scattering, cloud layers |
-| **Language** | [TypeScript](https://www.typescriptlang.org/) | Type-safe development with strict mode |
-| **Styling** | Vanilla CSS + CSS Variables | Glassmorphic design system with custom properties |
-| **Fonts** | [Geist](https://vercel.com/font) + [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | UI typography + monospace terminal |
-| **Linting** | [ESLint](https://eslint.org/) | Code quality and consistency |
-| **Deployment** | [Vercel](https://vercel.com/) | Zero-config hosting for Next.js |
+| Layer               | Technology                                                                              | Purpose                                                        |
+| ------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Framework**       | [Next.js 16](https://nextjs.org/) (App Router)                                          | Server/client rendering, routing, and build tooling            |
+| **UI Library**      | [React 19](https://react.dev/)                                                          | Component-based UI architecture                                |
+| **3D Engine**       | [Three.js](https://threejs.org/)                                                        | WebGL rendering, geometries, and materials                     |
+| **React ↔ 3D**      | [React Three Fiber (R3F)](https://r3f.docs.pmnd.rs/)                                    | Declarative Three.js in React                                  |
+| **3D Helpers**      | [@react-three/drei](https://drei.docs.pmnd.rs/)                                         | Stars, camera controls, and instanced mesh utilities           |
+| **Post-Processing** | [@react-three/postprocessing](https://github.com/pmndrs/postprocessing)                 | Bloom, vignette, and cinematic effects                         |
+| **Shaders**         | Custom GLSL                                                                             | Earth day/night rendering, atmosphere scattering, cloud layers |
+| **Language**        | [TypeScript](https://www.typescriptlang.org/)                                           | Type-safe development with strict mode                         |
+| **Styling**         | Vanilla CSS + CSS Variables                                                             | Glassmorphic design system with custom properties              |
+| **Fonts**           | [Geist](https://vercel.com/font) + [JetBrains Mono](https://www.jetbrains.com/lp/mono/) | UI typography + monospace terminal                             |
+| **Linting**         | [ESLint](https://eslint.org/)                                                           | Code quality and consistency                                   |
+| **Deployment**      | [Vercel](https://vercel.com/)                                                           | Zero-config hosting for Next.js                                |
 
 ---
 
@@ -136,22 +163,104 @@ integration boundary and rendering pipeline.
 
 ---
 
+## ⚡ Quick Start
+
+Get AstroDex running locally in under a minute:
+
+```bash
+git clone https://github.com/<your-username>/Astrodex.git
+cd Astrodex
+npm install
+npm run dev
+
+
+---
+
+### ♿ Accessibility
+
+```md
+## ♿ Accessibility
+
+AstroDex aims to provide an inclusive experience for all users.
+
+Current accessibility efforts include:
+
+- Keyboard-accessible navigation
+- Screen-reader friendly interface improvements
+- Semantic HTML usage
+- Reduced-motion support for animation-sensitive users
+- Improved focus visibility for interactive controls
+
+Accessibility enhancements are actively being developed and community contributions are welcome. 
+
+## 🛠️ Troubleshooting
+
+### WebGL Not Supported
+
+AstroDex relies on WebGL for 3D rendering.
+
+Check browser compatibility:
+
+- Google Chrome
+- Microsoft Edge
+- Brave Browser
+- Firefox (latest version)
+
+### Poor Performance
+
+If frame rates are low:
+
+- Enable hardware acceleration
+- Close GPU-intensive applications
+- Update graphics drivers
+- Reduce browser tab usage
+
+### Dependency Installation Errors
+
+Try clearing dependencies and reinstalling:
+
+```bash
+rm -rf node_modules
+rm package-lock.json
+npm install
+
+
+---
+
+### 🚀 Roadmap
+
+```md
+## 🚀 Roadmap
+
+Planned future enhancements include:
+
+- Supabase integration for persistent data storage
+- Expanded satellite catalog support
+- Real-world orbital datasets
+- Advanced collision prediction algorithms
+- Historical orbit replay system
+- Enhanced accessibility improvements
+- Mobile-friendly mission control interface
+
+
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-| Tool | Version | Notes |
-|------|---------|-------|
-| [Node.js](https://nodejs.org/) | **18+** | LTS recommended (includes npm) |
-| [npm](https://www.npmjs.com/) | **9+** | Bundled with Node.js |
-| [Git](https://git-scm.com/) | Any recent | For cloning and version control |
+| Tool                           | Version    | Notes                           |
+| ------------------------------ | ---------- | ------------------------------- |
+| [Node.js](https://nodejs.org/) | **18+**    | LTS recommended (includes npm)  |
+| [npm](https://www.npmjs.com/)  | **9+**     | Bundled with Node.js            |
+| [Git](https://git-scm.com/)    | Any recent | For cloning and version control |
 
 > [!TIP]
 > Run `node -v` and `npm -v` to verify your installed versions.
 
 ### Installation
-
+1. Clone the repository
 ```bash
+git clone https://github.com/RishiByte/astrodex.git
+cd astrodex
 # 1. Fork the repository on GitHub, then clone your fork
 git clone https://github.com/<your-username>/Astrodex.git
 cd Astrodex
@@ -193,12 +302,12 @@ The production server runs on **[http://localhost:3000](http://localhost:3000)**
 
 ### Available Scripts
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| `dev` | `npm run dev` | Start the development server with hot-reload |
-| `build` | `npm run build` | Create an optimized production build |
-| `start` | `npm run start` | Serve the production build locally |
-| `lint` | `npm run lint` | Run ESLint to check for code quality issues |
+| Script  | Command         | Description                                  |
+| ------- | --------------- | -------------------------------------------- |
+| `dev`   | `npm run dev`   | Start the development server with hot-reload |
+| `build` | `npm run build` | Create an optimized production build         |
+| `start` | `npm run start` | Serve the production build locally           |
+| `lint`  | `npm run lint`  | Run ESLint to check for code quality issues  |
 
 ### Deploying to Vercel
 
@@ -215,29 +324,15 @@ AstroDex is designed for zero-config deployment on [Vercel](https://vercel.com/)
 ### Type Checking
 
 ```bash
-# Run the TypeScript compiler in check-only mode (no output emitted)
-npx tsc --noEmit
+npm install
 ```
 
-### Linting
-
+3. Run the development server
 ```bash
-# Run ESLint across the entire project
-npm run lint
+npm run dev
 ```
 
-### Build Validation
-
-```bash
-# Verify the project compiles successfully for production
-npm run build
-```
-
-### Pre-PR Checklist
-
-Before opening a pull request, ensure all of the following pass:
-
-```bash
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 npm run lint          # ✅ No new lint errors
 npx tsc --noEmit      # ✅ No type errors
 npm run build         # ✅ Build completes successfully
@@ -293,9 +388,8 @@ Astrodex/
 
 ## 🤝 Contributing
 
-AstroDex is a **GSSoC 2026** (GirlScript Summer of Code) project and welcomes first-time open-source contributors. For the full process and guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md). In short: comment on an issue to claim it, open a focused branch for your work, and submit a PR with a clear description and testing steps.
+We welcome contributions! For the full process and guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md). In short: comment on an issue to claim it, open a focused branch for your work, and submit a PR with a clear description and testing steps. Helpful quick rules:
 
-- New to open source? Check [GOOD_FIRST_ISSUES.md](./GOOD_FIRST_ISSUES.md) for beginner-friendly tasks.
 - Comment on the issue expressing interest so maintainers can assign it.
 - Create a focused branch with a descriptive name (e.g., `feat/…`, `fix/…`, `docs/…`).
 - Keep PRs small and include steps to reproduce or test.
@@ -306,6 +400,10 @@ AstroDex is a **GSSoC 2026** (GirlScript Summer of Code) project and welcomes fi
 
 AstroDex uses TypeScript (strict mode), ESLint, and Tailwind. Follow the conventions in [CONTRIBUTING.md#code-style](./CONTRIBUTING.md#code-style) (use `@/` path alias, add `"use client"` for client components, avoid `any`, remove unused imports). Run these commands before opening a PR:
 
+- `npm run lint`
+- `npx tsc --noEmit`
+- `npm run build`
+
 ```bash
 npm run lint
 npx tsc --noEmit
@@ -314,10 +412,16 @@ npm run build
 
 ---
 
-## 📄 License
+## Architecture & Code conventions
 
-This project is licensed under the [MIT License](LICENSE).
+- **3D Components**: All 3D components are strictly `"use client"` and rendered dynamically via `next/dynamic({ ssr: false })` to avoid SSR mismatches with WebGL.
+- **Shader Code**: GLSL code for the planet and atmosphere is embedded directly in component files via template literals to maximize portability.
+- **Performance**: The 600+ asteroids use `<InstancedMesh>` for a single draw call. Individual `THREE.Vector3` or `Color` objects are reused outside of the render loop to prevent garbage collection pressure.
+- **Orbital Mechanics**: All Keplerian calculations live in `src/lib/kepler.ts`.
 
----
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
 
+## License
+MIT License
 Made with ❤️ by the [AstroDex contributors](https://github.com/Omnikon-Org/Astrodex/graphs/contributors)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect, useMemo } from "react"
+import { useRef, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { createProceduralCloudTexture } from "./textures"
@@ -13,8 +13,6 @@ varying vec3 vPosition;
 varying float vCloudDensity;
 
 void main() {
-  // Sample the grayscale cloud map and push denser pixels slightly above the
-  // Earth sphere so the layer has visible volume at the day/night boundary.
   vUv = uv;
   vNormal = normalize(normalMatrix * normal);
   float cloudDensity = texture2D(cloudTexture, uv).r;
@@ -36,8 +34,6 @@ varying vec3 vPosition;
 varying float vCloudDensity;
 
 void main() {
-  // Use the red channel as both cloud coverage and opacity. Lighting remains
-  // directional so clouds brighten on the sun-facing side of the planet.
   vec4 cloudColor = texture2D(cloudTexture, vUv);
   float alpha = cloudColor.r * 0.65;
 
@@ -56,30 +52,25 @@ interface CloudLayerProps {
   sunDirection: THREE.Vector3
 }
 
-/**
- * Renders the procedural cloud shell around Earth.
- *
- * The texture is created once per sun-direction setup, while the mesh rotates
- * in the frame loop. Transparent blending and disabled depth writes keep the
- * shell from hiding satellites or the atmosphere behind sparse cloud pixels.
- */
 export function CloudLayer({ sunDirection }: CloudLayerProps) {
   const meshRef = useRef<THREE.Mesh>(null)
 
-  const uniforms = useMemo(() => ({
-    cloudTexture: { value: new THREE.CanvasTexture(createProceduralCloudTexture()) },
-    sunDirection: { value: sunDirection.clone() },
-  }), [sunDirection])
+  const [uniforms] = useState(() => {
+    const tex = new THREE.CanvasTexture(createProceduralCloudTexture())
+    return {
+      cloudTexture: { value: tex },
+      sunDirection: { value: sunDirection.clone() },
+    }
+  })
 
   useEffect(() => {
-    return () => uniforms.cloudTexture.value.dispose()
-  }, [uniforms])
+    uniforms.sunDirection.value.copy(sunDirection)
+  }, [sunDirection, uniforms])
 
   useFrame((_, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.06
     }
-    uniforms.sunDirection.value.copy(sunDirection)
   })
 
   return (

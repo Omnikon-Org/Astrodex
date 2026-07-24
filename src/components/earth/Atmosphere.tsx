@@ -1,7 +1,6 @@
 "use client"
 
-import { useMemo, useRef } from "react"
-import { useFrame } from "@react-three/fiber"
+import { useRef, useEffect } from "react"
 import * as THREE from "three"
 
 const vertexShader = `
@@ -49,12 +48,17 @@ interface AtmosphereProps {
 
 export function Atmosphere({ sunDirection }: AtmosphereProps) {
   const meshRef = useRef<THREE.Mesh>(null)
-  const uniforms = useMemo(() => ({
-    sunDirection: { value: sunDirection.clone() },
-  }), [sunDirection])
+  const uniforms = useMemo(
+    () => ({
+      sunDirection: { value: sunDirection.clone() },
+    }),
+    [sunDirection]
+  )
 
-  useFrame(() => {
-    uniforms.sunDirection.value.copy(sunDirection)
+  useFrame((state) => {
+    if (meshRef.current) {
+      uniforms.sunDirection.value.copy(sunDirection)
+    }
   })
 
   return (

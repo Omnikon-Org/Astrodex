@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useAppState } from "@/lib/store"
+import { UserProfileModal } from "./UserProfileModal"
+import { IconUserCircle } from "@tabler/icons-react"
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -26,13 +28,9 @@ function LiveClock() {
   return <span style={{ fontFamily: "var(--font-mono), monospace" }}>{time || "--:--:-- --"}</span>
 }
 
-interface HeaderProps {
-  hudVisible: boolean
-  onToggleHud: () => void
-}
-
-export function Header({ hudVisible, onToggleHud }: HeaderProps) {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, cinematicMode, toggleCinematicMode } = useAppState()
+export function Header() {
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
     <header
@@ -47,7 +45,7 @@ export function Header({ hudVisible, onToggleHud }: HeaderProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 var(--header-x-padding)",
+        padding: "0 20px",
         borderTop: "none",
         borderLeft: "none",
         borderRight: "none",
@@ -135,38 +133,22 @@ export function Header({ hudVisible, onToggleHud }: HeaderProps) {
         </div>
 
         {selectedAsteroid && (
-          <button className="btn-ghost" onClick={triggerReset}>
+          <button className="btn-ghost" onClick={triggerReset} aria-label="Reset Camera to Earth">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back to Earth
           </button>
         )}
-
-        <button className="btn-ghost" onClick={toggleCinematicMode} aria-pressed={cinematicMode}>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 7h16M4 17h16M7 4v16M17 4v16" />
-          </svg>
-          {cinematicMode ? "Exit Cinema" : "Cinema"}
-        </button>
-
-        <button className="btn-ghost" onClick={onToggleHud} aria-pressed={!hudVisible}>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            {hudVisible ? (
-              <>
-                <path d="M3 3l18 18" />
-                <path d="M10.6 10.6A2 2 0 0 0 12 14a2 2 0 0 0 1.4-.6" />
-                <path d="M9.9 4.2A10.6 10.6 0 0 1 12 4c5 0 9 5 9 8a8.7 8.7 0 0 1-2.1 3.9" />
-                <path d="M6.1 6.1C4.2 7.4 3 9.6 3 12c0 3 4 8 9 8 1.4 0 2.7-.4 3.9-1" />
-              </>
-            ) : (
-              <>
-                <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" />
-                <circle cx="12" cy="12" r="3" />
-              </>
-            )}
-          </svg>
-          HUD
+        
+        <div className="h-6 w-px bg-[var(--border-subtle)] mx-2" />
+        
+        <button 
+          onClick={() => setProfileOpen(true)}
+          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--accent-cyan)] transition-colors rounded hover:bg-white/5"
+          aria-label="Open User Profile"
+        >
+          <IconUserCircle size={22} stroke={1.5} />
         </button>
       </div>
 
@@ -179,6 +161,8 @@ export function Header({ hudVisible, onToggleHud }: HeaderProps) {
           <LiveClock />
         </span>
       </div>
+      
+      <UserProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </header>
   )
 }
