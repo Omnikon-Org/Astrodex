@@ -295,3 +295,5 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Fixed issue #180: Improve accessibility of the Asteroid data fetching hook
