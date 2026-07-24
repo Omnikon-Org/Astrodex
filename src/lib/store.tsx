@@ -41,6 +41,8 @@ export interface AppState {
   clearReset: () => void
   simulationRunning: boolean
   toggleSimulation: () => void
+  timeScaleMultiplier: number
+  setTimeScaleMultiplier: (m: number) => void
   riskLevel: "HIGH" | "MEDIUM" | "LOW"
 
   // UI & Panel Toggles
@@ -138,7 +140,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setLeftSidebarOpen(false)
       setRightSidebarOpen(false)
     })
-    return () => cancelAnimationFrame(frame)
   }, [])
 
   // Action Handlers
@@ -171,7 +172,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
     asteroidDataRef.current = data
-    setAsteroidCatalog(data)
   }, [])
 
   const searchAsteroidById = useCallback((id: number) => {
@@ -255,12 +255,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedAsteroid,
         claimedAsteroids,
         selectAsteroid,
+        selectNextAsteroid,
+        selectPrevAsteroid,
         claimAsteroid,
         resetCamera,
         triggerReset,
         clearReset,
         simulationRunning,
         toggleSimulation,
+        timeScaleMultiplier,
+        setTimeScaleMultiplier,
         riskLevel,
         leftSidebarOpen,
         rightSidebarOpen,
@@ -270,7 +274,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleTerminal,
         searchAsteroidById,
         registerAsteroidData,
-        asteroidCatalog,
         filterType,
         setFilterType,
         satAltitude,
@@ -284,14 +287,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         boostCount,
         deltaVCount,
         triggerDeltaVLog,
-        cinematicMode,
-        toggleCinematicMode,
-        cameraFov,
-        setCameraFov,
-        autoRotate,
-        toggleAutoRotate,
-        bloomIntensity,
-        setBloomIntensity,
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,

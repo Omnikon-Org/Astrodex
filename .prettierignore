@@ -1,6 +1,7 @@
-node_modules
 .next
+dist
+node_modules
 out
 build
-coverage
 *.min.js
+coverage

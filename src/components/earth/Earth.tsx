@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect, useMemo } from "react"
+import { useRef, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import {
@@ -14,12 +14,10 @@ const vertexShader = `
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
-varying vec3 vWorldNormal;
 
 void main() {
   vUv = uv;
   vNormal = normalize(normalMatrix * normal);
-  vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
   vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
@@ -35,14 +33,12 @@ uniform vec3 sunDirection;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
-varying vec3 vWorldNormal;
 
 void main() {
-  vec3 normal = normalize(vNormal); // For specular
-  vec3 worldNormal = normalize(vWorldNormal);
+  vec3 normal = normalize(vNormal);
   vec3 sunDir = normalize(sunDirection);
 
-  float NdotL = dot(worldNormal, sunDir);
+  float NdotL = dot(normal, sunDir);
 
   vec3 dayColor = texture2D(dayTexture, vUv).rgb;
   vec3 nightColor = texture2D(nightTexture, vUv).rgb;
@@ -54,14 +50,14 @@ void main() {
   float cloudShadow = texture2D(cloudShadowTexture, vUv + shadowOffset).r;
   float shadowFactor = 1.0 - cloudShadow * 0.35 * step(0.0, NdotL);
 
-  float dayMix = clamp(NdotL * 1.2 + 0.1, 0.0, 1.0);
+  float dayMix = clamp(NdotL * 1.5 + 0.1, 0.0, 1.0);
 
   float twilight = 1.0 - abs(NdotL);
-  twilight = smoothstep(0.0, 0.6, twilight);
-  vec3 twilightColor = vec3(0.9, 0.4, 0.1) * twilight * 0.5;
+  twilight = smoothstep(0.0, 0.7, twilight);
+  vec3 twilightColor = vec3(1.0, 0.5, 0.2) * twilight * 0.7;
 
-  vec3 warmNight = nightColor * vec3(1.55, 1.05, 0.55) * 0.20;
-  vec3 color = mix(warmNight, dayColor * shadowFactor, dayMix);
+  vec3 warmNight = nightColor * vec3(1.7, 1.2, 0.6) * 0.25;
+  vec3 color = mix(warmNight, dayColor, dayMix);
   color += twilightColor;
 
   vec3 viewDir = normalize(-vPosition);
@@ -79,14 +75,25 @@ interface EarthProps {
   sunDirection: THREE.Vector3
 }
 
+function makeDefaultTexture() {
+  const canvas = document.createElement("canvas")
+  canvas.width = 2
+  canvas.height = 2
+  const ctx = canvas.getContext("2d")!
+  ctx.fillStyle = "#4488cc"
+  ctx.fillRect(0, 0, 2, 2)
+  return new THREE.CanvasTexture(canvas)
+}
+
 export function Earth({ sunDirection }: EarthProps) {
   const meshRef = useRef<THREE.Mesh>(null)
 
-  const uniforms = useMemo(() => {
+  const [uniforms] = useState(() => {
     const day = new THREE.CanvasTexture(createProceduralEarthTexture())
     const night = new THREE.CanvasTexture(createProceduralNightTexture())
     const spec = new THREE.CanvasTexture(createProceduralSpecularTexture())
     const cloud = new THREE.CanvasTexture(createProceduralCloudTexture())
+    
     return {
       dayTexture: { value: day },
       nightTexture: { value: night },
@@ -94,26 +101,20 @@ export function Earth({ sunDirection }: EarthProps) {
       cloudShadowTexture: { value: cloud },
       sunDirection: { value: sunDirection.clone() },
     }
-  }, [sunDirection])
+  })
 
   useEffect(() => {
-    return () => {
-      uniforms.dayTexture.value.dispose()
-      uniforms.nightTexture.value.dispose()
-      uniforms.specularTexture.value.dispose()
-      uniforms.cloudShadowTexture.value.dispose()
-    }
-  }, [uniforms])
+    uniforms.sunDirection.value.copy(sunDirection)
+  }, [sunDirection, uniforms])
 
   useFrame((_, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.05
     }
-    uniforms.sunDirection.value.copy(sunDirection)
   })
 
   return (
-    <mesh ref={meshRef} renderOrder={1}>
+    <mesh ref={meshRef}>
       <sphereGeometry args={[1.8, 64, 64]} />
       <shaderMaterial
         uniforms={uniforms}

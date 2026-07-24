@@ -5,58 +5,58 @@ import { useThree, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { useAppState } from "@/lib/store"
 import { trackedPosition } from "./AsteroidField"
+import { calculateCameraTargets } from "@/lib/cameraLogic"
 
 const EARTH_POSITION = new THREE.Vector3(0, 0, 6)
 const EARTH_TARGET = new THREE.Vector3(0, 0, 0)
 const _offset = new THREE.Vector3()
 const _lookTarget = new THREE.Vector3()
-const _shake = new THREE.Vector3()
 
 export function CameraController() {
   const { camera } = useThree()
-  const { selectedAsteroid, resetCamera, clearReset, reduceMotion } = useAppState()
+  const { selectedAsteroid, resetCamera, clearReset } = useAppState()
   const targetPos = useRef(EARTH_POSITION.clone())
   const targetLook = useRef(EARTH_TARGET.clone())
-  const lastTargetPos = useRef(EARTH_POSITION.clone())
-  const shakeTime = useRef(0)
-  
+  const hasSelection = useRef(false)
 
   useEffect(() => {
     if (resetCamera) {
+      hasSelection.current = false
+      targetPos.current.copy(EARTH_POSITION)
+      targetLook.current.copy(EARTH_TARGET)
       clearReset()
     }
   }, [resetCamera, clearReset])
 
+  useEffect(() => {
+    if (selectedAsteroid) {
+      hasSelection.current = true
+    }
+  }, [selectedAsteroid])
 
   useFrame((_, delta) => {
-    if (selectedAsteroid) {
-      const pos = trackedPosition.current
-      if (pos.lengthSq() > 0) {
-        targetLook.current.copy(pos)
-        _offset.copy(pos).normalize().multiplyScalar(1.5)
-        targetPos.current.copy(pos).add(_offset)
-      }
-    } else{
-      targetPos.current.copy(EARTH_POSITION)
-      targetLook.current.copy(EARTH_TARGET)
+    const { targetPos: newPos, targetLook: newLook } = calculateCameraTargets(
+      hasSelection.current,
+      trackedPosition.current,
+      targetPos.current,
+      targetLook.current
+    )
+    
+    targetPos.current.copy(newPos)
+    targetLook.current.copy(newLook)
+
+    camera.position.lerp(targetPos.current, 3 * delta)
+    
+    const dist = camera.position.distanceTo(targetPos.current)
+    if (dist > 0.5) {
+      const shakeAmt = Math.min(dist * 0.002, 0.02)
+      const t = _.clock.getElapsedTime() * 30
+      camera.position.x += Math.sin(t) * shakeAmt
+      camera.position.y += Math.cos(t * 1.2) * shakeAmt
+      camera.position.z += Math.sin(t * 0.8) * shakeAmt
     }
 
-    if (reduceMotion) {
-      camera.position.copy(targetPos.current)
-    } else {
-      camera.position.lerp(targetPos.current, 3 * delta)
-    }
     _lookTarget.copy(targetLook.current)
-    if (shakeTime.current > 0) {
-      const amp = shakeTime.current * 0.018
-      _shake.set(
-        Math.sin(shakeTime.current * 80) * amp,
-        Math.cos(shakeTime.current * 97) * amp,
-        0
-      )
-      camera.position.add(_shake)
-      shakeTime.current = Math.max(0, shakeTime.current - delta)
-    }
     camera.lookAt(_lookTarget)
   })
 

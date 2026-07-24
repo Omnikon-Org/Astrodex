@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useAppState } from "@/lib/store"
+import { UserProfileModal } from "./UserProfileModal"
+import { IconUserCircle } from "@tabler/icons-react"
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -27,7 +29,8 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, reduceMotion, toggleReduceMotion } = useAppState()
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
     <header
@@ -42,7 +45,7 @@ export function Header() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 var(--header-x-padding)",
+        padding: "0 20px",
         borderTop: "none",
         borderLeft: "none",
         borderRight: "none",
@@ -80,8 +83,6 @@ export function Header() {
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
         <button className="btn-primary" onClick={toggleSimulation}>
           <svg
-            role="img"
-            aria-label={simulationRunning ? "Pause icon" : "Play icon"}
             width="12"
             height="12"
             viewBox="0 0 24 24"
@@ -103,12 +104,12 @@ export function Header() {
           {simulationRunning ? "Pause Simulation" : "Run Simulation"}
         </button>
 
-        <div role="status" className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+        <div className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
           Risk: {riskLevel}
         </div>
 
         {/* Connection indicator */}
-        <div role="status" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
           <div
             style={{
               width: 6,
@@ -132,26 +133,22 @@ export function Header() {
         </div>
 
         {selectedAsteroid && (
-          <button className="btn-ghost" onClick={triggerReset}>
-            <svg role="img" aria-label="Back icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <button className="btn-ghost" onClick={triggerReset} aria-label="Reset Camera to Earth">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back to Earth
           </button>
         )}
-
+        
+        <div className="h-6 w-px bg-[var(--border-subtle)] mx-2" />
+        
         <button 
-          className="btn-ghost" 
-          onClick={toggleReduceMotion}
-          aria-pressed={reduceMotion}
-          title={reduceMotion ? "Enable Motion" : "Reduce Motion"}
+          onClick={() => setProfileOpen(true)}
+          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--accent-cyan)] transition-colors rounded hover:bg-white/5"
+          aria-label="Open User Profile"
         >
-          {reduceMotion ? (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-          ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-          )}
-          {reduceMotion ? "Motion: Reduced" : "Motion: Full"}
+          <IconUserCircle size={22} stroke={1.5} />
         </button>
       </div>
 
@@ -164,6 +161,8 @@ export function Header() {
           <LiveClock />
         </span>
       </div>
+      
+      <UserProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </header>
   )
 }

@@ -1,12 +1,41 @@
 "use client"
 
-import { useCallback } from "react"
+import { useRef, useMemo, useCallback, useEffect } from "react"
+import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
-import { ThreeEvent } from "@react-three/fiber"
 import type { AsteroidData } from "@/lib/types"
-import { useOrbitalObjects, ASTEROID_COUNT, DEBRIS_COUNT } from "@/hooks/useOrbitalObjects"
+import { checkCollision } from "@/lib/collision"
+import { useAppState } from "@/lib/store"
+import { satellitePositions } from "./SatelliteSystem"
+import {
+  solveKepler,
+  visViva,
+  meanMotion,
+  SCENE_TIME_SCALE,
+  velocityToKmPerSec,
+  KM_PER_UNIT_CONST,
+} from "@/lib/kepler"
+import { ASTEROID_COUNT, DEBRIS_COUNT, TOTAL_COUNT, generateOrbitalObjectData } from "@/lib/dataPipeline"
 
+const ASTEROID_COLORS = ["#8B8B8B", "#A0522D", "#6B6B6B", "#B8860B", "#696969"]
+const DEBRIS_COLORS = ["#ff5500", "#ffaa00", "#00d5ff", "#e100ff", "#ffffff"]
+
+const dummy = new THREE.Object3D()
+const colorObj = new THREE.Color()
+
+// Shared ref for camera tracking — only the selected object's position
 export const trackedPosition = { current: new THREE.Vector3() }
+
+// Module-level scratch — reused every frame for 600 instances to avoid GC pressure
+const _objPos = new THREE.Vector3()
+
+// Satellite position lookup table — hoisted out of useFrame so the array
+// literal isn't rebuilt 60 times per second
+const SAT_POSITIONS = [
+  { name: "ISS (ZARYA)", pos: satellitePositions.iss },
+  { name: "Envisat", pos: satellitePositions.envisat },
+  { name: "Hubble", pos: satellitePositions.hubble },
+]
 
 interface AsteroidFieldProps {
   onAsteroidClick: (data: AsteroidData) => void
@@ -14,62 +43,204 @@ interface AsteroidFieldProps {
 }
 
 export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFieldProps) {
-  const { asteroidMeshRef, debrisMeshRef, dataRef } = useOrbitalObjects(getSelectedIndex)
+  const asteroidMeshRef = useRef<THREE.InstancedMesh>(null)
+  const debrisMeshRef = useRef<THREE.InstancedMesh>(null)
+  const anglesRef = useRef<number[]>(new Array(TOTAL_COUNT).fill(0))
+
+  // Cached "at risk" state per object — colors are only re-pushed on transitions
+  const prevAtRiskRef = useRef<boolean[]>(new Array(TOTAL_COUNT).fill(false))
+
+  const { registerAsteroidData, simulationRunning, filterType, addConjunctionAlert } = useAppState()
+
+  // Track alert timestamps per object index to avoid spamming the feed
+  const lastAlertTimesRef = useRef<Record<number, number>>({})
+
+  const data = useMemo(() => {
+    const d: AsteroidData[] = []
+    for (let i = 0; i < TOTAL_COUNT; i++) {
+      d.push(generateOrbitalObjectData(i))
+    }
+    return d
+  }, [])
+
+  const dataRef = useRef(data)
+  useEffect(() => {
+    dataRef.current = data
+  }, [data])
+
+  // Register data in the store on mount
+  useEffect(() => {
+    registerAsteroidData(data)
+  }, [data, registerAsteroidData])
+
+  // Initialize colors
+  useEffect(() => {
+    const updateColors = (mesh: THREE.InstancedMesh | null, start: number, count: number, colors: string[]) => {
+      if (!mesh) return
+      for (let i = 0; i < count; i++) {
+        const objIndex = start + i
+        colorObj.set(colors[objIndex % colors.length])
+        mesh.setColorAt(i, colorObj)
+      }
+      if (mesh.instanceColor) {
+        mesh.instanceColor.needsUpdate = true
+      }
+    }
+
+    updateColors(asteroidMeshRef.current, 0, ASTEROID_COUNT, ASTEROID_COLORS)
+    updateColors(debrisMeshRef.current, ASTEROID_COUNT, DEBRIS_COUNT, DEBRIS_COLORS)
+  }, [])
+
+  useFrame((state, delta) => {
+    const asteroidMesh = asteroidMeshRef.current
+    const debrisMesh = debrisMeshRef.current
+    if (!asteroidMesh || !debrisMesh) return
+
+    const selectedIdx = getSelectedIndex()
+    const t = state.clock.getElapsedTime()
+    const prevAtRisk = prevAtRiskRef.current
+    const deltaScaled = delta * SCENE_TIME_SCALE
+
+    for (let i = 0; i < TOTAL_COUNT; i++) {
+      const ad = dataRef.current[i]
+      const isDebris = ad.type === "debris"
+      const instanceIndex = isDebris ? i - ASTEROID_COUNT : i
+
+      // 1. Keplerian propagation: M = n·t + M0  →  solve Kepler for E
+      if (selectedIdx !== i && simulationRunning) {
+        const n = meanMotion(ad.orbitRadius)
+        anglesRef.current[i] = solveKepler(n * t * deltaScaled + ad.meanAnomaly0, ad.eccentricity)
+      }
+
+      const E = anglesRef.current[i]
+      const a = ad.orbitRadius
+      const e = ad.eccentricity
+      const cosE = Math.cos(E)
+      const sinE = Math.sin(E)
+      const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+
+      // In-plane perifocal coordinates of the ellipse
+      const xPlane = a * (cosE - e)
+      const zPlane = a * sqrt1me2 * sinE
+
+      // Apply inclination tilt to break the orbit out of the xz plane
+      _objPos.set(xPlane, zPlane * ad.inclination, zPlane)
+
+      dummy.position.copy(_objPos)
+      dummy.rotation.x = E * 0.5
+      dummy.rotation.z = E * 0.3
+
+      // 2. Filter rendering scale
+      let activeScale = ad.scale
+      if (filterType === "ASTEROIDS" && isDebris) {
+        activeScale = 0
+      } else if (filterType === "DEBRIS" && !isDebris) {
+        activeScale = 0
+      }
+      dummy.scale.setScalar(activeScale)
+      dummy.updateMatrix()
+
+      const targetMesh = isDebris ? debrisMesh : asteroidMesh
+      targetMesh.setMatrixAt(instanceIndex, dummy.matrix)
+
+      // 3. Collision check with satellites
+      const { atRisk, closestSat, minDistance } = checkCollision(_objPos, SAT_POSITIONS)
+
+      ad.atRisk = atRisk
+
+      // Handle conjunction alerts in the store (throttle to once per 8 seconds per object)
+      if (atRisk && simulationRunning && activeScale > 0) {
+        const lastAlert = lastAlertTimesRef.current[i] || 0
+        if (t - lastAlert > 8) {
+          lastAlertTimesRef.current[i] = t
+
+          // Miss distance representation in kilometers (0.15 units ≈ 500 km)
+          const missKm = (minDistance * KM_PER_UNIT_CONST).toFixed(1)
+          const riskLevel = minDistance < 0.05 ? "HIGH" : minDistance < 0.1 ? "MEDIUM" : "LOW"
+
+          addConjunctionAlert({
+            tca: "now",
+            missKm,
+            risk: riskLevel,
+            secondaryId: ad.id,
+            secondaryName: ad.name,
+            type: ad.type,
+            satelliteName: closestSat,
+          })
+        }
+      }
+
+      // 4. Color updates ONLY on atRisk transitions (perf optimization)
+      if (atRisk && activeScale > 0) {
+        const pulse = Math.sin(t * 8) * 0.5 + 0.5
+        colorObj.setRGB(1.0, pulse * 0.3, pulse * 0.3) // pulsing red
+        targetMesh.setColorAt(instanceIndex, colorObj)
+        prevAtRisk[i] = true
+      } else if (prevAtRisk[i]) {
+        // Reset to default on transition out of at-risk
+        const defaultColorList = isDebris ? DEBRIS_COLORS : ASTEROID_COLORS
+        colorObj.set(defaultColorList[i % defaultColorList.length])
+        targetMesh.setColorAt(instanceIndex, colorObj)
+        prevAtRisk[i] = false
+      }
+
+      // 5. Vis-Viva speed for HUD telemetry
+      const r = _objPos.length()
+      if (r > 0 && selectedIdx === i) {
+        const v = visViva(r, a)
+        ad.velocity = `${velocityToKmPerSec(v).toFixed(2)} km/s`
+      }
+
+      // 6. Track position of selected object for camera
+      if (i === selectedIdx) {
+        trackedPosition.current.copy(_objPos)
+      }
+    }
+
+    asteroidMesh.instanceMatrix.needsUpdate = true
+    debrisMesh.instanceMatrix.needsUpdate = true
+    if (asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
+    if (debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
+  })
 
   const handleAsteroidClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
+    (e: import("@react-three/fiber").ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
-
-      const lookup = typeIndex === 0 ? asteroidLookupRef.current : debrisLookupRef.current
-      const globalIndex = lookup[tierIndex][e.instanceId]
-      if (globalIndex === undefined) return
-
-      onAsteroidClick(dataRef.current[globalIndex])
+      onAsteroidClick(dataRef.current[e.instanceId])
     },
-    [onAsteroidClick, dataRef]
+    [onAsteroidClick]
   )
 
   const handleDebrisClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
+    (e: import("@react-three/fiber").ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
       onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
     },
-    [onAsteroidClick, dataRef]
+    [onAsteroidClick]
   )
 
   return (
     <>
-      {trailGeometries.map(({ item, geometry }) => {
-        const highlighted = selectedAsteroid?.id === item.id
-        return (
-          <lineLoop key={`trail-${item.id}`} geometry={geometry}>
-            <lineDashedMaterial
-              color={highlighted ? "#38bdf8" : "#34d399"}
-              opacity={highlighted ? 0.5 : 0.24}
-              transparent
-              dashSize={0.08}
-              gapSize={0.07}
-            />
-          </lineLoop>
-        )
-      })}
-
+      {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
         ref={asteroidMeshRef}
-        args={[undefined as any, undefined as any, ASTEROID_COUNT]}
+        args={[undefined as unknown as THREE.BufferGeometry, undefined as unknown as THREE.Material, ASTEROID_COUNT]}
         onClick={handleAsteroidClick}
         frustumCulled={false}
       >
-        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_HIGH} />
+        <dodecahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial roughness={0.9} metalness={0.1} flatShading />
       </instancedMesh>
 
+      {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
       <instancedMesh
         ref={debrisMeshRef}
-        args={[undefined as any, undefined as any, DEBRIS_COUNT]}
+        args={[undefined as unknown as THREE.BufferGeometry, undefined as unknown as THREE.Material, DEBRIS_COUNT]}
         onClick={handleDebrisClick}
         frustumCulled={false}
       >
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+        <boxGeometry args={[0.7, 0.7, 0.7]} />
+        <meshStandardMaterial roughness={0.2} metalness={0.9} envMapIntensity={1.5} />
       </instancedMesh>
     </>
   )
