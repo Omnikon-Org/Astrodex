@@ -35,55 +35,21 @@ export function Header({ hudVisible, onToggleHud }: HeaderProps) {
   const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, cinematicMode, toggleCinematicMode } = useAppState()
 
   return (
-    <header
-      className="glass-panel-flat"
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        height: "var(--header-height)",
-        zIndex: 50,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 var(--header-x-padding)",
-        borderTop: "none",
-        borderLeft: "none",
-        borderRight: "none",
-        borderRadius: 0,
-        borderBottom: "1px solid var(--glass-border)",
-        boxShadow: "0 1px 20px rgba(0, 0, 0, 0.5)",
-      }}
-    >
+    <header className="fixed top-0 left-0 right-0 h-[var(--header-height)] z-50 flex items-center justify-between px-5 bg-[#0a101ce6] backdrop-blur-[20px] border-b border-white/10 shadow-[0_1px_20px_rgba(0,0,0,0.5)]">
       {/* Left: Brand */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div
-          className="animate-pulse-glow"
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: "var(--accent-cyan)",
-          }}
-        />
-        <h1
-          style={{
-            fontSize: 18,
-            fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "var(--text-primary)",
-            fontStyle: "italic",
-          }}
-        >
-          Astro<span style={{ color: "var(--accent-cyan)", fontWeight: 400 }}>Dex</span>
+      <div className="flex items-center gap-2.5">
+        <div className="w-2 h-2 rounded-full bg-sky-400 animate-pulse-glow" />
+        <h1 className="text-lg font-bold tracking-[0.14em] uppercase text-white/90 italic">
+          Astro<span className="text-sky-400 font-normal">Dex</span>
         </h1>
       </div>
 
       {/* Center: Controls */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <button className="btn-primary" onClick={toggleSimulation}>
+      <div className="flex items-center gap-3.5">
+        <button
+          className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 bg-sky-400/15 border border-sky-400/30 rounded-md text-sky-400 text-xs font-semibold tracking-[0.04em] cursor-pointer transition-all duration-200 hover:bg-sky-400/20 hover:border-sky-400/50 hover:shadow-[0_0_12px_rgba(56,189,248,0.15)]"
+          onClick={toggleSimulation}
+        >
           <svg
             width="12"
             height="12"
@@ -106,36 +72,35 @@ export function Header({ hudVisible, onToggleHud }: HeaderProps) {
           {simulationRunning ? "Pause Simulation" : "Run Simulation"}
         </button>
 
-        <div className={`badge ${riskLevel === "HIGH" ? "badge-high" : riskLevel === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+        <div
+          className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold tracking-[0.08em] uppercase ${
+            riskLevel === "HIGH"
+              ? "bg-red-400/15 border border-red-400/30 text-red-400"
+              : riskLevel === "MEDIUM"
+              ? "bg-amber-400/15 border border-amber-400/30 text-amber-400"
+              : "bg-emerald-400/15 border border-emerald-400/30 text-emerald-400"
+          }`}
+        >
           Risk: {riskLevel}
         </div>
 
         {/* Connection indicator */}
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <div className="flex items-center gap-1.5">
           <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: simulationRunning ? "var(--accent-green)" : "var(--accent-amber)",
-              boxShadow: simulationRunning
-                ? "0 0 6px rgba(52, 211, 153, 0.5)"
-                : "0 0 6px rgba(251, 191, 36, 0.5)",
-            }}
+            className={`w-1.5 h-1.5 rounded-full ${
+              simulationRunning ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.5)]" : "bg-amber-400 shadow-[0_0_6px_rgba(251,191,36,0.5)]"
+            }`}
           />
-          <span
-            style={{
-              fontSize: 10,
-              color: "var(--text-muted)",
-              letterSpacing: "0.04em",
-            }}
-          >
+          <span className="text-[10px] text-white/40 tracking-[0.04em]">
             {simulationRunning ? "LIVE" : "PAUSED"}
           </span>
         </div>
 
         {selectedAsteroid && (
-          <button className="btn-ghost" onClick={triggerReset}>
+          <button
+            className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 bg-transparent border border-white/5 rounded-md text-white/60 text-[11px] font-medium cursor-pointer transition-all duration-200 hover:bg-white/5 hover:border-white/10 hover:text-white/90"
+            onClick={triggerReset}
+          >
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
@@ -171,11 +136,11 @@ export function Header({ hudVisible, onToggleHud }: HeaderProps) {
       </div>
 
       {/* Right: Clock */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] text-white/40 tracking-[0.04em]">
           Last updated:
         </span>
-        <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+        <span className="text-[13px] text-white/60 font-medium">
           <LiveClock />
         </span>
       </div>
