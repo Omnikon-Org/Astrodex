@@ -7,11 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-=======
+"test": "vitest",
+    =======
 "analyze": "ANALYZE=true next build",
     "analyze": "ANALYZE=true next build",
->>>>>>> upstream/main
     "format": "prettier --write ."
+>>>>>>> upstream/main
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -30,13 +31,18 @@
 "@next/bundle-analyzer": "^16.2.11",
     "@next/bundle-analyzer": "^16.2.10",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.184.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
-<<<<<<< HEAD
+"jsdom": "^29.1.1",
+    <<<<<<< HEAD
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.6",
     "prettier": "^3.9.5",
