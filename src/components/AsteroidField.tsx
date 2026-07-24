@@ -2,6 +2,7 @@
 
 import { useRef, useMemo, useCallback, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
+import { Line } from "@react-three/drei"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
 import { useAppState } from "@/lib/store"
@@ -14,6 +15,7 @@ import {
   velocityToKmPerSec,
   KM_PER_UNIT_CONST,
 } from "@/lib/kepler"
+import { createProceduralAsteroidNormalMap } from "./earth/textures"
 
 const ASTEROID_COUNT = 400
 const DEBRIS_COUNT = 200
@@ -52,6 +54,9 @@ function generateOrbitalObjectData(index: number): AsteroidData {
     atRisk: false,
     eccentricity: isDebris ? Math.random() * 0.18 : Math.random() * 0.28,
     meanAnomaly0: Math.random() * Math.PI * 2,
+    rotSpeedX: (Math.random() - 0.5) * 1.5,
+    rotSpeedY: (Math.random() - 0.5) * 1.5,
+    rotSpeedZ: (Math.random() - 0.5) * 1.5,
   }
 }
 
@@ -100,6 +105,15 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     anglesRef.current = a
     prevAtRiskRef.current = new Array(TOTAL_COUNT).fill(false)
     return d
+  }, [])
+
+  const normalMapTexture = useMemo(() => {
+    if (typeof document === 'undefined') return null
+    const canvas = createProceduralAsteroidNormalMap()
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.wrapS = THREE.RepeatWrapping
+    tex.wrapT = THREE.RepeatWrapping
+    return tex
   }, [])
 
   const dataRef = useRef(data)
@@ -166,8 +180,9 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       _objPos.set(xPlane, zPlane * ad.inclination, zPlane)
 
       dummy.position.copy(_objPos)
-      dummy.rotation.x = E * 0.5
-      dummy.rotation.z = E * 0.3
+      dummy.rotation.x = t * ad.rotSpeedX
+      dummy.rotation.y = t * ad.rotSpeedY
+      dummy.rotation.z = t * ad.rotSpeedZ
 
       // 2. Filter rendering scale
       let activeScale = ad.scale
@@ -275,8 +290,36 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     [onAsteroidClick]
   )
 
+  const { claimedAsteroids } = useAppState()
+  const trails = useMemo(() => {
+    return Array.from(claimedAsteroids).map((id) => {
+      const ad = dataRef.current.find((a) => a.id === id)
+      if (!ad) return null
+
+      const pts = []
+      const a = ad.orbitRadius
+      const e = ad.eccentricity
+      const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+      const incl = ad.inclination
+
+      for (let i = 0; i <= 64; i++) {
+        const E = (i / 64) * Math.PI * 2
+        const cosE = Math.cos(E)
+        const sinE = Math.sin(E)
+        const xPlane = a * (cosE - e)
+        const zPlane = a * sqrt1me2 * sinE
+        pts.push(new THREE.Vector3(xPlane, zPlane * incl, zPlane))
+      }
+
+      return (
+        <Line key={id} points={pts} color="#00ffff" lineWidth={1} transparent opacity={0.4} />
+      )
+    })
+  }, [claimedAsteroids])
+
   return (
     <>
+      {trails}
       {/* ─── Asteroids Field (Rocky) ─── */}
       <instancedMesh
         ref={asteroidMeshRef}
@@ -285,7 +328,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         frustumCulled={false}
       >
         <dodecahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+        <meshStandardMaterial roughness={0.8} metalness={0.2} normalMap={normalMapTexture || undefined} normalScale={new THREE.Vector2(0.5, 0.5)} />
       </instancedMesh>
 
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
@@ -296,7 +339,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         frustumCulled={false}
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+        <meshStandardMaterial roughness={0.4} metalness={0.8} normalMap={normalMapTexture || undefined} normalScale={new THREE.Vector2(0.3, 0.3)} />
       </instancedMesh>
     </>
   )
