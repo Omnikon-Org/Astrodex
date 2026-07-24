@@ -16,13 +16,36 @@ export interface ConjunctionAlert {
   satelliteName: string
 }
 
+interface LeaderboardEntry {
+  user_id: string
+  user_name: string
+  avatar_url: string
+  claims_count: number
+}
+
+interface ClaimHistoryEntry {
+  id: string
+  user_id: string
+  user_name: string
+  asteroid_id: number
+  claimed_at: string
+}
+
+interface ClaimOwner {
+  user_id: string
+  user_name: string
+  avatar_url?: string
+}
+
 interface AppState {
   user: User | null
   loginWithGithub: () => Promise<void>
   loginWithGoogle: () => Promise<void>
   logout: () => Promise<void>
+  leaderboard: LeaderboardEntry[]
+  claimHistory: ClaimHistoryEntry[]
   selectedAsteroid: AsteroidData | null
-  claimedAsteroids: Set<number>
+  claimedAsteroids: Map<number, ClaimOwner>
   selectAsteroid: (a: AsteroidData | null) => void
   claimAsteroid: (id: number) => void
   resetCamera: boolean
@@ -73,6 +96,8 @@ interface AppState {
   conjunctions: ConjunctionAlert[]
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   clearConjunctions: () => void
+  reduceMotion: boolean
+  toggleReduceMotion: () => void
 }
 
 const AppContext = createContext<AppState | null>(null)
@@ -82,11 +107,14 @@ const LEO_CEILING_KM = 500 // hard upper bound for user-set altitude
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [claimHistory, setClaimHistory] = useState<ClaimHistoryEntry[]>([])
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
-  const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
+  const [claimedAsteroids, setClaimed] = useState<Map<number, ClaimOwner>>(new Map())
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
+  const [reduceMotion, setReduceMotion] = useState(false)
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
@@ -114,10 +142,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null)
     })
 
-    // Fetch initial claims
-    supabase.from('claims').select('asteroid_id').then(({ data, error }) => {
+    // Fetch initial claims with profiles (simulated via view or join)
+    supabase.from('claims_with_profiles').select('*').then(({ data, error }) => {
       if (!error && data) {
-        setClaimed(new Set(data.map(d => d.asteroid_id)))
+        const claimMap = new Map<number, ClaimOwner>()
+        for (const row of data) {
+          claimMap.set(row.asteroid_id, {
+            user_id: row.user_id,
+            user_name: row.user_name || 'Unknown',
+            avatar_url: row.avatar_url
+          })
+        }
+        setClaimed(claimMap)
+      }
+    })
+
+    // Fetch leaderboard
+    supabase.rpc('get_leaderboard').then(({ data, error }) => {
+      if (!error && data) {
+        setLeaderboard(data as LeaderboardEntry[])
+      }
+    })
+
+    // Fetch claim history
+    supabase.from('claim_history_view').select('*').order('claimed_at', { ascending: false }).limit(20).then(({ data, error }) => {
+      if (!error && data) {
+        setClaimHistory(data as ClaimHistoryEntry[])
       }
     })
 
@@ -125,9 +175,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const claimsChannel = supabase.channel('claims_channel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'claims' }, (payload) => {
         setClaimed((prev) => {
-          const next = new Set(prev)
+          const next = new Map(prev)
           if (payload.eventType === 'INSERT') {
-            next.add(payload.new.asteroid_id)
+            next.set(payload.new.asteroid_id, {
+              user_id: payload.new.user_id,
+              user_name: 'Unknown Explorer' // Would need to fetch profile or wait for broadcast
+            })
+            
+            // Optimistically update history if it's an insert
+            const newHistory: ClaimHistoryEntry = {
+              id: payload.new.id || Math.random().toString(),
+              user_id: payload.new.user_id,
+              user_name: 'Unknown Explorer',
+              asteroid_id: payload.new.asteroid_id,
+              claimed_at: payload.new.claimed_at || new Date().toISOString()
+            }
+            setClaimHistory((h) => [newHistory, ...h].slice(0, 20))
           } else if (payload.eventType === 'DELETE') {
             next.delete(payload.old.asteroid_id)
           }
@@ -169,11 +232,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
     lastClaimTime.current = now
 
     const isClaiming = !claimedAsteroids.has(id)
+    const ownerData: ClaimOwner = {
+      user_id: user.id,
+      user_name: user.user_metadata?.user_name || user.email?.split("@")[0] || 'Unknown',
+      avatar_url: user.user_metadata?.avatar_url
+    }
     
     // Optimistic UI Update
     setClaimed((prev) => {
-      const next = new Set(prev)
-      if (isClaiming) next.add(id)
+      const next = new Map(prev)
+      if (isClaiming) next.set(id, ownerData)
       else next.delete(id)
       return next
     })
@@ -194,9 +262,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       console.error("Failed to sync claim:", error)
       // Rollback Optimistic UI Update
       setClaimed((prev) => {
-        const next = new Set(prev)
+        const next = new Map(prev)
         if (isClaiming) next.delete(id)
-        else next.add(id)
+        else next.set(id, ownerData)
         return next
       })
     }
@@ -212,6 +280,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleLeftSidebar = useCallback(() => setLeftSidebarOpen((p) => !p), [])
   const toggleRightSidebar = useCallback(() => setRightSidebarOpen((p) => !p), [])
   const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
+  const toggleReduceMotion = useCallback(() => setReduceMotion((p) => !p), [])
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
     // Update the ref immediately so searchAsteroidById can access the latest
@@ -301,6 +370,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         loginWithGithub,
         loginWithGoogle,
         logout,
+        leaderboard,
+        claimHistory,
         selectedAsteroid,
         claimedAsteroids,
         selectAsteroid,
@@ -344,6 +415,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
+        reduceMotion,
+        toggleReduceMotion,
       }}
     >
       {children}
