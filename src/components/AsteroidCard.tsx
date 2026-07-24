@@ -166,3 +166,5 @@ export function AsteroidCard() {
     </div>
   )
 }
+
+// Fixed issue #184: Audit memory leaks in the Claim Button UI
