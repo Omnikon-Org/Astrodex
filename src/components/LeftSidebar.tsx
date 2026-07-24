@@ -351,16 +351,19 @@ export function LeftSidebar() {
                   </thead>
                   <tbody>
                     {filteredConjunctions.map((c) => (
-                      <tr key={c.id}>
+                      <tr key={c.id} style={{
+                        background: c.risk === "HIGH" ? "rgba(248, 113, 113, 0.1)" : c.risk === "MEDIUM" ? "rgba(251, 191, 36, 0.1)" : "transparent",
+                        transition: "background 0.3s ease"
+                      }}>
                         <td>
                           <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{c.satelliteName}</div>
                           <div style={{ fontSize: 9, color: c.type === "debris" ? "var(--accent-amber)" : "var(--text-muted)" }}>
                             vs {c.secondaryName}
                           </div>
                         </td>
-                        <td>{c.missKm} km</td>
+                        <td style={{ fontFamily: "var(--font-mono)", fontWeight: 500 }}>{c.missKm} km</td>
                         <td>
-                          <span className={`badge ${c.risk === "HIGH" ? "badge-high" : c.risk === "MEDIUM" ? "badge-medium" : "badge-low"}`}>
+                          <span className={`badge ${c.risk === "HIGH" ? "badge-high" : c.risk === "MEDIUM" ? "badge-medium" : "badge-low"}`} style={{ padding: "4px 8px", borderRadius: "var(--radius-lg)" }}>
                             {c.risk}
                           </span>
                         </td>
