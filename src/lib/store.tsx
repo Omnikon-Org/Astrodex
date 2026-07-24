@@ -25,62 +25,81 @@ export interface ConjunctionAlert {
   satelliteName: string
 }
 
-export interface AppState {
-  // Asteroid Selection & Catalog
+interface AppState {
+  /** The currently selected orbital object (asteroid or debris) for detailed inspection */
   selectedAsteroid: AsteroidData | null
+  /** Set of asteroid IDs that have been claimed by the user */
   claimedAsteroids: Set<number>
-  asteroidCatalog: AsteroidData[]
-  selectAsteroid: (asteroid: AsteroidData | null) => void
+  /** Updates the currently selected asteroid */
+  selectAsteroid: (a: AsteroidData | null) => void
+  /** Toggles the claim status for a given asteroid ID */
   claimAsteroid: (id: number) => void
+  /** Flag indicating if the camera should be reset to its default position */
+  resetCamera: boolean
+  /** Triggers a camera reset and clears the current asteroid selection */
+  triggerReset: () => void
+  /** Clears the reset camera flag after the reset animation completes */
+  clearReset: () => void
+  
+  // Simulation
+  /** Whether the orbital simulation is currently running or paused */
+  simulationRunning: boolean
+  /** Toggles the running state of the orbital simulation */
+  toggleSimulation: () => void
+  /** Global risk level based on the most severe active conjunction alert */
+  riskLevel: "HIGH" | "MEDIUM" | "LOW"
+  
+  // Panel toggles
+  /** Whether the left sidebar (HUD) is visible */
+  leftSidebarOpen: boolean
+  /** Whether the right sidebar (HUD) is visible */
+  rightSidebarOpen: boolean
+  /** Whether the agent terminal panel is expanded */
+  terminalExpanded: boolean
+  /** Toggles the left sidebar visibility */
+  toggleLeftSidebar: () => void
+  /** Toggles the right sidebar visibility */
+  toggleRightSidebar: () => void
+  /** Toggles the agent terminal expansion state */
+  toggleTerminal: () => void
+  
+  // Search by ID
+  /** Selects an asteroid by its unique ID and centers the camera on it */
   searchAsteroidById: (id: number) => void
+  /** Registers the initial batch of asteroid data generated for the simulation */
   registerAsteroidData: (data: AsteroidData[]) => void
 
-  // Camera & Simulation Controls
-  resetCamera: boolean
-  triggerReset: () => void
-  clearReset: () => void
-  simulationRunning: boolean
-  toggleSimulation: () => void
-  timeScaleMultiplier: number
-  setTimeScaleMultiplier: (m: number) => void
-  riskLevel: "HIGH" | "MEDIUM" | "LOW"
-
-  // UI & Panel Toggles
-  leftSidebarOpen: boolean
-  rightSidebarOpen: boolean
-  terminalExpanded: boolean
-  toggleLeftSidebar: () => void
-  toggleRightSidebar: () => void
-  toggleTerminal: () => void
-
-  // Space Debris Filters & Satellite Orbit Telemetry
+  // Space Debris Filters & Satellite Parameters
+  /** The current filter applied to the orbital objects rendering */
   filterType: "ALL" | "ASTEROIDS" | "DEBRIS"
-  setFilterType: (filter: "ALL" | "ASTEROIDS" | "DEBRIS") => void
+  /** Updates the filter type for rendering orbital objects */
+  setFilterType: (f: "ALL" | "ASTEROIDS" | "DEBRIS") => void
+  /** The altitude of the user's satellite in kilometers */
   satAltitude: number
+  /** The orbital inclination of the user's satellite in degrees */
   satInclination: number
+  /** The Right Ascension of the Ascending Node (RAAN) in degrees */
   satRaan: number
+  /** The eccentricity of the satellite's orbit */
   satEccentricity: number
+  /** Updates the primary orbital parameters of the satellite */
   updateSatelliteParams: (alt: number, inc: number, raan: number) => void
+  /** Updates just the eccentricity of the satellite's orbit */
   updateSatelliteEccentricity: (e: number) => void
+  
+  /** Decrement the ISS altitude by `amount` km, clamped to the LEO floor. */
   decayAltitude: (amount: number) => void
   boostBurn: (deltaKm: number) => void
   boostCount: number
   deltaVCount: number
+  /** Triggers a log event for Δv budget calculations */
   triggerDeltaVLog: () => void
-
-  // Cinematic & Visual FX Settings
-  cinematicMode: boolean
-  toggleCinematicMode: () => void
-  cameraFov: number
-  setCameraFov: (fov: number) => void
-  autoRotate: boolean
-  toggleAutoRotate: () => void
-  bloomIntensity: number
-  setBloomIntensity: (intensity: number) => void
-
-  // Conjunction Alert System
+  
+  /** List of active orbital conjunction (collision risk) alerts */
   conjunctions: ConjunctionAlert[]
+  /** Adds a new conjunction alert to the feed, updating the global risk level if necessary */
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
+  /** Clears all active conjunction alerts and resets global risk level to LOW */
   clearConjunctions: () => void
 }
 
