@@ -1,7 +1,9 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useRef, type ReactNode, useEffect } from "react"
 import type { AsteroidData } from "./types"
+import { supabase } from "./supabase"
+import type { User } from "@supabase/supabase-js"
 
 export interface ConjunctionAlert {
   id: number
@@ -14,9 +16,36 @@ export interface ConjunctionAlert {
   satelliteName: string
 }
 
+interface LeaderboardEntry {
+  user_id: string
+  user_name: string
+  avatar_url: string
+  claims_count: number
+}
+
+interface ClaimHistoryEntry {
+  id: string
+  user_id: string
+  user_name: string
+  asteroid_id: number
+  claimed_at: string
+}
+
+interface ClaimOwner {
+  user_id: string
+  user_name: string
+  avatar_url?: string
+}
+
 interface AppState {
+  user: User | null
+  loginWithGithub: () => Promise<void>
+  loginWithGoogle: () => Promise<void>
+  logout: () => Promise<void>
+  leaderboard: LeaderboardEntry[]
+  claimHistory: ClaimHistoryEntry[]
   selectedAsteroid: AsteroidData | null
-  claimedAsteroids: Set<number>
+  claimedAsteroids: Map<number, ClaimOwner>
   selectAsteroid: (a: AsteroidData | null) => void
   claimAsteroid: (id: number) => void
   resetCamera: boolean
@@ -77,8 +106,11 @@ const LEO_FLOOR_KM = 180 // cannot decay below ~180 km (re-entry threshold)
 const LEO_CEILING_KM = 500 // hard upper bound for user-set altitude
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [claimHistory, setClaimHistory] = useState<ClaimHistoryEntry[]>([])
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
-  const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
+  const [claimedAsteroids, setClaimed] = useState<Map<number, ClaimOwner>>(new Map())
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
@@ -101,31 +133,142 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
   const nextAlertId = useRef(1)
 
-  // Cinematic state
-  const [cinematicMode, setCinematicMode] = useState(false)
-  const [cameraFov, setCameraFov] = useState(75)
-  const [autoRotate, setAutoRotate] = useState(false)
-  const [bloomIntensity, setBloomIntensity] = useState(1.0)
-
   useEffect(() => {
-    if (window.innerWidth >= 768) return
-    const frame = requestAnimationFrame(() => {
-      setLeftSidebarOpen(false)
-      setRightSidebarOpen(false)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
     })
-    return () => cancelAnimationFrame(frame)
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    // Fetch initial claims with profiles (simulated via view or join)
+    supabase.from('claims_with_profiles').select('*').then(({ data, error }) => {
+      if (!error && data) {
+        const claimMap = new Map<number, ClaimOwner>()
+        for (const row of data) {
+          claimMap.set(row.asteroid_id, {
+            user_id: row.user_id,
+            user_name: row.user_name || 'Unknown',
+            avatar_url: row.avatar_url
+          })
+        }
+        setClaimed(claimMap)
+      }
+    })
+
+    // Fetch leaderboard
+    supabase.rpc('get_leaderboard').then(({ data, error }) => {
+      if (!error && data) {
+        setLeaderboard(data as LeaderboardEntry[])
+      }
+    })
+
+    // Fetch claim history
+    supabase.from('claim_history_view').select('*').order('claimed_at', { ascending: false }).limit(20).then(({ data, error }) => {
+      if (!error && data) {
+        setClaimHistory(data as ClaimHistoryEntry[])
+      }
+    })
+
+    // Subscribe to realtime claims updates
+    const claimsChannel = supabase.channel('claims_channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'claims' }, (payload) => {
+        setClaimed((prev) => {
+          const next = new Map(prev)
+          if (payload.eventType === 'INSERT') {
+            next.set(payload.new.asteroid_id, {
+              user_id: payload.new.user_id,
+              user_name: 'Unknown Explorer' // Would need to fetch profile or wait for broadcast
+            })
+            
+            // Optimistically update history if it's an insert
+            const newHistory: ClaimHistoryEntry = {
+              id: payload.new.id || Math.random().toString(),
+              user_id: payload.new.user_id,
+              user_name: 'Unknown Explorer',
+              asteroid_id: payload.new.asteroid_id,
+              claimed_at: payload.new.claimed_at || new Date().toISOString()
+            }
+            setClaimHistory((h) => [newHistory, ...h].slice(0, 20))
+          } else if (payload.eventType === 'DELETE') {
+            next.delete(payload.old.asteroid_id)
+          }
+          return next
+        })
+      })
+      .subscribe()
+
+    return () => {
+      subscription.unsubscribe()
+      supabase.removeChannel(claimsChannel)
+    }
   }, [])
+
+  const loginWithGithub = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'github' })
+  }, [])
+
+  const loginWithGoogle = useCallback(async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'google' })
+  }, [])
+
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut()
+  }, [])
+
+  const lastClaimTime = useRef<number>(0)
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
 
-  const claimAsteroid = useCallback((id: number) => {
+  const claimAsteroid = useCallback(async (id: number) => {
+    if (!user) return // Must be logged in
+
+    const now = Date.now()
+    if (now - lastClaimTime.current < 1000) {
+      console.warn("Rate limit: Please wait before claiming again.")
+      return
+    }
+    lastClaimTime.current = now
+
+    const isClaiming = !claimedAsteroids.has(id)
+    const ownerData: ClaimOwner = {
+      user_id: user.id,
+      user_name: user.user_metadata?.user_name || user.email?.split("@")[0] || 'Unknown',
+      avatar_url: user.user_metadata?.avatar_url
+    }
+    
+    // Optimistic UI Update
     setClaimed((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
+      const next = new Map(prev)
+      if (isClaiming) next.set(id, ownerData)
+      else next.delete(id)
       return next
     })
-  }, [])
+
+    try {
+      const { withTimeout } = await import('./supabase')
+      
+      if (isClaiming) {
+        await withTimeout(
+          supabase.from('claims').insert({ asteroid_id: id, user_id: user.id }) as PromiseLike<any>
+        )
+      } else {
+        await withTimeout(
+          supabase.from('claims').delete().eq('asteroid_id', id).eq('user_id', user.id) as PromiseLike<any>
+        )
+      }
+    } catch (error) {
+      console.error("Failed to sync claim:", error)
+      // Rollback Optimistic UI Update
+      setClaimed((prev) => {
+        const next = new Map(prev)
+        if (isClaiming) next.delete(id)
+        else next.set(id, ownerData)
+        return next
+      })
+    }
+  }, [user, claimedAsteroids])
 
   const triggerReset = useCallback(() => {
     setResetCamera(true)
@@ -223,6 +366,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        user,
+        loginWithGithub,
+        loginWithGoogle,
+        logout,
+        leaderboard,
+        claimHistory,
         selectedAsteroid,
         claimedAsteroids,
         selectAsteroid,

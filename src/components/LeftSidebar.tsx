@@ -17,7 +17,8 @@ export function LeftSidebar() {
     setFilterType,
     conjunctions,
     addConjunctionAlert,
-    asteroidCatalog,
+    leaderboard,
+    claimHistory,
   } = useAppState()
   const [searchId, setSearchId] = useState("")
   const [riskFilter, setRiskFilter] = useState<"ALL" | "HIGH" | "MEDIUM" | "LOW">("ALL")
@@ -397,6 +398,61 @@ export function LeftSidebar() {
                   No target selected. Search by ID or click an asteroid/debris particle.
                 </p>
               )}
+            </div>
+
+            {/* Leaderboard Section */}
+            <div className="panel-section">
+              <div className="panel-section-title">Claim Leaderboard</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {leaderboard && leaderboard.length > 0 ? (
+                  leaderboard.map((entry, idx) => (
+                    <div key={entry.user_id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: 4, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: "var(--accent-cyan)", width: 12 }}>{idx + 1}.</span>
+                        {entry.avatar_url ? (
+                          <img src={entry.avatar_url} alt="" style={{ width: 20, height: 20, borderRadius: "50%", opacity: 0.8 }} />
+                        ) : (
+                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "var(--text-secondary)" }}>
+                            {entry.user_name?.[0]?.toUpperCase() || "?"}
+                          </div>
+                        )}
+                        <span style={{ fontSize: 11, color: "var(--text-primary)" }}>{entry.user_name}</span>
+                      </div>
+                      <span style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--accent-green)" }}>{entry.claims_count}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ fontSize: 10, color: "var(--text-muted)", fontStyle: "italic", textAlign: "center", padding: "8px 0" }}>
+                    No claims yet. Be the first!
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Global Claim History */}
+            <div className="panel-section">
+              <div className="panel-section-title">Live Claim Feed</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 150, overflowY: "auto", paddingRight: 4 }}>
+                {claimHistory && claimHistory.length > 0 ? (
+                  claimHistory.map((entry) => (
+                    <div key={entry.id} style={{ display: "flex", flexDirection: "column", gap: 4, paddingBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: 10, color: "var(--accent-cyan)", fontWeight: 500 }}>{entry.user_name}</span>
+                        <span style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                          {new Date(entry.claimed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: 10, color: "var(--text-secondary)" }}>
+                        Claimed AST-{entry.asteroid_id.toString().padStart(4, "0")}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ fontSize: 10, color: "var(--text-muted)", fontStyle: "italic", textAlign: "center", padding: "8px 0" }}>
+                    Feed is empty.
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Conjunction Feed */}
