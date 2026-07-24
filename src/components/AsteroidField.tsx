@@ -4,6 +4,7 @@ import { useRef, useMemo, useCallback, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
+import { checkCollision } from "@/lib/collision"
 import { useAppState } from "@/lib/store"
 import { satellitePositions } from "./SatelliteSystem"
 import {
@@ -181,20 +182,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       targetMesh.setMatrixAt(instanceIndex, dummy.matrix)
 
       // 3. Collision check with satellites
-      let atRisk = false
-      let closestSat = ""
-      let minDistance = Infinity
-
-      for (const s of SAT_POSITIONS) {
-        const d = _objPos.distanceTo(s.pos)
-        if (d < 0.15) {
-          atRisk = true
-          if (d < minDistance) {
-            minDistance = d
-            closestSat = s.name
-          }
-        }
-      }
+      const { atRisk, closestSat, minDistance } = checkCollision(_objPos, SAT_POSITIONS)
 
       ad.atRisk = atRisk
 
