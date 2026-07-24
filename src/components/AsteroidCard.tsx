@@ -34,6 +34,8 @@ function LiveCoordinates() {
   )
 }
 
+import FocusLock from "react-focus-lock"
+
 export function AsteroidCard() {
   const {
     selectedAsteroid,
@@ -60,12 +62,11 @@ export function AsteroidCard() {
   }
 
   return (
-    <div
-      className="glass-panel animate-fade-in-left"
-      role="dialog"
-      aria-modal="false"
-      aria-labelledby="asteroid-inspector-title"
-      style={{
+    <FocusLock returnFocus>
+      <div
+        className="glass-panel animate-fade-in-left"
+        aria-labelledby="asteroid-card-title"
+        style={{
         position: "fixed",
         top: "calc(var(--header-height) + var(--hud-stack-gap))",
         left: leftSidebarOpen
@@ -224,5 +225,6 @@ export function AsteroidCard() {
         </div>
       </div>
     </div>
+    </FocusLock>
   )
 }
