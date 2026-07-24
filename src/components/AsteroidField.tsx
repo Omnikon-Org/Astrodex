@@ -266,8 +266,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         onClick={handleAsteroidClick}
         frustumCulled={false}
       >
-        <dodecahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+        <dodecahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial roughness={0.9} metalness={0.1} flatShading />
       </instancedMesh>
 
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
@@ -278,7 +278,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         frustumCulled={false}
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+        <meshStandardMaterial roughness={0.2} metalness={0.9} envMapIntensity={1.5} />
       </instancedMesh>
     </>
   )
