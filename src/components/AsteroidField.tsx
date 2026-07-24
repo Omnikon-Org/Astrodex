@@ -138,6 +138,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     const prevAtRisk = prevAtRiskRef.current
     const deltaScaled = delta * SCENE_TIME_SCALE
 
+    let colorsUpdated = false
+
     for (let i = 0; i < TOTAL_COUNT; i++) {
       const ad = dataRef.current[i]
       const isDebris = ad.type === "debris"
@@ -226,12 +228,14 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         colorObj.setRGB(1.0, pulse * 0.3, pulse * 0.3) // pulsing red
         targetMesh.setColorAt(instanceIndex, colorObj)
         prevAtRisk[i] = true
+        colorsUpdated = true
       } else if (prevAtRisk[i]) {
         // Reset to default on transition out of at-risk
         const defaultColorList = isDebris ? DEBRIS_COLORS : ASTEROID_COLORS
         colorObj.set(defaultColorList[i % defaultColorList.length])
         targetMesh.setColorAt(instanceIndex, colorObj)
         prevAtRisk[i] = false
+        colorsUpdated = true
       }
 
       // 5. Vis-Viva speed for HUD telemetry
@@ -249,8 +253,10 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
 
     asteroidMesh.instanceMatrix.needsUpdate = true
     debrisMesh.instanceMatrix.needsUpdate = true
-    if (asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
-    if (debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
+    if (colorsUpdated) {
+      if (asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
+      if (debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
+    }
   })
 
   const handleAsteroidClick = useCallback(
