@@ -31,8 +31,11 @@ export function RightSidebar() {
   const [boostStatus, setBoostStatus] = useState("")
 
   const handleApply = () => {
-    const maxDvVal = parseFloat(maxDv) || 0.35
-    const maxBurnsVal = parseInt(maxBurns, 10) || 1
+    const parsedDv = parseFloat(maxDv)
+    const maxDvVal = isNaN(parsedDv) ? 0.35 : parsedDv
+    
+    const parsedBurns = parseInt(maxBurns, 10)
+    const maxBurnsVal = isNaN(parsedBurns) ? 1 : parsedBurns
 
     const R_EARTH_KM = 6378
     const r1Km = R_EARTH_KM + satAltitude
@@ -68,10 +71,17 @@ export function RightSidebar() {
   const displaySpeedKmS = visVivaKmPerSec(R_EARTH_KM + satAltitude, R_EARTH_KM + satAltitude)
 
   const handleApplySatellite = () => {
-    const altVal = parseFloat(altitude) || 400
-    const incVal = parseFloat(inclination) || 0
-    const raanVal = parseFloat(raan) || 0
-    const eVal = parseFloat(eccentricity) || 0
+    const parsedAlt = parseFloat(altitude)
+    const altVal = isNaN(parsedAlt) ? 400 : parsedAlt
+
+    const parsedInc = parseFloat(inclination)
+    const incVal = isNaN(parsedInc) ? 0 : parsedInc
+
+    const parsedRaan = parseFloat(raan)
+    const raanVal = isNaN(parsedRaan) ? 0 : parsedRaan
+
+    const parsedE = parseFloat(eccentricity)
+    const eVal = isNaN(parsedE) ? 0 : parsedE
 
     updateSatelliteParams(altVal, incVal, raanVal)
     updateSatelliteEccentricity(eVal)
@@ -359,3 +369,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed issue #188: Fix edge cases in the Settings Modal
