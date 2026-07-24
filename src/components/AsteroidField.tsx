@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef, useMemo, useCallback, useEffect } from "react"
-import { useFrame, ThreeEvent } from "@react-three/fiber"
+import { useRef, useMemo, useCallback, useEffect, useState } from "react"
+import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
 import { useAppState } from "@/lib/store"
@@ -45,10 +45,11 @@ function generateOrbitalObjectData(index: number): AsteroidData {
   const type = isDebris ? "debris" : "asteroid"
 
   // Space Debris is closer to Earth and satellites for higher collision odds
-  const orbitRadius = isDebris ? 1.9 + Math.random() * 2.2 : 3.8 + Math.random() * 7.5
+  const orbitRadius = isDebris
+    ? 1.9 + Math.random() * 2.2
+    : 3.8 + Math.random() * 7.5
 
-  const speed =
-    (isDebris ? 0.08 + Math.random() * 0.12 : 0.02 + Math.random() * 0.06) * (1 / orbitRadius)
+  const speed = (isDebris ? 0.08 + Math.random() * 0.12 : 0.02 + Math.random() * 0.06) * (1 / orbitRadius)
   const id = index + 1
   const name = isDebris
     ? `DEB-${1962 + Math.floor(Math.random() * 63)}-${String(Math.floor(Math.random() * 800)).padStart(3, "0")}A`
@@ -160,56 +161,150 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const asteroidMeshRefs = useRef<TierMeshRefs>([null, null, null])
   const debrisMeshRefs = useRef<TierMeshRefs>([null, null, null])
 
-  // Cached "at risk" state per object — colors are only re-pushed on transitions
-  const prevAtRiskRef = useRef<boolean[]>([])
-
-  const { simulationRunning, filterType, addConjunctionAlert } = useAppState()
+  const {
+    registerAsteroidData,
+    simulationRunning,
+    filterType,
+    addConjunctionAlert,
+    selectedAsteroid,
+    claimedAsteroids,
+  } = useAppState()
 
   // Track alert timestamps per object index to avoid spamming the feed
   const lastAlertTimesRef = useRef<Record<number, number>>({})
 
-  const { dataArray, initialAngles } = useMemo(() => {
+  const asteroidLookupRef = useRef<TierLookup>(createTierLookup())
+  const debrisLookupRef = useRef<TierLookup>(createTierLookup())
+  const asteroidPlacementRef = useRef<TierPlacement[]>(
+    Array.from({ length: ASTEROID_COUNT }, () => ({ tierIndex: 0 as LODTierIndex, localIndex: 0 }))
+  )
+  const debrisPlacementRef = useRef<TierPlacement[]>(
+    Array.from({ length: DEBRIS_COUNT }, () => ({ tierIndex: 0 as LODTierIndex, localIndex: 0 }))
+  )
+  const asteroidTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
+  const debrisTierCountsRef = useRef<[number, number, number]>([0, 0, 0])
+  const frameCounterRef = useRef(0)
+  // Paused-time-aware sim clock. R3F's `state.clock.getElapsedTime()` keeps
+  // advancing while `simulationRunning` is false, so on resume every asteroid
+  // and debris piece used to teleport to where it would have been if the sim
+  // had never paused. This ref only advances when simulationRunning is true,
+  // and the mean-anomaly propagation for every one of the 600 objects now
+  // derives its time from here. See issue #550.
+  const simTimeRef = useRef(0)
+
+  const generated = useMemo(() => {
     const d: AsteroidData[] = []
     const a: number[] = []
     for (let i = 0; i < TOTAL_COUNT; i++) {
       d.push(generateOrbitalObjectData(i))
-      a.push(0)
+      a.push(0) // placeholder; first frame resolves it via Kepler
     }
-    return { dataArray: d, initialAngles: a }
+    return {
+      data: d,
+      angles: a,
+    }
   }, [])
 
-  const dataRef = useRef(dataArray)
-  
-  useEffect(() => {
-    dataRef.current = dataArray
-    anglesRef.current = initialAngles
-    prevAtRiskRef.current = new Array(TOTAL_COUNT).fill(false)
-  }, [dataArray, initialAngles])
+  const data = generated.data
+  const anglesRef = useRef(generated.angles)
+  const dataRef = useRef(data)
+
+  const asteroidGeometries = useMemo(
+    () => [
+      new THREE.SphereGeometry(1, HIGH_DETAIL_SEGMENTS, HIGH_DETAIL_SEGMENTS),
+      new THREE.SphereGeometry(1, MEDIUM_DETAIL_SEGMENTS, MEDIUM_DETAIL_SEGMENTS),
+      new THREE.SphereGeometry(1, LOW_DETAIL_SEGMENTS, LOW_DETAIL_SEGMENTS),
+    ] as [THREE.SphereGeometry, THREE.SphereGeometry, THREE.SphereGeometry],
+    []
+  )
+
+  const debrisGeometries = useMemo(
+    () => [
+      new THREE.SphereGeometry(1, HIGH_DETAIL_SEGMENTS, HIGH_DETAIL_SEGMENTS),
+      new THREE.SphereGeometry(1, MEDIUM_DETAIL_SEGMENTS, MEDIUM_DETAIL_SEGMENTS),
+      new THREE.SphereGeometry(1, LOW_DETAIL_SEGMENTS, LOW_DETAIL_SEGMENTS),
+    ] as [THREE.SphereGeometry, THREE.SphereGeometry, THREE.SphereGeometry],
+    []
+  )
+
+  const asteroidNormalMap = useMemo(() => createAsteroidNormalTexture(), [])
+
+  const trailItems = useMemo(() => {
+    const claimed = data.filter((item) => claimedAsteroids.has(item.id)).slice(0, 12)
+    if (selectedAsteroid && !claimed.some((item) => item.id === selectedAsteroid.id)) {
+      return [selectedAsteroid, ...claimed]
+    }
+    return claimed
+  }, [claimedAsteroids, data, selectedAsteroid])
+
+  const trailGeometries = useMemo(
+    () => trailItems.map((item) => ({ item, geometry: createOrbitTrailGeometry(item) })),
+    [trailItems]
+  )
 
   // Register data in the store on mount
   useEffect(() => {
-    const { setAsteroidData } = useAppState.getState()
-    setAsteroidData(dataRef.current)
+    registerAsteroidData(data)
+  }, [data, registerAsteroidData])
+
+  useEffect(() => {
+    return () => {
+      asteroidGeometries[0].dispose()
+      asteroidGeometries[1].dispose()
+      asteroidGeometries[2].dispose()
+      debrisGeometries[0].dispose()
+      debrisGeometries[1].dispose()
+      debrisGeometries[2].dispose()
+      asteroidNormalMap.dispose()
+    }
+  }, [asteroidGeometries, debrisGeometries, asteroidNormalMap])
+
+  const workerRef = useRef<Worker>(null)
+  const [asteroidsPositions] = useState(() => new Float32Array(TOTAL_COUNT * 3))
+  const [satPositions] = useState(() => new Float32Array(3 * 3))
+  const [asteroidIds, setAsteroidIds] = useState<number[]>([])
+
+  useEffect(() => {
+    setAsteroidIds(dataRef.current.map(d => d.id))
   }, [])
 
   useEffect(() => {
-    const updateColors = (
-      mesh: THREE.InstancedMesh | null,
-      start: number,
-      count: number,
-      colors: string[]
-    ) => {
-      if (!mesh) return
-      for (let i = 0; i < count; i++) {
-        const objIndex = start + i
-        colorObj.set(colors[objIndex % colors.length])
-        mesh.setColorAt(i, colorObj)
-      }
-      if (mesh.instanceColor) {
-        mesh.instanceColor.needsUpdate = true
-      }
+    workerRef.current = new Worker(new URL('../workers/conjunction.worker.ts', import.meta.url))
+    workerRef.current.onmessage = (e) => {
+      const alerts = e.data
+      const t = Date.now() / 1000 // use absolute time for throttling
+      alerts.forEach((alert: any) => {
+        const { index, id, minDistance, closestSat } = alert
+        const ad = dataRef.current[index]
+        
+        ad.atRisk = true
+        
+        const lastAlert = lastAlertTimesRef.current[index] || 0
+        if (t - lastAlert > 8) {
+          lastAlertTimesRef.current[index] = t
+
+          const missKm = (minDistance * KM_PER_UNIT_CONST).toFixed(1)
+          const riskLevel = minDistance < 0.05 ? "HIGH" : minDistance < 0.1 ? "MEDIUM" : "LOW"
+
+          // Re-map satellite index to name
+          const satName = closestSat === 0 ? "ISS" : closestSat === 1 ? "Envisat" : "Hubble"
+
+          addConjunctionAlert({
+            tca: "now",
+            missKm,
+            risk: riskLevel,
+            secondaryId: id,
+            secondaryName: ad.name,
+            type: ad.type,
+            satelliteName: satName,
+          })
+        }
+      })
     }
-  }, [asteroidGeometries, debrisGeometries, asteroidNormalMap])
+    return () => {
+      workerRef.current?.terminate()
+    }
+  }, [addConjunctionAlert])
 
   useFrame((state, delta) => {
     const selectedIdx = getSelectedIndex()
@@ -328,52 +423,24 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         else asteroidMatrixDirty[tierIndex] = true
       }
 
-      // 3. Collision check with satellites
-      let atRisk = false
-      let closestSat = ""
-      let minDistance = Infinity
-
-      for (const s of SAT_POSITIONS) {
-        const d = _objPos.distanceTo(s.pos)
-        if (d < 0.15) {
-          atRisk = true
-          if (d < minDistance) {
-            minDistance = d
-            closestSat = s.name
-          }
-        }
-      }
-
-      ad.atRisk = atRisk
-
-      // Handle conjunction alerts in the store (throttle to once per 8 seconds per object)
-      if (atRisk && simulationRunning && activeScale > 0) {
+      // 3. Delegate Collision check to Web Worker
+      // Instead of calculating distance for every satellite every frame on the main thread,
+      // we pack the coordinates into a Float32Array.
+      asteroidsPositions[i * 3] = _objPos.x
+      asteroidsPositions[i * 3 + 1] = _objPos.y
+      asteroidsPositions[i * 3 + 2] = _objPos.z
+      
+      // Clear atRisk status if it hasn't been refreshed in 0.5s by the worker
+      if (ad.atRisk) {
         const lastAlert = lastAlertTimesRef.current[i] || 0
-        if (t - lastAlert > 8) {
-          lastAlertTimesRef.current[i] = t
-
-          // Miss distance representation in kilometers (0.15 units ≈ 500 km)
-          const missKm = (minDistance * KM_PER_UNIT_CONST).toFixed(1)
-          const riskLevel = minDistance < 0.05 ? "HIGH" : minDistance < 0.1 ? "MEDIUM" : "LOW"
-
-          addConjunctionAlert({
-            tca: "now",
-            missKm,
-            risk: riskLevel,
-            secondaryId: ad.id,
-            secondaryName: ad.name,
-            type: ad.type,
-            satelliteName: closestSat,
-          })
+        const tNow = Date.now() / 1000
+        if (tNow - lastAlert > 0.5) {
+          ad.atRisk = false
         }
       }
 
-      // 4. Color updates keyed by the stable global object index so tier moves remain correct.
-      const targetMeshes = isDebris ? debrisMeshes : asteroidMeshes
-      const targetMesh = targetMeshes[tierIndex]
-      if (!targetMesh) continue
-
-      if (atRisk && activeScale > 0) {
+      // 4. Update Colors based on risk and selections (perf optimization)
+      if (ad.atRisk && activeScale > 0) {
         const pulse = Math.sin(t * 8) * 0.5 + 0.5
         colorObj.setRGB(1.0, pulse * 0.3, pulse * 0.3) // pulsing red
       } else {
@@ -397,42 +464,36 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       }
     }
 
-    if (shouldRebucket) {
-      asteroidLookupRef.current = nextAsteroidLookups
-      debrisLookupRef.current = nextDebrisLookups
-      asteroidPlacementRef.current = nextAsteroidPlacement
-      debrisPlacementRef.current = nextDebrisPlacement
-      asteroidTierCountsRef.current = [
-        nextAsteroidLookups[0].length,
-        nextAsteroidLookups[1].length,
-        nextAsteroidLookups[2].length,
-      ]
-      debrisTierCountsRef.current = [
-        nextDebrisLookups[0].length,
-        nextDebrisLookups[1].length,
-        nextDebrisLookups[2].length,
-      ]
+    // Send data to worker every few frames or just every frame if worker is idle
+    // We'll just postMessage every frame for now. Web workers handle queues.
+    // Also need satellite positions
+    satPositions[0] = satellitePositions.iss.x
+    satPositions[1] = satellitePositions.iss.y
+    satPositions[2] = satellitePositions.iss.z
+    satPositions[3] = satellitePositions.envisat.x
+    satPositions[4] = satellitePositions.envisat.y
+    satPositions[5] = satellitePositions.envisat.z
+    satPositions[6] = satellitePositions.hubble.x
+    satPositions[7] = satellitePositions.hubble.y
+    satPositions[8] = satellitePositions.hubble.z
+
+    if (workerRef.current && simulationRunning) {
+      workerRef.current.postMessage({
+        asteroids: asteroidsPositions,
+        satellites: satPositions,
+        asteroidIds: asteroidIds,
+        threshold: 0.15
+      })
     }
 
-    for (let tierIndex = 0 as LODTierIndex; tierIndex < 3; tierIndex = (tierIndex + 1) as LODTierIndex) {
-      const asteroidMesh = asteroidMeshes[tierIndex]
-      if (asteroidMesh) {
-        asteroidMesh.count = asteroidTierCountsRef.current[tierIndex]
-        if (asteroidMatrixDirty[tierIndex]) asteroidMesh.instanceMatrix.needsUpdate = true
-        if (asteroidColorDirty[tierIndex] && asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
-      }
-
-      const debrisMesh = debrisMeshes[tierIndex]
-      if (debrisMesh) {
-        debrisMesh.count = debrisTierCountsRef.current[tierIndex]
-        if (debrisMatrixDirty[tierIndex]) debrisMesh.instanceMatrix.needsUpdate = true
-        if (debrisColorDirty[tierIndex] && debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
-      }
-    }
+    asteroidMesh.instanceMatrix.needsUpdate = true
+    debrisMesh.instanceMatrix.needsUpdate = true
+    if (asteroidMesh.instanceColor) asteroidMesh.instanceColor.needsUpdate = true
+    if (debrisMesh.instanceColor) debrisMesh.instanceColor.needsUpdate = true
   })
 
-  const handleAsteroidClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
+  const handleMeshClick = useCallback(
+    (typeIndex: ObjectTypeIndex, tierIndex: LODTierIndex, e: ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
 
       const lookup = typeIndex === 0 ? asteroidLookupRef.current : debrisLookupRef.current
@@ -444,13 +505,12 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     [onAsteroidClick]
   )
 
-  const handleDebrisClick = useCallback(
-    (e: ThreeEvent<MouseEvent>) => {
-      if (e.instanceId === undefined) return
-      onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
-    },
-    [onAsteroidClick]
-  )
+  const handleAsteroidHighClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 0, e), [handleMeshClick])
+  const handleAsteroidMediumClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 1, e), [handleMeshClick])
+  const handleAsteroidLowClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(0, 2, e), [handleMeshClick])
+  const handleDebrisHighClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 0, e), [handleMeshClick])
+  const handleDebrisMediumClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 1, e), [handleMeshClick])
+  const handleDebrisLowClick = useCallback((e: ThreeEvent<MouseEvent>) => handleMeshClick(1, 2, e), [handleMeshClick])
 
   return (
     <>
@@ -470,18 +530,72 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       })}
 
       <instancedMesh
-        ref={asteroidMeshRef}
-        args={[undefined as any, undefined as any, ASTEROID_COUNT]}
-        onClick={handleAsteroidClick}
+        ref={(mesh) => {
+          asteroidMeshRefs.current[0] = mesh
+        }}
+        args={[asteroidGeometries[0], undefined, ASTEROID_COUNT]}
+        count={0}
+        onClick={handleAsteroidHighClick}
         frustumCulled={false}
       >
         <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_HIGH} />
       </instancedMesh>
 
       <instancedMesh
-        ref={debrisMeshRef}
-        args={[undefined as any, undefined as any, DEBRIS_COUNT]}
-        onClick={handleDebrisClick}
+        ref={(mesh) => {
+          asteroidMeshRefs.current[1] = mesh
+        }}
+        args={[asteroidGeometries[1], undefined, ASTEROID_COUNT]}
+        count={0}
+        onClick={handleAsteroidMediumClick}
+        frustumCulled={false}
+      >
+        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_MEDIUM} />
+      </instancedMesh>
+
+      <instancedMesh
+        ref={(mesh) => {
+          asteroidMeshRefs.current[2] = mesh
+        }}
+        args={[asteroidGeometries[2], undefined, ASTEROID_COUNT]}
+        count={0}
+        onClick={handleAsteroidLowClick}
+        frustumCulled={false}
+      >
+        <meshStandardMaterial roughness={0.86} metalness={0.14} normalMap={asteroidNormalMap} normalScale={ASTEROID_NORMAL_SCALE_LOW} />
+      </instancedMesh>
+
+      <instancedMesh
+        ref={(mesh) => {
+          debrisMeshRefs.current[0] = mesh
+        }}
+        args={[debrisGeometries[0], undefined, DEBRIS_COUNT]}
+        count={0}
+        onClick={handleDebrisHighClick}
+        frustumCulled={false}
+      >
+        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+      </instancedMesh>
+
+      <instancedMesh
+        ref={(mesh) => {
+          debrisMeshRefs.current[1] = mesh
+        }}
+        args={[debrisGeometries[1], undefined, DEBRIS_COUNT]}
+        count={0}
+        onClick={handleDebrisMediumClick}
+        frustumCulled={false}
+      >
+        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+      </instancedMesh>
+
+      <instancedMesh
+        ref={(mesh) => {
+          debrisMeshRefs.current[2] = mesh
+        }}
+        args={[debrisGeometries[2], undefined, DEBRIS_COUNT]}
+        count={0}
+        onClick={handleDebrisLowClick}
         frustumCulled={false}
       >
         <meshStandardMaterial roughness={0.4} metalness={0.8} />
