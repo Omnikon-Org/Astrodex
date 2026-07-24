@@ -15,6 +15,7 @@ import {
   velocityToKmPerSec,
   KM_PER_UNIT_CONST,
 } from "@/lib/kepler"
+import { createProceduralAsteroidNormalMap } from "./earth/textures"
 
 const ASTEROID_COUNT = 400
 const DEBRIS_COUNT = 200
@@ -101,6 +102,15 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     anglesRef.current = a
     prevAtRiskRef.current = new Array(TOTAL_COUNT).fill(false)
     return d
+  }, [])
+
+  const normalMapTexture = useMemo(() => {
+    if (typeof document === 'undefined') return null
+    const canvas = createProceduralAsteroidNormalMap()
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.wrapS = THREE.RepeatWrapping
+    tex.wrapT = THREE.RepeatWrapping
+    return tex
   }, [])
 
   const dataRef = useRef(data)
@@ -308,7 +318,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         frustumCulled={false}
       >
         <dodecahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial roughness={0.8} metalness={0.2} />
+        <meshStandardMaterial roughness={0.8} metalness={0.2} normalMap={normalMapTexture || undefined} normalScale={new THREE.Vector2(0.5, 0.5)} />
       </instancedMesh>
 
       {/* ─── Space Debris Field (Spent parts, fragments) ─── */}
@@ -319,7 +329,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         frustumCulled={false}
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
-        <meshStandardMaterial roughness={0.4} metalness={0.8} />
+        <meshStandardMaterial roughness={0.4} metalness={0.8} normalMap={normalMapTexture || undefined} normalScale={new THREE.Vector2(0.3, 0.3)} />
       </instancedMesh>
     </>
   )
