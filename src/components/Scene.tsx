@@ -12,6 +12,7 @@ import { AsteroidField } from "./AsteroidField"
 import { SatelliteSystem } from "./SatelliteSystem"
 import { CameraController } from "./CameraController"
 import { Effects } from "./Effects"
+import { CanvasErrorBoundary } from "./CanvasErrorBoundary"
 import { useAppState } from "@/lib/store"
 import type { AsteroidData } from "@/lib/types"
 
@@ -138,13 +139,15 @@ function SceneContent() {
 
 export function Scene() {
   return (
-    <div className="fixed inset-0 z-0" aria-hidden="true">
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
-        gl={{ antialias: true, alpha: false }}
-      >
-        <SceneContent />
-      </Canvas>
+    <div className="fixed inset-0 z-0">
+      <CanvasErrorBoundary>
+        <Canvas
+          camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
+          gl={{ antialias: true, alpha: false }}
+        >
+          <SceneContent />
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   )
 }
