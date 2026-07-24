@@ -1,3 +1,6 @@
+import type { Metadata } from "next"
+import { Geist, Geist_Mono } from "next/font/google" // Added font imports
+import "./globals.css"
 import type { Metadata } from "next";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -11,6 +14,17 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
+
+// Instantiated the font families with CSS variable names
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+})
+
+const jetbrainsMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://astrodex.app"),
@@ -60,5 +74,8 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${jetbrainsMono.variable}`}>
       <body>{children}</body>
     </html>
+  )
+}
+
   );
 }
