@@ -2,6 +2,7 @@
 
 import { useRef, useMemo, useCallback, useEffect } from "react"
 import { useFrame } from "@react-three/fiber"
+import { Html } from "@react-three/drei"
 import * as THREE from "three"
 import type { AsteroidData } from "@/lib/types"
 import { useAppState } from "@/lib/store"
@@ -277,6 +278,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         args={[null as any, null as any, ASTEROID_COUNT]}
         onClick={handleAsteroidClick}
         frustumCulled={false}
+        role="button"
+        aria-label="Interactive asteroid field"
       >
         <dodecahedronGeometry args={[1, 0]} />
         <meshStandardMaterial roughness={0.8} metalness={0.2} />
@@ -288,10 +291,20 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         args={[null as any, null as any, DEBRIS_COUNT]}
         onClick={handleDebrisClick}
         frustumCulled={false}
+        role="button"
+        aria-label="Interactive space debris field"
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
         <meshStandardMaterial roughness={0.4} metalness={0.8} />
       </instancedMesh>
+      
+      <Html>
+        <div aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
+          {getSelectedIndex() !== null ? `Selected ${dataRef.current[getSelectedIndex()!].name}` : "Asteroid field loaded with 600 objects."}
+        </div>
+      </Html>
     </>
   )
 }
+
+// Fixed issue #196: Improve accessibility of the Asteroid InstancedMesh
