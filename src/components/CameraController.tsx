@@ -14,7 +14,7 @@ const _shake = new THREE.Vector3()
 
 export function CameraController() {
   const { camera } = useThree()
-  const { selectedAsteroid, resetCamera, clearReset } = useAppState()
+  const { selectedAsteroid, resetCamera, clearReset, reduceMotion } = useAppState()
   const targetPos = useRef(EARTH_POSITION.clone())
   const targetLook = useRef(EARTH_TARGET.clone())
   const lastTargetPos = useRef(EARTH_POSITION.clone())
@@ -41,11 +41,11 @@ export function CameraController() {
       targetLook.current.copy(EARTH_TARGET)
     }
 
-    const jumpDistance = targetPos.current.distanceTo(lastTargetPos.current)
-    if (jumpDistance > 0.6) shakeTime.current = Math.min(0.35, jumpDistance * 0.08)
-    lastTargetPos.current.copy(targetPos.current)
-
-    camera.position.lerp(targetPos.current, 3 * delta)
+    if (reduceMotion) {
+      camera.position.copy(targetPos.current)
+    } else {
+      camera.position.lerp(targetPos.current, 3 * delta)
+    }
     _lookTarget.copy(targetLook.current)
     if (shakeTime.current > 0) {
       const amp = shakeTime.current * 0.018

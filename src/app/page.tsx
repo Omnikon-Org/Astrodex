@@ -14,7 +14,11 @@ const Scene = dynamic(() => import("@/components/Scene").then((m) => ({ default:
   // The WebGL canvas relies on browser APIs, so keep it client-only and show
   // the lightweight spinner while the scene bundle loads.
   ssr: false,
-  loading: () => <LoadingSkeleton />,
+  loading: () => (
+    <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#000005", color: "var(--accent-cyan)", fontFamily: "var(--font-jetbrains-mono), monospace", fontSize: "14px" }}>
+      Initializing WebGL context...
+    </div>
+  ),
 })
 
 function MobileHudNav() {
@@ -91,7 +95,27 @@ function HomeShell() {
 export default function Home() {
   return (
     <AppProvider>
-      <HomeShell />
+      <main
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          background: "#000005",
+        }}
+      >
+        {/* Background 3D Space Scene */}
+        <Scene />
+
+        {/* HUD UI Layout Components */}
+        <Header />
+        <LeftSidebar />
+        <RightSidebar />
+        <AgentTerminal />
+
+        {/* Floating Asteroid Inspector */}
+        <AsteroidCard />
+      </main>
     </AppProvider>
   )
 }
