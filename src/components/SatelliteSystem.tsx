@@ -154,28 +154,71 @@ export function SatelliteSystem() {
       <lineLoop geometry={issOrbitGeo}>
         <lineBasicMaterial color="#38bdf8" opacity={0.35} transparent linewidth={1} />
       </lineLoop>
-      <mesh ref={issRef}>
-        <sphereGeometry args={[0.04, 16, 16]} />
-        <meshBasicMaterial color="#38bdf8" />
-      </mesh>
+      <group ref={issRef}>
+        <group scale={0.015}>
+          {/* Main Module */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[1, 1, 6, 8]} />
+            <meshStandardMaterial color="#cccccc" metalness={0.8} roughness={0.2} />
+          </mesh>
+          {/* Solar Panels */}
+          <mesh position={[2, 0, 0]}>
+            <boxGeometry args={[4, 0.2, 2]} />
+            <meshStandardMaterial color="#225588" metalness={0.9} roughness={0.1} />
+          </mesh>
+          <mesh position={[-2, 0, 0]}>
+            <boxGeometry args={[4, 0.2, 2]} />
+            <meshStandardMaterial color="#225588" metalness={0.9} roughness={0.1} />
+          </mesh>
+        </group>
+      </group>
 
       {/* ─── Envisat Orbit ─── */}
       <lineLoop geometry={envisatOrbitGeo}>
         <lineBasicMaterial color="#fbbf24" opacity={0.25} transparent linewidth={1} />
       </lineLoop>
-      <mesh ref={envisatRef}>
-        <sphereGeometry args={[0.035, 16, 16]} />
-        <meshBasicMaterial color="#fbbf24" />
-      </mesh>
+      <group ref={envisatRef}>
+        <group scale={0.015}>
+          {/* Bus */}
+          <mesh>
+            <boxGeometry args={[1.5, 1.5, 3]} />
+            <meshStandardMaterial color="#bda55d" metalness={0.7} roughness={0.4} />
+          </mesh>
+          {/* Solar Array */}
+          <mesh position={[2, 0, 0]}>
+            <boxGeometry args={[3, 0.1, 1.5]} />
+            <meshStandardMaterial color="#225588" metalness={0.9} roughness={0.1} />
+          </mesh>
+        </group>
+      </group>
 
       {/* ─── Hubble Orbit ─── */}
       <lineLoop geometry={hubbleOrbitGeo}>
         <lineBasicMaterial color="#34d399" opacity={0.25} transparent linewidth={1} />
       </lineLoop>
-      <mesh ref={hubbleRef}>
-        <sphereGeometry args={[0.03, 16, 16]} />
-        <meshBasicMaterial color="#34d399" />
-      </mesh>
+      <group ref={hubbleRef}>
+        <group scale={0.015}>
+          {/* Telescope Tube */}
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.8, 0.8, 4, 16]} />
+            <meshStandardMaterial color="#88aacc" metalness={0.6} roughness={0.3} />
+          </mesh>
+          {/* Aperture Door */}
+          <mesh position={[0, 1.5, 0.8]} rotation={[0.4, 0, 0]}>
+            <boxGeometry args={[1.6, 1.6, 0.1]} />
+            <meshStandardMaterial color="#88aacc" metalness={0.6} roughness={0.3} />
+          </mesh>
+          {/* Solar Arrays */}
+          <mesh position={[0, -0.5, 1.5]} rotation={[0, 0, 0]}>
+            <boxGeometry args={[3, 1, 0.05]} />
+            <meshStandardMaterial color="#225588" metalness={0.9} roughness={0.1} />
+          </mesh>
+          <mesh position={[0, -0.5, -1.5]} rotation={[0, 0, 0]}>
+            <boxGeometry args={[3, 1, 0.05]} />
+            <meshStandardMaterial color="#225588" metalness={0.9} roughness={0.1} />
+          </mesh>
+        </group>
+      </group>
     </group>
   )
 }
