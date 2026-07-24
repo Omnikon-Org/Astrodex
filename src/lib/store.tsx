@@ -22,9 +22,10 @@ interface AppState {
   resetCamera: boolean
   triggerReset: () => void
   clearReset: () => void
-  // Simulation
   simulationRunning: boolean
   toggleSimulation: () => void
+  timeScaleMultiplier: number
+  setTimeScaleMultiplier: (m: number) => void
   riskLevel: "HIGH" | "MEDIUM" | "LOW"
   // Panel toggles
   leftSidebarOpen: boolean
@@ -35,6 +36,8 @@ interface AppState {
   toggleTerminal: () => void
   // Search by ID
   searchAsteroidById: (id: number) => void
+  selectNextAsteroid: () => void
+  selectPrevAsteroid: () => void
   registerAsteroidData: (data: AsteroidData[]) => void
 
   // Space Debris Filters & Satellite Parameters
@@ -70,6 +73,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
+  const [timeScaleMultiplier, setTimeScaleMultiplier] = useState(1)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
@@ -89,6 +93,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const nextAlertId = useRef(1)
 
   const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
+
+  const selectNextAsteroid = useCallback(() => {
+    if (asteroidDataRef.current.length === 0) return
+    setSelectedAsteroid((prev) => {
+      if (!prev) return asteroidDataRef.current[0]
+      const nextId = (prev.id + 1) % asteroidDataRef.current.length
+      return asteroidDataRef.current[nextId]
+    })
+  }, [])
+
+  const selectPrevAsteroid = useCallback(() => {
+    if (asteroidDataRef.current.length === 0) return
+    setSelectedAsteroid((prev) => {
+      if (!prev) return asteroidDataRef.current[0]
+      const nextId = (prev.id - 1 + asteroidDataRef.current.length) % asteroidDataRef.current.length
+      return asteroidDataRef.current[nextId]
+    })
+  }, [])
 
   const claimAsteroid = useCallback((id: number) => {
     setClaimed((prev) => {
@@ -148,21 +170,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const addConjunctionAlert = useCallback((alert: Omit<ConjunctionAlert, "id">) => {
     setConjunctions((prev) => {
-      // Check if this combination of satellite and secondary ID is already in the list
-      const exists = prev.some(
-        (c) => c.satelliteName === alert.satelliteName && c.secondaryId === alert.secondaryId
-      )
-      if (exists) return prev
+      if (prev.some((c) => c.satelliteName === alert.satelliteName && c.secondaryId === alert.secondaryId)) {
+        return prev
+      }
 
-      const newAlert = { ...alert, id: nextAlertId.current++ }
-      const updated = [newAlert, ...prev].slice(0, 15) // Keep last 15 alerts
-
-      // Update global risk level based on the highest risk in the feed
-      const hasHigh = updated.some((c) => c.risk === "HIGH")
-      const hasMedium = updated.some((c) => c.risk === "MEDIUM")
-      if (hasHigh) setRiskLevel("HIGH")
-      else if (hasMedium) setRiskLevel("MEDIUM")
-      else setRiskLevel("LOW")
+      const updated = [{ ...alert, id: nextAlertId.current++ }, ...prev].slice(0, 15)
+      
+      const highestRisk = updated.find(c => c.risk === "HIGH") ? "HIGH" : updated.find(c => c.risk === "MEDIUM") ? "MEDIUM" : "LOW"
+      setRiskLevel(highestRisk)
 
       return updated
     })
@@ -179,12 +194,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
         selectedAsteroid,
         claimedAsteroids,
         selectAsteroid,
+        selectNextAsteroid,
+        selectPrevAsteroid,
         claimAsteroid,
         resetCamera,
         triggerReset,
         clearReset,
         simulationRunning,
         toggleSimulation,
+        timeScaleMultiplier,
+        setTimeScaleMultiplier,
         riskLevel,
         leftSidebarOpen,
         rightSidebarOpen,
@@ -224,3 +243,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Global mutable clock to sync orbital simulations across components
+export const simClock = { time: 0 }
