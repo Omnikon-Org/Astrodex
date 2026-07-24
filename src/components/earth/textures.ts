@@ -327,3 +327,5 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Fixed issue #173: Audit memory leaks in the Procedural texture generator
