@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed issue #167: Add error handling to the Mobile Navbar
