@@ -1,5 +1,4 @@
 "use client"
-import { useState } from "react"
 
 import { useEffect, useRef } from "react"
 import { useAppState } from "@/lib/store"
@@ -34,8 +33,6 @@ function LiveCoordinates() {
   )
 }
 
-import FocusLock from "react-focus-lock"
-
 export function AsteroidCard() {
   const {
     selectedAsteroid,
@@ -44,8 +41,17 @@ export function AsteroidCard() {
     leftSidebarOpen,
     selectAsteroid,
   } = useAppState()
-  
-  const [announcement, setAnnouncement] = useState("")
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
+
+  useEffect(() => {
+  if (!selectedAsteroid) return
+  closeButtonRef.current?.focus()
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") selectAsteroid(null)
+  }
+  document.addEventListener("keydown", onKeyDown)
+  return () => document.removeEventListener("keydown", onKeyDown)
+}, [selectedAsteroid, selectAsteroid])
 
   if (!selectedAsteroid) return null
 
@@ -62,11 +68,10 @@ export function AsteroidCard() {
   }
 
   return (
-    <FocusLock returnFocus>
-      <div
-        className="glass-panel animate-fade-in-left"
-        aria-labelledby="asteroid-card-title"
-        style={{
+    <section
+      className="glass-panel animate-fade-in-left"
+      aria-labelledby="asteroid-card-title"
+      style={{
         position: "fixed",
         top: "calc(var(--header-height) + var(--hud-stack-gap))",
         left: leftSidebarOpen
@@ -102,18 +107,19 @@ export function AsteroidCard() {
                 : "0 0 6px var(--accent-cyan)",
             }}
           />
-          <span
-            id="asteroid-inspector-title"
+          <h2
+            id="asteroid-card-title"
             style={{
               fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               color: "var(--text-primary)",
+              margin: 0,
             }}
           >
             Inspector: {selectedAsteroid.name}
-          </span>
+          </h2>
         </div>
         <button
           ref={closeButtonRef}
@@ -123,8 +129,6 @@ export function AsteroidCard() {
           style={{ padding: 4, border: "none" }}
         >
           <svg
-            role="img"
-            aria-label="Close icon"
             width="14"
             height="14"
             viewBox="0 0 24 24"
@@ -199,10 +203,7 @@ export function AsteroidCard() {
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={() => {
-              claimAsteroid(selectedAsteroid.id)
-              setAnnouncement(isClaimed ? `Mining claim released for ${selectedAsteroid.name}` : `Mining claim filed for ${selectedAsteroid.name}`)
-            }}
+            onClick={handleClaimToggle}
             className="btn-primary"
             style={{
               width: "100%",
@@ -220,11 +221,7 @@ export function AsteroidCard() {
             {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
           </button>
         </div>
-        <div aria-live="polite" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
-          {announcement}
-        </div>
       </div>
-    </div>
-    </FocusLock>
+    </section>
   )
 }
