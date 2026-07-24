@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
 import { visVivaKmPerSec, calculateLEODecayRate, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
 
