@@ -22,9 +22,10 @@ interface AppState {
   resetCamera: boolean
   triggerReset: () => void
   clearReset: () => void
-  // Simulation
   simulationRunning: boolean
   toggleSimulation: () => void
+  timeScaleMultiplier: number
+  setTimeScaleMultiplier: (m: number) => void
   riskLevel: "HIGH" | "MEDIUM" | "LOW"
   // Panel toggles
   leftSidebarOpen: boolean
@@ -70,6 +71,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
+  const [timeScaleMultiplier, setTimeScaleMultiplier] = useState(1)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
 
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
@@ -178,6 +180,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         clearReset,
         simulationRunning,
         toggleSimulation,
+        timeScaleMultiplier,
+        setTimeScaleMultiplier,
         riskLevel,
         leftSidebarOpen,
         rightSidebarOpen,
@@ -217,3 +221,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Global mutable clock to sync orbital simulations across components
+export const simClock = { time: 0 }
