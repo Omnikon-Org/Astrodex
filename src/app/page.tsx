@@ -7,8 +7,7 @@ import { LeftSidebar } from "@/components/LeftSidebar"
 import { RightSidebar } from "@/components/RightSidebar"
 import { AgentTerminal } from "@/components/AgentTerminal"
 import { AsteroidCard } from "@/components/AsteroidCard"
-
-import { RiskModal } from "@/components/RiskModal"
+import { KeyboardManager } from "@/components/KeyboardManager"
 
 const Scene = dynamic(() => import("@/components/Scene").then((m) => ({ default: m.Scene })), {
   ssr: false,
@@ -37,9 +36,7 @@ export default function Home() {
         
         {/* Floating Asteroid Inspector */}
         <AsteroidCard />
-
-        {/* Global Modals */}
-        <RiskModal />
+        <KeyboardManager />
       </main>
     </AppProvider>
   )
