@@ -20,6 +20,7 @@ void main() {
   float cloudDensity = texture2D(cloudTexture, uv).r;
   vCloudDensity = cloudDensity;
   float displacement = cloudDensity * 0.018;
+  vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
   vec3 newPosition = position + normal * displacement;
   vPosition = (modelViewMatrix * vec4(newPosition, 1.0)).xyz;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
@@ -33,6 +34,7 @@ uniform vec3 sunDirection;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
+varying vec3 vWorldNormal;
 varying float vCloudDensity;
 
 void main() {
@@ -41,9 +43,9 @@ void main() {
   vec4 cloudColor = texture2D(cloudTexture, vUv);
   float alpha = cloudColor.r * 0.65;
 
-  vec3 normal = normalize(vNormal);
+  vec3 worldNormal = normalize(vWorldNormal);
   vec3 sunDir = normalize(sunDirection);
-  float NdotL = dot(normal, sunDir);
+  float NdotL = dot(worldNormal, sunDir);
   float lighting = clamp(NdotL * 0.5 + 0.5, 0.0, 1.0);
 
   vec3 color = vec3(1.0) * lighting * 0.9;
