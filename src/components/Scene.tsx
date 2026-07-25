@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Standalone WebGL Options Constant
+export const WEBGL_CONTEXT_OPTIONS = { alpha: true, depth: true, stencil: false };
