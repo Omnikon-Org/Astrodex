@@ -151,3 +151,5 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// Fixed #202: Precomputed MU_SCENE division outside the hot useFrame loop.
