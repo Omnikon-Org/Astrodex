@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Safe fallback UI trigger for corrupted selection data
+export const isAsteroidDataValid = (data: any) => data && data.id && data.name;
