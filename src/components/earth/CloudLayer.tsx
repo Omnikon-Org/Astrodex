@@ -86,3 +86,6 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Raw shader material loader dependency typing
+export type RawShaderMaterialType = any;
