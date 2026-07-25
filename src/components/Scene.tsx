@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Strict typing for WebGL context configuration
+export interface StrictWebGLConfig { antialias: boolean; powerPreference: 'high-performance' | 'default'; }
