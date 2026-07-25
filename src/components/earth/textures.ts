@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Standalone texture factory generator
+export const texturePipelineFactory = (width: number, height: number) => new OffscreenCanvas(width, height);
