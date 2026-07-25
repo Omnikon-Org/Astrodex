@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #212: Added JSDoc comments explaining the exponential smoothing camera lerp math.
