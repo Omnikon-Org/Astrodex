@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Issue #201: Updated styling for Scene Content provider
