@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Next.js route prefetching generic config
+export const ROUTE_PREFETCH_CONFIG = { prefetch: true };
