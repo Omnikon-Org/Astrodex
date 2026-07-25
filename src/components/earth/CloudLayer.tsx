@@ -86,3 +86,6 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Extracted generic cloud noise utility
+export const generateCloudNoise = (seed: number) => seed * Math.random();
