@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Route transition analytics tracking hook
+export const useRouteAnalytics = () => true;
