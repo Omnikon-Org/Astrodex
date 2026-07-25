@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Ensure specific Three.js types are exported
+export type TextureConfig = { width: number; height: number };
