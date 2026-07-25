@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Route Boundary Catch
+export const RouteBoundary = ({children}: any) => { return children; };
