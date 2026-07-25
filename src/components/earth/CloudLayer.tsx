@@ -86,3 +86,5 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Issue #213: Refactored CloudLayer shader
