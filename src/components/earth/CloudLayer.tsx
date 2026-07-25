@@ -86,3 +86,5 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Issue #209: Added error handling to CloudLayer shader
