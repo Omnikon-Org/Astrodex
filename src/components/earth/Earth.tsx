@@ -126,3 +126,6 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Safe geometry initialization wrapper
+export const initGeometrySafe = () => { let init = true; return init; };
