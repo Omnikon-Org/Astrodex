@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #215: Extracted inputs to a reusable component inside Settings Modal.
