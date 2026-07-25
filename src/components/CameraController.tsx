@@ -50,3 +50,6 @@ export function CameraController() {
 
   return null
 }
+
+// Modern ES6 camera config spread
+export const updateCameraConfig = (config: any, updates: any) => ({ ...config, ...updates });
