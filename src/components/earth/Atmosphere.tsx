@@ -70,3 +70,6 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Atmospheric scattering styling uniforms tweak
+export const ATMOSPHERE_SCATTER_STRENGTH = 1.2;
