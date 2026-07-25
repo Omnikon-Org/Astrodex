@@ -1,0 +1,3 @@
+
+/* Consolidated claim layout */
+.claim-btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
