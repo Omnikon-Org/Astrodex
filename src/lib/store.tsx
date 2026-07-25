@@ -101,6 +101,9 @@ interface AppState {
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   /** Clears all active conjunction alerts and resets global risk level to LOW */
   clearConjunctions: () => void
+  
+  /** History of claims and releases */
+  claimHistory: { id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]
 }
 
 // ==========================================
@@ -121,6 +124,15 @@ const AppContext = createContext<AppState | null>(null)
 export function AppProvider({ children }: { children: ReactNode }) {
   // 1. Asteroid Data States
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
+  const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
+  const [resetCamera, setResetCamera] = useState(false)
+  const [simulationRunning, setSimulationRunning] = useState(true)
+  const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
+  const [claimHistory, setClaimHistory] = useState<{ id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]>([])
+
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
+  const [terminalExpanded, setTerminalExpanded] = useState(false)
   const [claimedAsteroids, setClaimedAsteroids] = useState<Set<number>>(new Set())
   const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
   const asteroidDataRef = useRef<AsteroidData[]>([])
@@ -167,6 +179,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const claimAsteroid = useCallback((id: number) => {
+    setClaimed((prev) => {
+      const next = new Set(prev)
+      const action = next.has(id) ? "RELEASED" : "CLAIMED"
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      
+      setClaimHistory(h => [...h, { id, action, timestamp: new Date() }])
+      return next
     setClaimedAsteroids((prevClaims) => {
       const nextClaims = new Set(prevClaims)
       if (nextClaims.has(id)) {
@@ -309,6 +329,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
+        claimHistory,
       }}
     >
       {children}
