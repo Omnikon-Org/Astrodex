@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Route transition wrapper
+export const RouteTransition = ({children}: any) => { return children; };
