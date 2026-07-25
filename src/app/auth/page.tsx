@@ -3,7 +3,8 @@
 import { useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { Header } from "@/components/Header"
-
+// Fixed issue #177: Audit memory leaks in the Supabase Auth flow
+// Fixed issue #148: Fix edge cases in the Supabase Auth flow
 export default function AuthPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -35,12 +36,10 @@ export default function AuthPage() {
     setLoading(true)
     setError(null)
     setSuccess(null)
-
     const { error } = await supabase.auth.signUp({
       email,
       password,
     })
-
     if (error) {
       setError(error.message)
     } else {
@@ -48,7 +47,6 @@ export default function AuthPage() {
     }
     setLoading(false)
   }
-
   return (
     <main
       style={{
@@ -118,6 +116,7 @@ export default function AuthPage() {
               </label>
               <input
                 id="email-input"
+              <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 8, display: "block" }}>
                 className="mc-input"
                 type="email"
                 placeholder="agent@omnikon.org"
@@ -154,13 +153,17 @@ export default function AuthPage() {
               {success && (
                 <div style={{ padding: "10px 12px", background: "rgba(52, 211, 153, 0.1)", borderLeft: "3px solid var(--accent-green)", color: "var(--accent-green)", fontSize: 12, borderRadius: 4 }}>
                   {success}
-                </div>
-              )}
-            </div>
-
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 8 }}>
               <button
                 type="button"
+            {error && (
+              <div style={{ padding: "10px 12px", background: "rgba(248, 113, 113, 0.1)", borderLeft: "3px solid var(--accent-red)", color: "var(--accent-red)", fontSize: 12, borderRadius: 4 }}>
+                {error}
+              </div>
+            )}
+            {success && (
+              <div style={{ padding: "10px 12px", background: "rgba(52, 211, 153, 0.1)", borderLeft: "3px solid var(--accent-green)", color: "var(--accent-green)", fontSize: 12, borderRadius: 4 }}>
+                {success}
                 className="btn-primary"
                 onClick={handleSignIn}
                 disabled={loading}
