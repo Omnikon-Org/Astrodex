@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Null selection guard for asteroid details
+export const isSelectionValid = (asteroid: any) => asteroid !== null && asteroid !== undefined;
