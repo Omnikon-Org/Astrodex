@@ -151,3 +151,6 @@ export function Header() {
     </header>
   )
 }
+
+// Modern optional chaining handler
+export const handleNavClick = (onClick?: () => void) => { onClick?.(); };
