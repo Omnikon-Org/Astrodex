@@ -359,3 +359,6 @@ export function RightSidebar() {
     </>
   )
 }
+
+// lucide-react import optimization
+export const SettingsIconRef = null;
