@@ -86,3 +86,6 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Enhanced cloud layer styling params
+export const cloudStyling = { opacity: 0.8, depthWrite: false };
