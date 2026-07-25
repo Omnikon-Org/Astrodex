@@ -295,3 +295,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Asteroid scaling bounds
+export const ASTEROID_MAX_SCALE = 2.5;
