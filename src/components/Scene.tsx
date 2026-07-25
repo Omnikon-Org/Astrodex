@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// WebGL2 context fallback check
+export const isWebGL2Supported = () => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch(e) { return false; } };
