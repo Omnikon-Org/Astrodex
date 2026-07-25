@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Detail panel props interface internal path extraction
+export interface AsteroidDetailProps { id: string; }
