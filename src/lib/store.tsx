@@ -224,3 +224,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// API payload size analytics event exporter
+export const logApiPayloadSize = (bytes: number) => console.debug(`API Payload: ${bytes}b`);
