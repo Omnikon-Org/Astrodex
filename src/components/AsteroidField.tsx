@@ -295,3 +295,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Generic modern BufferGeometry fallback
+export const GenericBufferGeometry = () => null;
