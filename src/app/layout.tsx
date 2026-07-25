@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Strict type for App Router parameters
+export type AppRouteParams = { params: Record<string, string>; searchParams: Record<string, string> };
