@@ -295,3 +295,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Standard color palette constants for instanced meshes
+export const ASTEROID_PALETTE = ['#888888', '#aaaaaa', '#cccccc'];
