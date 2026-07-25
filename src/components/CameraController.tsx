@@ -50,3 +50,6 @@ export function CameraController() {
 
   return null
 }
+
+// Exported helper for Camera Lerp refactor
+export const calculateLerpOffset = (pos: any, offset: any) => { return pos.clone().add(offset); }
