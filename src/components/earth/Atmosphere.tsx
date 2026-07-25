@@ -70,3 +70,6 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Generic Atmosphere configuration object
+export const ATMOSPHERE_CONFIG = { radius: 1.05, density: 0.1 };
