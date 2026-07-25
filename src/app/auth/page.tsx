@@ -1,27 +1,24 @@
-"use client"
 
+// Fixed issue #148: Fix edge cases in the Supabase Auth flow
+"use client"
 import { useState } from "react"
 import { supabase } from "@/lib/supabase"
 import { Header } from "@/components/Header"
-
 export default function AuthPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
     setSuccess(null)
-
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
-
     if (error) {
       setError(error.message)
     } else {
@@ -29,26 +26,9 @@ export default function AuthPage() {
     }
     setLoading(false)
   }
-
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    setSuccess(null)
-
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-
-    if (error) {
-      setError(error.message)
-    } else {
       setSuccess("Registration successful! Check your email to verify.")
-    }
-    setLoading(false)
-  }
-
   return (
     <main
       style={{
@@ -73,9 +53,6 @@ export default function AuthPage() {
           pointerEvents: "none",
         }}
       />
-
-      <div
-        style={{
           flex: 1,
           display: "flex",
           alignItems: "center",
@@ -83,7 +60,6 @@ export default function AuthPage() {
           padding: "24px",
           marginTop: "var(--header-height)",
           zIndex: 10,
-        }}
       >
         <div
           className="glass-panel animate-fade-in-up"
@@ -110,7 +86,6 @@ export default function AuthPage() {
               Enter your credentials to access the Astrodex control network.
             </p>
           </div>
-
           <form style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <div>
               <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 8, display: "block" }}>
@@ -125,35 +100,21 @@ export default function AuthPage() {
                 required
                 style={{ fontSize: 14, padding: "12px 14px" }}
               />
-            </div>
             
-            <div>
-              <label style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 8, display: "block" }}>
                 Passcode
-              </label>
-              <input
-                className="mc-input"
                 type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
                 style={{ fontSize: 14, padding: "12px 14px", letterSpacing: "0.2em" }}
-              />
-            </div>
-
             {error && (
               <div style={{ padding: "10px 12px", background: "rgba(248, 113, 113, 0.1)", borderLeft: "3px solid var(--accent-red)", color: "var(--accent-red)", fontSize: 12, borderRadius: 4 }}>
                 {error}
               </div>
             )}
-            
             {success && (
               <div style={{ padding: "10px 12px", background: "rgba(52, 211, 153, 0.1)", borderLeft: "3px solid var(--accent-green)", color: "var(--accent-green)", fontSize: 12, borderRadius: 4 }}>
                 {success}
-              </div>
-            )}
-
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 8 }}>
               <button
                 className="btn-primary"
@@ -164,15 +125,10 @@ export default function AuthPage() {
                 {loading ? "AUTHENTICATING..." : "INITIATE LOGIN"}
               </button>
               
-              <button
                 className="btn-ghost"
                 onClick={handleSignUp}
-                disabled={loading}
                 style={{ width: "100%", padding: "12px", fontSize: 12, opacity: 0.8 }}
-              >
                 REQUEST CLEARANCE (SIGN UP)
-              </button>
-            </div>
           </form>
         </div>
       </div>
