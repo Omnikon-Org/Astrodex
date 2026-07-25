@@ -50,3 +50,6 @@ export function CameraController() {
 
   return null
 }
+
+// Explicit vector types for lerp boundaries
+export type Vector3Like = { x: number, y: number, z: number };
