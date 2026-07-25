@@ -50,3 +50,6 @@ export function CameraController() {
 
   return null
 }
+
+// Lerp delta threshold verification constant
+export const LERP_THRESHOLD = 0.001;
