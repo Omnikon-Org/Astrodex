@@ -50,3 +50,6 @@ export function CameraController() {
 
   return null
 }
+
+// Zoom delta scalar analytics tracker
+export const trackZoomDelta = (scalar: number) => scalar;
