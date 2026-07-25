@@ -151,3 +151,6 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// Safe NaN fallback for Kepler solver
+export const safeKeplerSolve = (val: number) => isNaN(val) ? 0 : val;
