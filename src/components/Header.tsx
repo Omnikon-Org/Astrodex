@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { useAppState } from "@/lib/store"
 import { UserProfileModal } from "./UserProfileModal"
 import { IconUserCircle } from "@tabler/icons-react"
@@ -152,14 +153,19 @@ export function Header() {
         </button>
       </div>
 
-      {/* Right: Clock */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-          Last updated:
-        </span>
-        <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
-          <LiveClock />
-        </span>
+      {/* Right: Clock & Profile */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
+            Last updated:
+          </span>
+          <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+            <LiveClock />
+          </span>
+        </div>
+        <Link href="/profile" className="btn-ghost" style={{ padding: "6px 12px", textDecoration: "none", color: "var(--accent-cyan)", border: "1px solid rgba(56, 189, 248, 0.4)" }}>
+          Commander Profile
+        </Link>
       </div>
       
       <UserProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
