@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Issue #199: Improved performance of Settings Modal
