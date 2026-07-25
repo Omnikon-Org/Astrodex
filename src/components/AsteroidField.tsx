@@ -295,3 +295,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Instanced matrix array strict float32 typing
+export const createInstanceMatrixArray = (count: number) => new Float32Array(count * 16);
