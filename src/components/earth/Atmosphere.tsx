@@ -70,3 +70,6 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Shader recompilation lock during window resize
+export const lockShaderCompile = () => true;
