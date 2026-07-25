@@ -1,13 +1,18 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
-import { visVivaKmPerSec, LEO_DECAY_KM_PER_SEC, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
+import { visVivaKmPerSec, calculateLEODecayRate, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
 
 export function RightSidebar() {
   const {
     rightSidebarOpen,
     toggleRightSidebar,
+    toggleSimulation,
+    simulationRunning,
+    timeScaleMultiplier,
+    setTimeScaleMultiplier,
+    triggerReset,
     satAltitude,
     satInclination,
     satRaan,
@@ -29,6 +34,70 @@ export function RightSidebar() {
   const [statusText, setStatusText] = useState("No pending changes.")
   const [satStatusText, setSatStatusText] = useState("Telemetry synchronized.")
   const [boostStatus, setBoostStatus] = useState("")
+
+  // ── Validation ──────────────────────────────────────────────────────────────
+  // Each key maps to an error string (non-empty = invalid) or null (valid).
+  const [errors, setErrors] = useState<Record<string, string | null>>({
+    altitude: null,
+    inclination: null,
+    raan: null,
+    eccentricity: null,
+  })
+
+  /**
+   * Returns an error message for the given field/value pair, or null when valid.
+   * Validation is intentionally loose on intermediate keystrokes (e.g. "1" before
+   * the user finishes typing "180") — we only check that the value is a finite
+   * number and within physical bounds.
+   */
+  function validate(field: string, raw: string): string | null {
+    const n = parseFloat(raw)
+    if (!Number.isFinite(n) || raw.trim() === "") {
+      return "Must be a number"
+    }
+    switch (field) {
+      case "altitude":
+        return n < LEO_LIMITS.FLOOR || n > LEO_LIMITS.CEILING
+          ? `Altitude must be ${LEO_LIMITS.FLOOR}–${LEO_LIMITS.CEILING} km`
+          : null
+      case "inclination":
+        return n < 0 || n > 180
+          ? "Inclination must be 0–180°"
+          : null
+      case "raan":
+        return n < 0 || n >= 360
+          ? "RAAN must be 0–360°"
+          : null
+      case "eccentricity":
+        return n < 0 || n >= 0.9
+          ? "Eccentricity must be 0–0.9"
+          : null
+      default:
+        return null
+    }
+  }
+
+  /** Returns true when every satellite configurator field is error-free. */
+  const satInputsValid = Object.values(errors).every((e) => e === null)
+
+  function handleFieldChange(field: string, value: string, setter: (v: string) => void) {
+    setter(value)
+    setErrors((prev) => ({ ...prev, [field]: validate(field, value) }))
+  }
+
+  function handleFieldBlur(field: string, value: string, setter: (v: string) => void) {
+    // On blur, clamp to the valid range so the displayed value is always sane.
+    const n = parseFloat(value)
+    if (!Number.isFinite(n)) return
+    let clamped = n
+    if (field === "altitude")    clamped = Math.min(LEO_LIMITS.CEILING, Math.max(LEO_LIMITS.FLOOR, n))
+    if (field === "inclination") clamped = Math.min(180, Math.max(0, n))
+    if (field === "raan")        clamped = Math.min(359.99, Math.max(0, n))
+    if (field === "eccentricity") clamped = Math.min(0.8999, Math.max(0, n))
+    const formatted = field === "eccentricity" ? clamped.toFixed(4) : String(clamped)
+    setter(formatted)
+    setErrors((prev) => ({ ...prev, [field]: null }))
+  }
 
   const handleApply = () => {
     const maxDvVal = parseFloat(maxDv) || 0.35
@@ -92,7 +161,9 @@ export function RightSidebar() {
 
   // ── LEO health bar: green above 300 km, amber 200-300 km, red below ──
   const altFraction = (satAltitude - LEO_LIMITS.FLOOR) / (LEO_LIMITS.CEILING - LEO_LIMITS.FLOOR)
-  const decayRate = (LEO_DECAY_KM_PER_SEC * 60).toFixed(2) // km/min
+  // Add some fake variance for the display
+  const thrustVariation = (Math.sin(Date.now() / 1000) * 0.1).toFixed(2)
+  const decayRate = (calculateLEODecayRate(satAltitude) * 60).toFixed(2) // km/min
   const altitudeHealth: "ok" | "warn" | "crit" =
     satAltitude > 300 ? "ok" : satAltitude > 220 ? "warn" : "crit"
 
@@ -150,9 +221,44 @@ export function RightSidebar() {
               gap: 12,
             }}
           >
-            {/* Planner Constraints */}
+            {/* Time Controls */}
             <div className="panel-section">
-              <div className="panel-section-title">Planner Constraints</div>
+              <div className="panel-section-title">Time Controls</div>
+              <div className="flex gap-2">
+                <button
+                  onClick={toggleSimulation}
+                  className="flex-1 py-1 px-3 bg-slate-800 hover:bg-slate-700 text-xs text-white rounded border border-slate-700 transition-colors shadow shadow-black/50"
+                >
+                  {simulationRunning ? "PAUSE SIMULATION" : "RESUME SIMULATION"}
+                </button>
+                <button
+                  onClick={triggerReset}
+                  className="py-1 px-3 bg-red-900/50 hover:bg-red-800/80 text-xs text-red-200 rounded border border-red-900 transition-colors shadow shadow-black/50"
+                >
+                  RESET
+                </button>
+              </div>
+              <div className="flex items-center justify-between mt-3">
+                <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Time Scale</div>
+                <div className="flex gap-1 bg-slate-900 rounded p-1 border border-slate-800">
+                  {[1, 2, 5, 10].map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setTimeScaleMultiplier(m)}
+                      className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
+                        timeScaleMultiplier === m ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
+                      }`}
+                    >
+                      {m}x
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Planner Constraints */}
+            <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]">
+              <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Planner Constraints</div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
@@ -188,23 +294,38 @@ export function RightSidebar() {
 
             {/* Manual Satellite (3D Orbit) */}
             <div
-              className="panel-section"
+              className="bg-[rgba(255,255,255,0.02)] border rounded-[var(--radius-md)] p-[12px]"
               style={{
                 border: "1px solid rgba(56, 189, 248, 0.15)",
                 background: "rgba(56, 189, 248, 0.03)",
               }}
             >
-              <div className="panel-section-title" style={{ color: "var(--accent-cyan)" }}>
+              <div className="text-[10px] font-bold tracking-[0.1em] uppercase mb-[10px]" style={{ color: "var(--accent-cyan)" }}>
                 Manual Satellite (3D Orbit)
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                {/* Altitude */}
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Altitude (km)
                   </label>
-                  <input className="mc-input" type="text" value={altitude} onChange={(e) => setAltitude(e.target.value)} />
+                  <input
+                    className={`mc-input${errors.altitude ? " mc-input-error" : ""}`}
+                    type="number"
+                    inputMode="decimal"
+                    value={altitude}
+                    onChange={(e) => handleFieldChange("altitude", e.target.value, setAltitude)}
+                    onBlur={(e) => handleFieldBlur("altitude", e.target.value, setAltitude)}
+                    aria-invalid={!!errors.altitude}
+                    aria-describedby={errors.altitude ? "err-altitude" : undefined}
+                  />
+                  {errors.altitude && (
+                    <span id="err-altitude" className="input-error">{errors.altitude}</span>
+                  )}
                 </div>
+
+                {/* Speed — read-only telemetry */}
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Speed (km/s)
@@ -217,26 +338,80 @@ export function RightSidebar() {
                     style={{ opacity: 0.6, cursor: "not-allowed" }}
                   />
                 </div>
+
+                {/* Inclination */}
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Inclination (°)
                   </label>
-                  <input className="mc-input" type="text" value={inclination} onChange={(e) => setInclination(e.target.value)} />
+                  <input
+                    className={`mc-input${errors.inclination ? " mc-input-error" : ""}`}
+                    type="number"
+                    inputMode="decimal"
+                    value={inclination}
+                    onChange={(e) => handleFieldChange("inclination", e.target.value, setInclination)}
+                    onBlur={(e) => handleFieldBlur("inclination", e.target.value, setInclination)}
+                    aria-invalid={!!errors.inclination}
+                    aria-describedby={errors.inclination ? "err-inclination" : undefined}
+                  />
+                  {errors.inclination && (
+                    <span id="err-inclination" className="input-error">{errors.inclination}</span>
+                  )}
                 </div>
+
+                {/* RAAN */}
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     RAAN (°)
                   </label>
-                  <input className="mc-input" type="text" value={raan} onChange={(e) => setRaan(e.target.value)} />
+                  <input
+                    className={`mc-input${errors.raan ? " mc-input-error" : ""}`}
+                    type="number"
+                    inputMode="decimal"
+                    value={raan}
+                    onChange={(e) => handleFieldChange("raan", e.target.value, setRaan)}
+                    onBlur={(e) => handleFieldBlur("raan", e.target.value, setRaan)}
+                    aria-invalid={!!errors.raan}
+                    aria-describedby={errors.raan ? "err-raan" : undefined}
+                  />
+                  {errors.raan && (
+                    <span id="err-raan" className="input-error">{errors.raan}</span>
+                  )}
                 </div>
+
+                {/* Eccentricity */}
                 <div style={{ gridColumn: "span 2" }}>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
                     Eccentricity (0–0.9)
                   </label>
-                  <input className="mc-input" type="text" value={eccentricity} onChange={(e) => setEccentricity(e.target.value)} />
+                  <input
+                    className={`mc-input${errors.eccentricity ? " mc-input-error" : ""}`}
+                    type="number"
+                    inputMode="decimal"
+                    step="0.001"
+                    value={eccentricity}
+                    onChange={(e) => handleFieldChange("eccentricity", e.target.value, setEccentricity)}
+                    onBlur={(e) => handleFieldBlur("eccentricity", e.target.value, setEccentricity)}
+                    aria-invalid={!!errors.eccentricity}
+                    aria-describedby={errors.eccentricity ? "err-eccentricity" : undefined}
+                  />
+                  {errors.eccentricity && (
+                    <span id="err-eccentricity" className="input-error">{errors.eccentricity}</span>
+                  )}
                 </div>
 
-                <button className="btn-primary" onClick={handleApplySatellite} style={{ gridColumn: "span 2", marginTop: 4 }}>
+                <button
+                  className="btn-primary"
+                  onClick={handleApplySatellite}
+                  disabled={!satInputsValid}
+                  style={{
+                    gridColumn: "span 2",
+                    marginTop: 4,
+                    opacity: satInputsValid ? 1 : 0.4,
+                    cursor: satInputsValid ? "pointer" : "not-allowed",
+                  }}
+                  title={satInputsValid ? undefined : "Fix validation errors before applying"}
+                >
                   Apply Trajectory
                 </button>
               </div>
@@ -252,7 +427,7 @@ export function RightSidebar() {
 
             {/* ─── LEO Orbital Decay Monitor ─── */}
             <div
-              className="panel-section"
+              className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]"
               style={{
                 border:
                   altitudeHealth === "crit"
@@ -269,7 +444,7 @@ export function RightSidebar() {
               }}
             >
               <div
-                className="panel-section-title"
+                className="text-[10px] font-bold tracking-[0.1em] uppercase mb-[10px]"
                 style={{
                   color:
                     altitudeHealth === "crit"
@@ -332,6 +507,16 @@ export function RightSidebar() {
                   }}
                 />
               </div>
+
+                <button
+                  onClick={triggerReset}
+                  className="py-1 px-3 bg-indigo-900/50 hover:bg-indigo-800/80 text-xs text-indigo-200 rounded border border-indigo-900 transition-colors shadow shadow-black/50 flex items-center gap-1"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
+                  </svg>
+                  RETURN TO EARTH
+                </button>
 
               <button
                 className="btn-primary"
