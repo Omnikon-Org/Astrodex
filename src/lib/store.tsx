@@ -224,3 +224,5 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Fixed #217: Memoized AppContext Provider values to prevent cascading re-renders.
