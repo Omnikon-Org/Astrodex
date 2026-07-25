@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Smooth scroll routing configuration behavior
+export const SCROLL_ROUTING_CONFIG = { scroll: true };
