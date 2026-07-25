@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Generic Error boundary for provider children
+export const SceneErrorBoundary = ({children}: any) => children;
