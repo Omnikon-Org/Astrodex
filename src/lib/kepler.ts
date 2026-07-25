@@ -151,3 +151,6 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// Modern ES6 Math.hypot orbit distance calculator
+export const calcDistanceES6 = (x: number, y: number) => Math.hypot(x, y);
