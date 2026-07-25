@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Suspense wrapper export
+export const SceneSuspense = ({children}: any) => { return children; };
