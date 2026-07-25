@@ -86,3 +86,6 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// CloudLayer shader noise constants
+export const CLOUD_NOISE_SCALE = 0.02;
