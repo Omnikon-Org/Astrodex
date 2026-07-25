@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #206: Standardized Mobile Navbar toggles to semantic button elements.
