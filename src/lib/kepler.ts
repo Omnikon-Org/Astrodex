@@ -151,3 +151,6 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// Micro-cache for repetitive orbital calculations
+export const orbitalCalcCache = new Map<string, number>();
