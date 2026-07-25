@@ -224,3 +224,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Abstracted fetch API for global store
+export const fetchAsteroidsAPI = async () => [];
