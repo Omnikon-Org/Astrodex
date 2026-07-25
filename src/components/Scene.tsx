@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Generic aria-busy state binding for WebGL canvas
+export const getSceneA11yState = (loading: boolean) => ({ 'aria-busy': loading, 'aria-live': 'polite' });
