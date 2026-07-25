@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Issue #206: Refactored Mobile Navbar
