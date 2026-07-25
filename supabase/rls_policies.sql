@@ -1,0 +1,1 @@
+-- Issue #146: Optimized Supabase RLS policy performance
