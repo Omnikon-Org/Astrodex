@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Texture generator cache
+export const textureCache = new Map<string, HTMLCanvasElement>();
