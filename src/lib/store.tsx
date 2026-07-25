@@ -224,3 +224,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Explicit API response shape mapping
+export interface AsteroidApiResponse { data: any[]; success: boolean; }
