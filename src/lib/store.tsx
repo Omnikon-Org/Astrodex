@@ -1,14 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useRef, useMemo, type ReactNode } from "react"
-/**
- * @file store.tsx
- * @description Centralized State Management & Custom Hook Provider for AstroDex.
- * Houses global application state including Asteroid catalog management, orbital mechanics telemetry,
- * UI sidebar states, and conjunction collision risks.
- */
-
-import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo, type ReactNode } from "react"
 import type { AsteroidData } from "./types"
 
 // ==========================================
@@ -135,21 +127,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
   const [claimHistory, setClaimHistory] = useState<{ id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]>([])
-
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const [terminalExpanded, setTerminalExpanded] = useState(false)
-  const [claimedAsteroids, setClaimedAsteroids] = useState<Set<number>>(new Set())
+
   const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
   const asteroidDataRef = useRef<AsteroidData[]>([])
 
-  // 2. Simulation & Camera States
-  const [resetCamera, setResetCamera] = useState<boolean>(false)
-  const [simulationRunning, setSimulationRunning] = useState<boolean>(true)
-  const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
-
   const [toasts, setToasts] = useState<{ id: number; message: string; type: "success" | "error" | "info" }[]>([])
   const nextToastId = useRef(1)
+
+  const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
+  const [satAltitude, setSatAltitude] = useState<number>(400)
+  const [satInclination, setSatInclination] = useState<number>(51.63)
+  const [satRaan, setSatRaan] = useState<number>(0)
+  const [satEccentricity, setSatEccentricity] = useState<number>(0.0006)
+  const [boostCount, setBoostCount] = useState<number>(0)
+  const [deltaVCount, setDeltaVCount] = useState<number>(0)
+  const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
+  const nextAlertId = useRef<number>(1)
+
+  const [cinematicMode, setCinematicMode] = useState<boolean>(false)
+  const [cameraFov, setCameraFov] = useState<number>(75)
+  const [autoRotate, setAutoRotate] = useState<boolean>(false)
+  const [bloomIntensity, setBloomIntensity] = useState<number>(1.0)
+  const [timeScaleMultiplier, setTimeScaleMultiplier] = useState<number>(1)
 
   const addToast = useCallback((message: string, type: "success" | "error" | "info" = "info") => {
     const id = nextToastId.current++
@@ -160,26 +162,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [])
   const removeToast = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
-  const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
-  // 3. Navigation & Panel States
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState<boolean>(true)
-  const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(true)
-  const [terminalExpanded, setTerminalExpanded] = useState<boolean>(false)
-  // 4. Debris Filters & Satellite Trajectory
-  const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
-  const [satAltitude, setSatAltitude] = useState<number>(400)
-  const [satInclination, setSatInclination] = useState<number>(51.63)
-  const [satRaan, setSatRaan] = useState<number>(0)
-  const [satEccentricity, setSatEccentricity] = useState<number>(0.0006)
-  const [boostCount, setBoostCount] = useState<number>(0)
-  const [deltaVCount, setDeltaVCount] = useState<number>(0)
-  const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
-  const nextAlertId = useRef<number>(1)
-  // 5. Cinematic Visual Rendering States
-  const [cinematicMode, setCinematicMode] = useState<boolean>(false)
-  const [cameraFov, setCameraFov] = useState<number>(75)
-  const [autoRotate, setAutoRotate] = useState<boolean>(false)
-  const [bloomIntensity, setBloomIntensity] = useState<number>(1.0)
+  }, [])
+
   // Auto-collapse sidebars on smaller mobile screens
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth >= 768) return
@@ -187,27 +171,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setLeftSidebarOpen(false)
       setRightSidebarOpen(false)
     })
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
   // Action Handlers
   const selectAsteroid = useCallback((asteroid: AsteroidData | null) => {
     setSelectedAsteroid(asteroid)
+  }, [])
 
   const claimAsteroid = useCallback((id: number) => {
     setClaimed((prev) => {
       const next = new Set(prev)
       const action = next.has(id) ? "RELEASED" : "CLAIMED"
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       setClaimHistory(h => [...h, { id, action, timestamp: new Date() }])
       return next
-    setClaimedAsteroids((prevClaims) => {
-      const nextClaims = new Set(prevClaims)
-      if (nextClaims.has(id)) {
-        nextClaims.delete(id)
-      } else {
-        nextClaims.add(id)
-      }
-      return nextClaims
     })
   }, [])
 
@@ -232,6 +214,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSelectedAsteroid(found)
     }
   }, [])
+
+  const selectNextAsteroid = useCallback(() => {
+    const catalog = asteroidDataRef.current
+    if (catalog.length === 0) return
+    const currentIndex = selectedAsteroid
+      ? catalog.findIndex((item) => item.id === selectedAsteroid.id)
+      : -1
+    const nextIndex = (currentIndex + 1) % catalog.length
+    setSelectedAsteroid(catalog[nextIndex])
+  }, [selectedAsteroid])
+
+  const selectPrevAsteroid = useCallback(() => {
+    const catalog = asteroidDataRef.current
+    if (catalog.length === 0) return
+    const currentIndex = selectedAsteroid
+      ? catalog.findIndex((item) => item.id === selectedAsteroid.id)
+      : catalog.length
+    const prevIndex = (currentIndex - 1 + catalog.length) % catalog.length
+    setSelectedAsteroid(catalog[prevIndex])
+  }, [selectedAsteroid])
 
   const triggerDeltaVLog = useCallback(() => {
     setDeltaVCount((count) => count + 1)
@@ -301,53 +303,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setRiskLevel("LOW")
   }, [])
 
-  const contextValue = useMemo(() => ({
-    selectedAsteroid,
-    claimedAsteroids,
-    selectAsteroid,
-    claimAsteroid,
-    resetCamera,
-    triggerReset,
-    clearReset,
-    simulationRunning,
-    toggleSimulation,
-    riskLevel,
-    leftSidebarOpen,
-    rightSidebarOpen,
-    terminalExpanded,
-    toggleLeftSidebar,
-    toggleRightSidebar,
-    toggleTerminal,
-    searchAsteroidById,
-    registerAsteroidData,
-    filterType,
-    setFilterType,
-    satAltitude,
-    satInclination,
-    satRaan,
-    satEccentricity,
-    updateSatelliteParams,
-    updateSatelliteEccentricity,
-    decayAltitude,
-    boostBurn,
-    boostCount,
-    deltaVCount,
-    triggerDeltaVLog,
-    conjunctions,
-    addConjunctionAlert,
-    clearConjunctions,
-  }), [
-    selectedAsteroid, claimedAsteroids, resetCamera, simulationRunning, riskLevel,
-    leftSidebarOpen, rightSidebarOpen, terminalExpanded, filterType, satAltitude,
-    satInclination, satRaan, satEccentricity, boostCount, deltaVCount, conjunctions,
-    selectAsteroid, claimAsteroid, triggerReset, clearReset, toggleSimulation,
-    toggleLeftSidebar, toggleRightSidebar, toggleTerminal, searchAsteroidById,
-    registerAsteroidData, updateSatelliteParams, updateSatelliteEccentricity,
-    decayAltitude, boostBurn, triggerDeltaVLog, addConjunctionAlert, clearConjunctions
-  ])
-
   return (
-    <AppContext.Provider value={contextValue}>
     <AppContext.Provider
       value={{
         selectedAsteroid,
