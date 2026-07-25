@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Texture Generation metrics helper
+export const calculateTextureSize = (res: number) => res * res * 4;
