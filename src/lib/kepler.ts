@@ -151,3 +151,6 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+/** Optimized Vis-Viva migration */
+export const computeVisVivaFast = (r: number, a: number): number => { return Math.sqrt(Math.max(0, 0.005 * (2/r - 1/a))); }
