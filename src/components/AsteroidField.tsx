@@ -295,3 +295,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Negative scale instance guard
+export const safeInstanceScale = (scale: number) => scale < 0 ? 0.01 : scale;
