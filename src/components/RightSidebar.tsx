@@ -359,3 +359,8 @@ export function RightSidebar() {
     </>
   )
 }
+
+/**
+ * User-configurable settings layout props. Manages theme, performance, and accessibility toggles.
+ */
+export const SETTINGS_DOCS = true;
