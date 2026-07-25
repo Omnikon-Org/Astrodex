@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Issue #215: Refactored Settings Modal
