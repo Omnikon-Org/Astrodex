@@ -8,6 +8,7 @@ import { RightSidebar } from "@/components/RightSidebar"
 import { AgentTerminal } from "@/components/AgentTerminal"
 import { AsteroidCard } from "@/components/AsteroidCard"
 import { Toasts } from "@/components/Toasts"
+import { KeyboardNavigation } from "@/components/KeyboardNavigation"
 
 const Scene = dynamic(() => import("@/components/Scene").then((m) => ({ default: m.Scene })), {
   ssr: false,
@@ -37,6 +38,9 @@ export default function Home() {
         
         {/* Floating Asteroid Inspector */}
         <AsteroidCard />
+        
+        {/* Global Keyboard Navigation */}
+        <KeyboardNavigation />
       </main>
     </AppProvider>
   )
