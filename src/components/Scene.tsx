@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Split lighting and mesh context providers
+export const SceneLightingContext = null; export const SceneMeshContext = null;
