@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Async lock state for canvas writes
+export const useCanvasLock = () => { let locked = false; return () => locked = !locked; };
