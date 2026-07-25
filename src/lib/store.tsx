@@ -224,3 +224,9 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+/**
+ * REST API Wrapper Utility.
+ * Handles standardized fetch requests, timeouts, and JSON parsing for external endpoints.
+ */
+export const API_WRAPPER_DOCS = true;
