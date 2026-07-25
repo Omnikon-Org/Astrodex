@@ -86,3 +86,6 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Safe material disposal helper for CloudLayer
+export const disposeCloudMaterial = (mat: any) => { if(mat) mat.dispose(); };
