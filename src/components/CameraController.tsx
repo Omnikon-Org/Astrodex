@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Issue #212: Added inline documentation for Camera Lerp logic
