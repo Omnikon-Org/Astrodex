@@ -295,3 +295,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Vertex count performance profiling logger
+export const logGeometryVertices = (count: number) => console.debug(`Vertices: ${count}`);
