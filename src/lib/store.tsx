@@ -101,6 +101,11 @@ interface AppState {
   addConjunctionAlert: (alert: Omit<ConjunctionAlert, "id">) => void
   /** Clears all active conjunction alerts and resets global risk level to LOW */
   clearConjunctions: () => void
+
+  // Toasts
+  toasts: { id: number; message: string; type: "success" | "error" | "info" }[]
+  addToast: (message: string, type?: "success" | "error" | "info") => void
+  removeToast: (id: number) => void
   
   /** History of claims and releases */
   claimHistory: { id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]
@@ -142,11 +147,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [simulationRunning, setSimulationRunning] = useState<boolean>(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
 
+  const [toasts, setToasts] = useState<{ id: number; message: string; type: "success" | "error" | "info" }[]>([])
+  const nextToastId = useRef(1)
+
+  const addToast = useCallback((message: string, type: "success" | "error" | "info" = "info") => {
+    const id = nextToastId.current++
+    setToasts((prev) => [...prev, { id, message, type }])
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id))
+    }, 4000)
+  }, [])
+  const removeToast = useCallback((id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id))
+  const selectAsteroid = useCallback((a: AsteroidData | null) => setSelectedAsteroid(a), [])
   // 3. Navigation & Panel States
   const [leftSidebarOpen, setLeftSidebarOpen] = useState<boolean>(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(true)
   const [terminalExpanded, setTerminalExpanded] = useState<boolean>(false)
-
   // 4. Debris Filters & Satellite Trajectory
   const [filterType, setFilterType] = useState<"ALL" | "ASTEROIDS" | "DEBRIS">("ALL")
   const [satAltitude, setSatAltitude] = useState<number>(400)
@@ -157,13 +174,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [deltaVCount, setDeltaVCount] = useState<number>(0)
   const [conjunctions, setConjunctions] = useState<ConjunctionAlert[]>([])
   const nextAlertId = useRef<number>(1)
-
   // 5. Cinematic Visual Rendering States
   const [cinematicMode, setCinematicMode] = useState<boolean>(false)
   const [cameraFov, setCameraFov] = useState<number>(75)
   const [autoRotate, setAutoRotate] = useState<boolean>(false)
   const [bloomIntensity, setBloomIntensity] = useState<number>(1.0)
-
   // Auto-collapse sidebars on smaller mobile screens
   useEffect(() => {
     if (typeof window !== "undefined" && window.innerWidth >= 768) return
@@ -171,12 +186,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setLeftSidebarOpen(false)
       setRightSidebarOpen(false)
     })
-  }, [])
-
   // Action Handlers
   const selectAsteroid = useCallback((asteroid: AsteroidData | null) => {
     setSelectedAsteroid(asteroid)
-  }, [])
 
   const claimAsteroid = useCallback((id: number) => {
     setClaimed((prev) => {
@@ -329,6 +341,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         conjunctions,
         addConjunctionAlert,
         clearConjunctions,
+        toasts,
+        addToast,
+        removeToast,
         claimHistory,
       }}
     >

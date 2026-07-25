@@ -331,6 +331,25 @@ html, body {
   animation: fadeInRight 0.35s ease-out forwards;
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.35s ease-out forwards;
+}
+
 .animate-pulse-glow {
   animation: pulseGlow 2s ease-in-out infinite;
 }

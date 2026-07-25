@@ -11,6 +11,7 @@ export function AsteroidCard() {
     claimAsteroid,
     leftSidebarOpen,
     selectAsteroid,
+    addToast,
   } = useAppState()
 
   if (!selectedAsteroid) return null
@@ -166,6 +167,32 @@ export function AsteroidCard() {
           </div>
         </div>
 
+        {/* Action Buttons */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <button
+            onClick={() => {
+              claimAsteroid(selectedAsteroid.id)
+              if (isClaimed) {
+                addToast(`Released claim on ${selectedAsteroid.name}`, "info")
+              } else {
+                addToast(`Mining claim secured on ${selectedAsteroid.name}`, "success")
+              }
+            }}
+            className="btn-primary"
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "var(--radius-md)",
+              backgroundColor: isClaimed ? "rgba(248, 113, 113, 0.12)" : "rgba(56, 189, 248, 0.12)",
+              borderColor: isClaimed ? "rgba(248, 113, 113, 0.4)" : "rgba(56, 189, 248, 0.4)",
+              color: isClaimed ? "var(--accent-red)" : "var(--accent-cyan)",
+              fontSize: "12px",
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+          >
+            {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
+          </button>
         {/* Mining Claim Operations */}
         <div style={{ marginTop: 12 }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", marginBottom: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>
