@@ -224,3 +224,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Malformed JSON API response guard
+export const parseApiSafe = (raw: string) => { try{ return JSON.parse(raw); }catch(e){ return {}; } };
