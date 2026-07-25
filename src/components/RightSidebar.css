@@ -1,0 +1,3 @@
+
+/* FPS counter fixed-width typography */
+.fps-monitor { font-family: 'Fira Code', monospace; font-variant-numeric: tabular-nums; }
