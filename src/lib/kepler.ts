@@ -151,3 +151,42 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+/**
+ * Get 3D Cartesian coordinates (x, y, z) for a Keplerian orbit.
+ * Computes the perifocal coordinates and rotates them by inclination and RAAN
+ * into the Three.js coordinate system (where Y is up/polar).
+ *
+ * @param a Semi-major axis
+ * @param e Eccentricity
+ * @param E Eccentric anomaly (radians)
+ * @param incRad Inclination (radians)
+ * @param raanRad Right Ascension of the Ascending Node (radians)
+ * @returns { x, y, z }
+ */
+export function getOrbitalPosition(
+  a: number,
+  e: number,
+  E: number,
+  incRad: number,
+  raanRad: number = 0
+): { x: number; y: number; z: number } {
+  const cosE = Math.cos(E)
+  const sinE = Math.sin(E)
+  const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+
+  const x_pf = a * (cosE - e)
+  const y_pf = a * sqrt1me2 * sinE
+
+  // Inclination rotation about the line of nodes (x_pf axis)
+  const x1 = x_pf
+  const y1 = y_pf * Math.sin(incRad)
+  const z1 = y_pf * Math.cos(incRad)
+
+  // RAAN rotation about the polar (y) axis
+  const x = x1 * Math.cos(raanRad) - z1 * Math.sin(raanRad)
+  const z = x1 * Math.sin(raanRad) + z1 * Math.cos(raanRad)
+  const y = y1
+
+  return { x, y, z }
+}

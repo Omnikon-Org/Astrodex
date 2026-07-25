@@ -1,6 +1,8 @@
 "use client"
 
 import { useAppState } from "@/lib/store"
+import { ClaimButton } from "./ClaimButton"
+import { Tooltip } from "./Tooltip"
 
 export function AsteroidCard() {
   const {
@@ -111,10 +113,12 @@ export function AsteroidCard() {
         )}
 
         {/* Orbit Visual Diagram Placeholder or Stats */}
-        <div className="panel-section" style={{ marginBottom: 14 }}>
-          <div className="panel-section-title">Orbital Mechanics</div>
+        <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]" style={{ marginBottom: 14 }}>
+          <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Orbital Mechanics</div>
           <div className="kv-row">
-            <span className="kv-label">Semi-Major Axis</span>
+            <Tooltip content="Average distance from the central body (AU)">
+              <span className="kv-label cursor-help border-b border-dotted border-gray-500">Semi-Major Axis</span>
+            </Tooltip>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
           </div>
           <div className="kv-row">
@@ -141,26 +145,16 @@ export function AsteroidCard() {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <button
+        {/* Mining Claim Operations */}
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", marginBottom: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Mining Claim Operations
+          </div>
+          <ClaimButton
+            isClaimed={isClaimed}
             onClick={() => claimAsteroid(selectedAsteroid.id)}
-            className="btn-primary"
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "var(--radius-md)",
-              backgroundColor: isClaimed ? "rgba(248, 113, 113, 0.12)" : "rgba(56, 189, 248, 0.12)",
-              borderColor: isClaimed ? "rgba(248, 113, 113, 0.4)" : "rgba(56, 189, 248, 0.4)",
-              color: isClaimed ? "var(--accent-red)" : "var(--accent-cyan)",
-              fontSize: "12px",
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-            }}
-          >
-            {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
-          </button>
+          />
+        </div>
         </div>
       </div>
     </div>
