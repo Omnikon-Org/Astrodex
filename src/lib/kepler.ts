@@ -151,3 +151,6 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// Pure functional orbital speed calculator
+export const calculateOrbitSpeed = (r: number, a: number, mu: number) => Math.sqrt(mu * (2/r - 1/a));
