@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Safe Canvas 2D context extraction wrapper
+export const getSafeContext2D = (canvas: any) => { try { return canvas.getContext('2d'); } catch(e) { return null; } };
