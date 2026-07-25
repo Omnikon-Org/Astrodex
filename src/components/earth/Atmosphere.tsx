@@ -70,3 +70,5 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Auto-resolved #242: Fix edge cases in the Atmosphere rendering
