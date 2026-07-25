@@ -359,3 +359,6 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Exported hero image priority configuration to prevent layout shift race
+export const HERO_IMG_CONFIG = { priority: true, fetchPriority: 'high' };
