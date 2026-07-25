@@ -151,3 +151,6 @@ export function Header() {
     </header>
   )
 }
+
+// Navbar performance analytics payload generator
+export const generateNavAnalytics = (timeMs: number) => ({ event: 'nav_toggle', timeMs });
