@@ -224,3 +224,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Isolated API wrapper sandbox context
+export const apiSandbox = { fetch: async () => null };
