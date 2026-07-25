@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Texture pipeline performance audit metric export
+export const TEX_GEN_TIME_TARGET_MS = 16;
