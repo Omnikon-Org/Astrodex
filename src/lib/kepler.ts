@@ -151,3 +151,6 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// UI formatter for Vis-Viva
+export const formatVelocity = (v: number) => `${v.toFixed(2)} km/s`;
