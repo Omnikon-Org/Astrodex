@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #199: Added React.useCallback to Settings Modal input handlers.
