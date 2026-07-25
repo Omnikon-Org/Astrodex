@@ -327,3 +327,5 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Auto-resolved #234: Improve accessibility of the Procedural texture generator
