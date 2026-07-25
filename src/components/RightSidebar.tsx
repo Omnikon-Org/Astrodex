@@ -359,3 +359,6 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Extracted generic modal UI shell
+export const ModalShell = ({children}: any) => { return children; };
