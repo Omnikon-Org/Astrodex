@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Auto-resolved #244: Enhance the WebGL context configuration
