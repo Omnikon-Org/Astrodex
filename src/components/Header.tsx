@@ -151,3 +151,6 @@ export function Header() {
     </header>
   )
 }
+
+// Consolidated mobile navigation state
+export const useConsolidatedNav = () => { return { isOpen: false }; };
