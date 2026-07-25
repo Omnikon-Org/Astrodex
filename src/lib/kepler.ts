@@ -151,3 +151,6 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// Abstracted Kepler solver utility
+export const solveKeplerAbstract = (M: number, e: number) => M + e * Math.sin(M);
