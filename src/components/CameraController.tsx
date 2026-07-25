@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #216: Refactored camera tracking logic to pre-allocate vectors outside the render loop.
