@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// FOUT (Flash of Unstyled Text) duration tracker payload
+export const fontLoadEvent = { type: 'font_load', maxDurationMs: 3000 };
