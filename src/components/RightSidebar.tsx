@@ -359,3 +359,6 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Isolated settings micro-store
+export const SettingsMicroStore = { theme: 'dark' };
