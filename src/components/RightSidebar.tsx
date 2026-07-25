@@ -359,3 +359,6 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Onboarding modal isolation boundary
+export const OnboardingBoundary = ({children}: any) => children;
