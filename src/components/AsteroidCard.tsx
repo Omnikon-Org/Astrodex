@@ -107,7 +107,28 @@ export function AsteroidCard() {
               justifyContent: "space-between",
             }}
           >
-            <span>STATUS: CLAIMED & SECURED</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {/* User Avatar Placeholder */}
+              <div
+                style={{
+                  width: 18,
+                  height: 18,
+                  borderRadius: "50%",
+                  background: "var(--accent-green)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#000",
+                }}
+                title="Claimed by you"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <span>STATUS: CLAIMED & SECURED</span>
+            </div>
             <span style={{ fontSize: 9, opacity: 0.8 }}>SEC-REG</span>
           </div>
         )}
