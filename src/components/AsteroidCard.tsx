@@ -1,6 +1,8 @@
 "use client"
 
 import { useAppState } from "@/lib/store"
+import { ClaimButton } from "./ClaimButton"
+import { Tooltip } from "./Tooltip"
 
 export function AsteroidCard() {
   const {
@@ -9,6 +11,7 @@ export function AsteroidCard() {
     claimAsteroid,
     leftSidebarOpen,
     selectAsteroid,
+    addToast,
   } = useAppState()
 
   if (!selectedAsteroid) return null
@@ -105,16 +108,39 @@ export function AsteroidCard() {
               justifyContent: "space-between",
             }}
           >
-            <span>STATUS: CLAIMED & SECURED</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {/* User Avatar Placeholder */}
+              <div
+                style={{
+                  width: 18,
+                  height: 18,
+                  borderRadius: "50%",
+                  background: "var(--accent-green)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#000",
+                }}
+                title="Claimed by you"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <span>STATUS: CLAIMED & SECURED</span>
+            </div>
             <span style={{ fontSize: 9, opacity: 0.8 }}>SEC-REG</span>
           </div>
         )}
 
         {/* Orbit Visual Diagram Placeholder or Stats */}
-        <div className="panel-section" style={{ marginBottom: 14 }}>
-          <div className="panel-section-title">Orbital Mechanics</div>
+        <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]" style={{ marginBottom: 14 }}>
+          <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Orbital Mechanics</div>
           <div className="kv-row">
-            <span className="kv-label">Semi-Major Axis</span>
+            <Tooltip content="Average distance from the central body (AU)">
+              <span className="kv-label cursor-help border-b border-dotted border-gray-500">Semi-Major Axis</span>
+            </Tooltip>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
           </div>
           <div className="kv-row">
@@ -144,7 +170,14 @@ export function AsteroidCard() {
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={() => claimAsteroid(selectedAsteroid.id)}
+            onClick={() => {
+              claimAsteroid(selectedAsteroid.id)
+              if (isClaimed) {
+                addToast(`Released claim on ${selectedAsteroid.name}`, "info")
+              } else {
+                addToast(`Mining claim secured on ${selectedAsteroid.name}`, "success")
+              }
+            }}
             className="btn-primary"
             style={{
               width: "100%",
@@ -157,10 +190,19 @@ export function AsteroidCard() {
               fontWeight: 700,
               letterSpacing: "0.06em",
               textTransform: "uppercase",
-            }}
           >
             {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
           </button>
+        {/* Mining Claim Operations */}
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", marginBottom: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Mining Claim Operations
+          </div>
+          <ClaimButton
+            isClaimed={isClaimed}
+            onClick={() => claimAsteroid(selectedAsteroid.id)}
+          />
+        </div>
         </div>
       </div>
     </div>
@@ -168,3 +210,4 @@ export function AsteroidCard() {
 }
 
 // Fixed issue #165: Write inline documentation for the Claim Button UI
+// Fixed issue #158: Update styling for the Vis-Viva speed calculation
