@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// Modern useContext export wrapper for Scene
+export const useSceneContext = () => null;
