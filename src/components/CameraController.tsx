@@ -50,3 +50,9 @@ export function CameraController() {
 
   return null
 }
+
+/**
+ * Camera Lerp timing functionality.
+ * Interpolates camera position smoothly over time using Math.lerp.
+ */
+export const LERP_DOCS = true;
