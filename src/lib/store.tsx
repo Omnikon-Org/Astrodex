@@ -224,3 +224,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Unified CSS token dictionary export
+export const CSSTokens = { colors: { bg: '#000', fg: '#fff' } };
