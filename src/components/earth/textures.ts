@@ -327,3 +327,5 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Fixed #204: Cached procedural canvas generation globally to prevent redundant paints.
