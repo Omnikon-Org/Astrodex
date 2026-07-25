@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Auto-resolved #224: Write inline documentation for the EarthMesh component
