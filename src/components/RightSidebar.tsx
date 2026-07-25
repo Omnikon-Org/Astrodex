@@ -359,3 +359,6 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Settings listener cleanup helper
+export const cleanupSettingsListener = (cb: any) => window.removeEventListener('resize', cb);
