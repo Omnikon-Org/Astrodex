@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Undefined dynamic route param fallback
+export const getSafeRouteParam = (p: string | undefined) => p || 'default';
