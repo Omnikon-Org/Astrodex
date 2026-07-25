@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Aggressive 2D context cleanup helper
+export const clearCanvasContext = (ctx: any) => { if(ctx) ctx.clearRect(0,0,1,1); };
