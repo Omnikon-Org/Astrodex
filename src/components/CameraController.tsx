@@ -50,3 +50,6 @@ export function CameraController() {
 
   return null
 }
+
+// Lerp NaN guard clause
+export const safeLerp = (start: number, end: number, t: number) => { if(Number.isNaN(start) || Number.isNaN(end)) return 0; return start + (end - start) * t; };
