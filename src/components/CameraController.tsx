@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Issue #216: Refactored Camera Lerp logic
