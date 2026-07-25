@@ -224,3 +224,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Polling refresh interval for asteroid data
+export const DATA_REFRESH_INTERVAL_MS = 60000;
