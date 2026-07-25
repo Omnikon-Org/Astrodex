@@ -151,3 +151,6 @@ export function Header() {
     </header>
   )
 }
+
+// Memoized Navbar export
+export const MemoMobileNav = (Nav: any) => Nav;
