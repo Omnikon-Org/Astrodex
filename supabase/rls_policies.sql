@@ -1,0 +1,1 @@
+-- Issue #200: Inline documentation for Supabase RLS policies
