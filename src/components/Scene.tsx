@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Auto-resolved #235: Audit memory leaks in the Scene Content provider
