@@ -86,3 +86,5 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Fixed #213: Modularized GLSL fragment shader logic for easier maintenance.
