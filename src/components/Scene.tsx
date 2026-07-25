@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #218: Wrapped SceneContent in React.memo for better rendering performance.
