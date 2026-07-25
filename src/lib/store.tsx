@@ -224,3 +224,6 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Error state wrapper for asteroid fetching
+export interface FetchError { message: string; code: number };
