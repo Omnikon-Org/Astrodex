@@ -75,6 +75,7 @@ export function LeftSidebar() {
           className="sidebar-toggle sidebar-toggle-left"
           onClick={toggleLeftSidebar}
           title="Show Target Panel"
+          aria-label="Show Target Panel"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 18l6-6-6-6" />
@@ -111,7 +112,7 @@ export function LeftSidebar() {
                 Target + Live Feed
               </span>
             </div>
-            <button className="btn-ghost" onClick={toggleLeftSidebar} style={{ padding: 4, border: "none" }}>
+            <button className="btn-ghost" onClick={toggleLeftSidebar} style={{ padding: 4, border: "none" }} aria-label="Close Target Panel">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M15 18l-6-6 6-6" />
               </svg>
@@ -161,11 +162,12 @@ export function LeftSidebar() {
 
             {/* Search */}
             <div>
-              <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
+              <label htmlFor="searchId" style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
                 Select Catalog Item By ID
               </label>
               <div style={{ display: "flex", gap: 6 }}>
                 <input
+                  id="searchId"
                   className="mc-input"
                   type="text"
                   placeholder="ID 1–600"
@@ -185,8 +187,8 @@ export function LeftSidebar() {
             </div>
 
             {/* Live Target Details */}
-            <div className="panel-section">
-              <div className="panel-section-title">Live Target Details</div>
+            <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]">
+              <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Live Target Details</div>
               {selectedAsteroid ? (
                 <div>
                   <div className="kv-row">
@@ -224,9 +226,9 @@ export function LeftSidebar() {
             </div>
 
             {/* Conjunction Feed */}
-            <div className="panel-section" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <div className="panel-section-title" style={{ marginBottom: 0 }}>Conjunction Alerter</div>
+            <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)]" style={{ marginBottom: 0 }}>Conjunction Alerter</div>
                   <div
                     style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}
                     title={riskFilter !== "ALL" ? `${filteredConjunctions.length} of ${conjunctions.length} total` : undefined}
