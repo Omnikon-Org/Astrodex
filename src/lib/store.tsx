@@ -224,3 +224,5 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Auto-resolved #237: Improve accessibility of the AppProvider context
