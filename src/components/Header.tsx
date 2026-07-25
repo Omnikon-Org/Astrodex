@@ -151,3 +151,6 @@ export function Header() {
     </header>
   )
 }
+
+// Aria-labels for cache data warnings
+export const cacheAriaProps = { 'aria-label': 'Cached data displayed', 'aria-live': 'polite' };
