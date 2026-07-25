@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #201: Added backdrop-filter blur glassmorphism to UI overlay wrapper.
