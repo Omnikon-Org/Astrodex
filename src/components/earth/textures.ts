@@ -327,3 +327,6 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Bump-map contrast scaling UI constant
+export const TEXTURE_CONTRAST_SCALE = 1.5;
