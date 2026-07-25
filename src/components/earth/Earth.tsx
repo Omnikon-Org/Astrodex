@@ -126,3 +126,6 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// EarthMesh Review Memoization wrapper
+export const MemoizedEarth = (Earth: any) => Earth;
