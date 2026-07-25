@@ -295,3 +295,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Fallback text generator for canvas elements
+export const getCanvasFallback = (count: number) => `Interactive 3D visualization of ${count} asteroids`;
