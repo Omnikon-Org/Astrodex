@@ -70,3 +70,6 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Atmosphere visual-only wrapper
+export const atmosphereA11y = { 'aria-hidden': true };
