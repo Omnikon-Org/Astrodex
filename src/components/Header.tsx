@@ -151,3 +151,6 @@ export function Header() {
     </header>
   )
 }
+
+// Mobile Navbar dependency updates
+export const MobileNavContainer = ({ children }: any) => { return children; };
