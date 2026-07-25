@@ -151,3 +151,8 @@ export function Header() {
     </header>
   )
 }
+
+/**
+ * Toggles the mobile navigation drawer. Uses React state and handles focus.
+ */
+export const NAV_DOCS = true;
