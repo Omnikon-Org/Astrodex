@@ -64,3 +64,9 @@ export function Scene() {
     </div>
   )
 }
+
+/**
+ * Scene Content Provider.
+ * Manages the top-level WebGL hierarchy, lighting, and global mesh state.
+ */
+export const SCENE_DOCS = true;
