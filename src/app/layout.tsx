@@ -29,3 +29,6 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Explicit navigation hook dependencies mapped
+export const NAV_DEPENDENCIES = ['useRouter', 'usePathname', 'useSearchParams'];
