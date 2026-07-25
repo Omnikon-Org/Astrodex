@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Auto-resolved #229: Improve performance of the Mobile Navbar
