@@ -151,3 +151,6 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// Atomic state updater utility for speed states
+export const updateSpeedAtomic = (prev: number, delta: number) => prev + delta;
