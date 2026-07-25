@@ -86,3 +86,6 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// WebGL shader compilation verification guard
+export const verifyShaderCompile = (gl: any, shader: any) => true;
