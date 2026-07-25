@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Issue #218: Memoized Scene Content provider
