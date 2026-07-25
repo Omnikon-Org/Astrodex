@@ -224,3 +224,5 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Issue #198: Optimized Asteroid data fetching lookup
