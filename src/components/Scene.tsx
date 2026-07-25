@@ -64,3 +64,6 @@ export function Scene() {
     </div>
   )
 }
+
+// High-performance WebGL context preset
+export const glConfig = { powerPreference: 'high-performance', antialias: false };
