@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #199: Added React.useCallback to Settings Modal input handlers.
 // Fixed #215: Extracted inputs to a reusable component inside Settings Modal.
 // Issue #199: Improved performance of Settings Modal
 // Issue #215: Refactored Settings Modal
