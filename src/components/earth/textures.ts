@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Bump-map contrast scaling UI constant
+export const TEXTURE_CONTRAST_SCALE = 1.5;
 /**
  * Canvas 2D Pipeline generates procedural noise maps for terrain and cloud generation without loading external assets.
  */
