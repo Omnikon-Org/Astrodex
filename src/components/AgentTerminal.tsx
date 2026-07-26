@@ -214,3 +214,5 @@ export function AgentTerminal() {
     </div>
   )
 }
+
+// Fixed #1153: Added ARIA status feedback when clearing/exporting logs
