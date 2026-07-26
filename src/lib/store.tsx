@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Distinct App Dispatch context to prevent over-renders
+export const AppDispatchContext = null;
 // Abstracted fetch API for global store
 export const fetchAsteroidsAPI = async () => [];
 // Polling refresh interval for asteroid data
