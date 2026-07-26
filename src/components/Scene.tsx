@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// High-performance WebGL context preset
+export const glConfig = { powerPreference: 'high-performance', antialias: false };
 // Auto-resolved #235: Audit memory leaks in the Scene Content provider
 // Auto-resolved #244: Enhance the WebGL context configuration
 // Fixed #201: Added backdrop-filter blur glassmorphism to UI overlay wrapper.
