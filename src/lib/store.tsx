@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// API payload size analytics event exporter
+export const logApiPayloadSize = (bytes: number) => console.debug(`API Payload: ${bytes}b`);
 /**
  * REST API Wrapper Utility.
  * Handles standardized fetch requests, timeouts, and JSON parsing for external endpoints.
