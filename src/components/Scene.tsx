@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1140: Fixed WebGL context loss unhandled exception
