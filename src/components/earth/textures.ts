@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Aggressive 2D context cleanup helper
+export const clearCanvasContext = (ctx: any) => { if(ctx) ctx.clearRect(0,0,1,1); };
 // A11y properties for procedural canvas
 export const proceduralCanvasA11y = { 'aria-hidden': 'true', role: 'presentation' };
 // Async lock state for canvas writes
