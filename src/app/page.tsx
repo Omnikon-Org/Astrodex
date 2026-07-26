@@ -14,9 +14,9 @@ const Scene = dynamic(() => import("@/components/Scene").then((m) => ({ default:
   ssr: false,
 })
 
-export default function Home() {
+export default function Home({ initialObjectId }: { initialObjectId?: string | null }) {
   return (
-    <AppProvider>
+    <AppProvider initialObjectId={initialObjectId}>
       <main
         style={{
           position: "relative",

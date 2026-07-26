@@ -14,7 +14,6 @@ import { CameraController } from "./CameraController"
 import { Effects } from "./Effects"
 import { CanvasErrorBoundary } from "./CanvasErrorBoundary"
 import { useAppState } from "@/lib/store"
-import { useStore } from "@/lib/store";
 
 function SceneContent() {
   const sunDirection = useMemo(() => new THREE.Vector3(5, 3, 5).normalize(), [])
@@ -52,18 +51,6 @@ function SceneContent() {
       <Effects />
     </>
   )
-}
-
-export default function Scene() {
-  const focusedObjectId = useStore((s) => s.focusedObjectId);
-  
-  return (
-    <Canvas>
-      {/* existing components */}
-      <CameraController focusedObjectId={focusedObjectId} />
-      <AsteroidField focusedObjectId={focusedObjectId} />
-    </Canvas>
-  );
 }
 
 export function Scene() {

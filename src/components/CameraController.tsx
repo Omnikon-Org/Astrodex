@@ -12,25 +12,21 @@ const EARTH_TARGET = new THREE.Vector3(0, 0, 0)
 const _offset = new THREE.Vector3()
 const _lookTarget = new THREE.Vector3()
 
-// ========== NEW: accept focusedObjectId from parent ==========
-export function CameraController({ focusedObjectId }: { focusedObjectId?: string | null }) {
+export function CameraController() {
   const { camera } = useThree()
-  const { selectedAsteroid, resetCamera, clearReset, searchAsteroidById } = useAppState()
+  const { selectedAsteroid, resetCamera, clearReset, searchAsteroidById, focusedObjectId } = useAppState()
   const targetPos = useRef(EARTH_POSITION.clone())
   const targetLook = useRef(EARTH_TARGET.clone())
   const hasSelection = useRef(false)
 
-  // ========== NEW: watch focusedObjectId and move camera to that object ==========
+  // Watch focusedObjectId and move camera to that object
   useEffect(() => {
     if (focusedObjectId) {
-      // Parse the ID – supports formats like "asteroid-042" or just "42"
       const numId = parseInt(focusedObjectId.replace(/\D/g, ""), 10)
       if (!isNaN(numId)) {
         searchAsteroidById(numId)
       }
     }
-    // Optionally: if focusedObjectId is null, you could clear selection here
-    // but we leave it unchanged to keep existing behaviour.
   }, [focusedObjectId, searchAsteroidById])
 
   // Keyboard navigation for accessibility
