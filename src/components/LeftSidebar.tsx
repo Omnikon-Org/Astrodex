@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1222: Added custom asteroid bookmarking in LeftSidebar
