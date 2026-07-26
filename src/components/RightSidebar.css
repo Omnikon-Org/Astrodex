@@ -1,3 +1,5 @@
 
+/* Controls overlay opacity variables */
+:root { --overlay-opacity: 0.85; --overlay-bg: rgba(0,0,0,0.85); }
 /* Profile Modal backdrop styling */
 .modal-backdrop { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
