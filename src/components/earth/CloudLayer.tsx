@@ -88,6 +88,8 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// Raw shader material loader dependency typing
+export type RawShaderMaterialType = any;
 // Extracted generic cloud noise utility
 export const generateCloudNoise = (seed: number) => seed * Math.random();
 // Safe material disposal helper for CloudLayer
