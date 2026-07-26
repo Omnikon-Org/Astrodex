@@ -77,6 +77,8 @@ export default function RootLayout({
   )
 }
 
+// Route transition analytics tracking hook
+export const useRouteAnalytics = () => true;
 // Smooth scroll routing configuration behavior
 export const SCROLL_ROUTING_CONFIG = { scroll: true };
 // Undefined dynamic route param fallback
