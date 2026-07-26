@@ -1,4 +1,6 @@
 
+// WebGL Spinner React Suspense fallback pattern
+export const SpinnerSuspenseFallback = () => 'Loading WebGL...';
 // WebGL spinner specific error boundary
 export const SpinnerErrorBoundary = ({children}: any) => { return children; };
 // Localized spinner context extraction
