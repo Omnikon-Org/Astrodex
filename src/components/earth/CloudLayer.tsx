@@ -88,6 +88,7 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// Fixed #213: Modularized GLSL fragment shader logic for easier maintenance.
 // Issue #209: Added error handling to CloudLayer shader
 // Issue #213: Refactored CloudLayer shader
 // Fixed issue #164: Fix edge cases in the CloudLayer shader
