@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Detail panel isolation sandbox boundary
+export const DetailSandbox = ({children}: any) => { return children; };
 // Generic Error boundary for provider children
 export const SceneErrorBoundary = ({children}: any) => children;
 // Modern useContext export wrapper for Scene
