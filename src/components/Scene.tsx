@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Safe fallback UI trigger for corrupted selection data
+export const isAsteroidDataValid = (data: any) => data && data.id && data.name;
 // Strict typing for WebGL context configuration
 export interface StrictWebGLConfig { antialias: boolean; powerPreference: 'high-performance' | 'default'; }
 // Generic aria-busy state binding for WebGL canvas
