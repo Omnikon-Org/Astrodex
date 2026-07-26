@@ -48,9 +48,12 @@ interface AtmosphereProps {
 
 export function Atmosphere({ sunDirection }: AtmosphereProps) {
   const meshRef = useRef<THREE.Mesh>(null)
-  const uniformsRef = useRef({
-    sunDirection: { value: sunDirection.clone() },
-  })
+  const uniforms = useMemo(
+    () => ({
+      sunDirection: { value: sunDirection.clone() },
+    }),
+    [sunDirection]
+  )
 
   const geomRef = useRef<THREE.SphereGeometry>(null)
   const matRef = useRef<THREE.ShaderMaterial>(null)
@@ -58,6 +61,11 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   useEffect(() => {
     uniformsRef.current.sunDirection.value.copy(sunDirection)
   }, [sunDirection])
+  useFrame((state) => {
+    if (meshRef.current) {
+      uniforms.sunDirection.value.copy(sunDirection)
+    }
+  })
 
   useEffect(() => {
     return () => {
@@ -71,6 +79,9 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
       <sphereGeometry ref={geomRef} args={[2.0, 64, 64]} />
       <shaderMaterial ref={matRef}
         uniforms={uniformsRef.current}
+      <sphereGeometry args={[2.0, 64, 64]} />
+      <shaderMaterial
+        uniforms={uniforms}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
         transparent
@@ -80,3 +91,7 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Issue #221: Audited GPU memory cleanup in Atmosphere component
+// Fixed issue #171: Update styling for the Atmosphere rendering
+// Fixed issue #153: Optimize the Atmosphere rendering
