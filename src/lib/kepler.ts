@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+/** Optimized Vis-Viva migration */
+export const computeVisVivaFast = (r: number, a: number): number => { return Math.sqrt(Math.max(0, 0.005 * (2/r - 1/a))); }
 // Auto-resolved #225: Fix edge cases in the Vis-Viva speed calculation
 // Auto-resolved #239: Fix edge cases in the Kepler orbit solver
 // Fixed #202: Precomputed MU_SCENE division outside the hot useFrame loop.
