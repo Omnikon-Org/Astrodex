@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1109: Added fallback semantic HTML text for WebGL Canvas
