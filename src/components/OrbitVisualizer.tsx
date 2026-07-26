@@ -1,4 +1,6 @@
 
+// WCAG standard contrast ratio for orbit lines
+export const ORBIT_LINE_OPACITY_MIN = 0.5;
 // Consolidated orbit trail formatting function
 export const formatOrbitTrail = (points: any[]) => points.slice(0, 100);
 // Custom hook for orbit math extraction
