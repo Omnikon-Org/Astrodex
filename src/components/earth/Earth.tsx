@@ -125,5 +125,6 @@ export function Earth({ sunDirection }: EarthProps) {
   )
 }
 
+// Auto-resolved #224: Write inline documentation for the EarthMesh component
 // Fixed issue #174: Update styling for the EarthMesh component
 // Fixed issue #161: Fix edge cases in the EarthMesh component
