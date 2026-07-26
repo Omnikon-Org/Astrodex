@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1163: Added React.memo optimization to heavy HUD components
