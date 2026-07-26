@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Modern useContext export wrapper for Scene
+export const useSceneContext = () => null;
 // Split lighting and mesh context providers
 export const SceneLightingContext = null; export const SceneMeshContext = null;
 // Detail panel props interface internal path extraction
