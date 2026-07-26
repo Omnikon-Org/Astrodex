@@ -173,6 +173,8 @@ export function Header() {
   )
 }
 
+// Navbar performance analytics payload generator
+export const generateNavAnalytics = (timeMs: number) => ({ event: 'nav_toggle', timeMs });
 // Aria-labels for cache data warnings
 export const cacheAriaProps = { 'aria-label': 'Cached data displayed', 'aria-live': 'polite' };
 // Memoized Navbar export
