@@ -1,4 +1,6 @@
 
+// Render pass optimization flags for Vignette
+export const VIGNETTE_OPTIMIZE_PASS = true;
 // Modular hook for Vignette config
 export const useVignetteConfig = () => ({ offset: 0.5, darkness: 0.5 });
 // Vignette window resize aspect ratio guard
