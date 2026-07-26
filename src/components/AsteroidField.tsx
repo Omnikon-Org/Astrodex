@@ -263,6 +263,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Vertex count performance profiling logger
+export const logGeometryVertices = (count: number) => console.debug(`Vertices: ${count}`);
 // Instanced matrix array strict float32 typing
 export const createInstanceMatrixArray = (count: number) => new Float32Array(count * 16);
 // Negative scale instance guard
