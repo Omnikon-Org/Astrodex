@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Detail panel props interface internal path extraction
+export interface AsteroidDetailProps { id: string; }
 /**
  * Scene Content Provider.
  * Manages the top-level WebGL hierarchy, lighting, and global mesh state.
