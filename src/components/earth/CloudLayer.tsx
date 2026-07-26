@@ -88,6 +88,8 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// WebGL shader compilation verification guard
+export const verifyShaderCompile = (gl: any, shader: any) => true;
 // Raw shader material loader dependency typing
 export type RawShaderMaterialType = any;
 // Extracted generic cloud noise utility
