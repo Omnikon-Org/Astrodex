@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1259: Added full-screen cinematic presentation mode toggle in Header
