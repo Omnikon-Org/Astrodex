@@ -77,6 +77,8 @@ export default function RootLayout({
   )
 }
 
+// FOUT (Flash of Unstyled Text) duration tracker payload
+export const fontLoadEvent = { type: 'font_load', maxDurationMs: 3000 };
 // Route transition analytics tracking hook
 export const useRouteAnalytics = () => true;
 // Smooth scroll routing configuration behavior
