@@ -47,3 +47,5 @@ Closes #
 ## ✅ The "I Swear I Didn't Break Anything" Pledge
 - [ ] I have thoroughly tested these changes in my own local branch.
 - [ ] I verified multiple times that this code compiles into a standalone build and does not break existing production features.
+
+<!-- Fixed #1235: Created standardized PR description template -->
