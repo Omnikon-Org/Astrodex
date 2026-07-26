@@ -555,6 +555,8 @@ export function RightSidebar() {
   )
 }
 
+// Onboarding modal isolation boundary
+export const OnboardingBoundary = ({children}: any) => children;
 // Extracted generic modal UI shell
 export const ModalShell = ({children}: any) => { return children; };
 /**
