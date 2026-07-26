@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Ensure specific Three.js types are exported
+export type TextureConfig = { width: number; height: number };
 // Texture generator cache
 export const textureCache = new Map<string, HTMLCanvasElement>();
 // Auto-resolved #234: Improve accessibility of the Procedural texture generator
