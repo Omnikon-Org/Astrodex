@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Async lock state for canvas writes
+export const useCanvasLock = () => { let locked = false; return () => locked = !locked; };
 // Safe Canvas 2D context extraction wrapper
 export const getSafeContext2D = (canvas: any) => { try { return canvas.getContext('2d'); } catch(e) { return null; } };
 // Bump-map contrast scaling UI constant
