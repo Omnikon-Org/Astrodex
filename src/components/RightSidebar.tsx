@@ -555,6 +555,8 @@ export function RightSidebar() {
   )
 }
 
+// lucide-react import optimization
+export const SettingsIconRef = null;
 // Fixed #199: Added React.useCallback to Settings Modal input handlers.
 // Fixed #215: Extracted inputs to a reusable component inside Settings Modal.
 // Issue #199: Improved performance of Settings Modal
