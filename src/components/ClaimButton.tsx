@@ -1,4 +1,6 @@
 
+// Pure functional Claim Button extraction
+export const PureClaimButton = (props: any) => null;
 // Pre-bind claim handler for performance
 export const handleClaimPrebind = (fn: any) => fn.bind(null);
 // Anti-double-click safeguard state
