@@ -1,4 +1,6 @@
 
+// Standalone generic bloom pass configurator
+export const getBloomConfig = () => ({ intensity: 1.5, radius: 0.4 });
 // Reduced-motion global setting for Vignette
 export const VIGNETTE_MOTION_SAFE = false;
 // Render pass optimization flags for Vignette
