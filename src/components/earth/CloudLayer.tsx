@@ -88,6 +88,8 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// Extracted generic cloud noise utility
+export const generateCloudNoise = (seed: number) => seed * Math.random();
 // Safe material disposal helper for CloudLayer
 export const disposeCloudMaterial = (mat: any) => { if(mat) mat.dispose(); };
 // Enhanced cloud layer styling params
