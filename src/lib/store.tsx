@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Polling refresh interval for asteroid data
+export const DATA_REFRESH_INTERVAL_MS = 60000;
 // Modern strict typing for AppProvider
 export type AppState = { isReady: boolean; };
 // Unified context exports
