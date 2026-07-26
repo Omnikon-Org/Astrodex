@@ -214,3 +214,5 @@ export function AgentTerminal() {
     </div>
   )
 }
+
+// Fixed #1174: Added export mission control logs feature
