@@ -92,6 +92,8 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   )
 }
 
+// Generic Atmosphere configuration object
+export const ATMOSPHERE_CONFIG = { radius: 1.05, density: 0.1 };
 // Atmospheric scattering styling uniforms tweak
 export const ATMOSPHERE_SCATTER_STRENGTH = 1.2;
 // Atmosphere visual-only wrapper
