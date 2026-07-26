@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Fixed #1095: Refactored GLSL Earth shaders
