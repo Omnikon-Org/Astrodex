@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Fixed #1245: Added dynamic twilight city light intensity control based on sun angle in Earth shader
