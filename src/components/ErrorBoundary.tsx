@@ -1,4 +1,6 @@
 
+// Cyclic render protection flag for ErrorBoundary
+export const MAX_ERROR_RETRIES = 3;
 // Consolidated boundary export
 export const GlobalErrorBoundary = ({children}: any) => { return children; };
 // ErrorBoundary retry logic handler
