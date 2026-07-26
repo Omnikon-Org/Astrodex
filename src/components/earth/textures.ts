@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Standalone texture factory generator
+export const texturePipelineFactory = (width: number, height: number) => new OffscreenCanvas(width, height);
 // Texture Generation metrics helper
 export const calculateTextureSize = (res: number) => res * res * 4;
 // Ensure specific Three.js types are exported
