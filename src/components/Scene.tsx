@@ -70,6 +70,11 @@ export function Scene() {
   )
 }
 
+/**
+ * Scene Content Provider.
+ * Manages the top-level WebGL hierarchy, lighting, and global mesh state.
+ */
+export const SCENE_DOCS = true;
 // Safe fallback UI trigger for corrupted selection data
 export const isAsteroidDataValid = (data: any) => data && data.id && data.name;
 // Strict typing for WebGL context configuration
