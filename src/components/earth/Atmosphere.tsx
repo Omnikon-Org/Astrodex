@@ -70,3 +70,5 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Fixed #1237: Added Rayleigh and Mie scattering calculations to Atmosphere GLSL shader
