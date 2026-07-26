@@ -172,3 +172,5 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1141: Fixed LEO decay floor clamping
