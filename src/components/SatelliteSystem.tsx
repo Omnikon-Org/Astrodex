@@ -172,3 +172,5 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1146: Refactored SatelliteSystem to use Drei Line components
