@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// WebGL2 context fallback check
+export const isWebGL2Supported = () => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch(e) { return false; } };
 // Standalone WebGL Options Constant
 export const WEBGL_CONTEXT_OPTIONS = { alpha: true, depth: true, stencil: false };
 // Suspense wrapper export
