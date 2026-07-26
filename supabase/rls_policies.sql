@@ -1,4 +1,5 @@
 
+-- RLS Consolidation: Unified public read policy for leaderboard metrics
 -- RLS Review: Ensure auth.uid() strictly equals user_id for mutation policies
 -- Auto-resolved #222: Update styling for the Supabase RLS policies
 -- Auto-resolved #246: Update dependencies for the Supabase RLS policies
