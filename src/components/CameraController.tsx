@@ -90,6 +90,8 @@ export function CameraController() {
   return null
 }
 
+// Lerp delta threshold verification constant
+export const LERP_THRESHOLD = 0.001;
 // Exported helper for Camera Lerp refactor
 export const calculateLerpOffset = (pos: any, offset: any) => { return pos.clone().add(offset); }
 // Fixed #212: Added JSDoc comments explaining the exponential smoothing camera lerp math.
