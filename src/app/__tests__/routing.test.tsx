@@ -21,7 +21,11 @@ vi.mock("next/navigation", () => ({
 
 describe("Next.js Routing Layer", () => {
   it("renders the main page component successfully", () => {
-    // Basic test to verify routing rendering doesn't crash
     expect(true).toBe(true)
+  })
+
+  it("supports initial object permalink routing prop", () => {
+    const { container } = render(<Page initialObjectId="asteroid-42" />)
+    expect(container).toBeDefined()
   })
 })

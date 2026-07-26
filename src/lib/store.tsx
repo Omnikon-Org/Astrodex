@@ -102,6 +102,12 @@ interface AppState {
   
   /** History of claims and releases */
   claimHistory: { id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]
+
+  // ========== NEW: Focused Object ID ==========
+  /** The unique ID of the currently focused orbital object (for camera tracking) */
+  focusedObjectId: string | null
+  /** Sets the currently focused object ID, or null to clear focus */
+  setFocusedObjectId: (id: string | null) => void
 }
 
 // ==========================================
@@ -119,7 +125,13 @@ const AppContext = createContext<AppState | null>(null)
 // Context Provider Component
 // ==========================================
 
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({
+  children,
+  initialObjectId = null,
+}: {
+  children: ReactNode
+  initialObjectId?: string | null
+}) {
   // 1. Asteroid Data States
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
   const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
@@ -152,6 +164,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [autoRotate, setAutoRotate] = useState<boolean>(false)
   const [bloomIntensity, setBloomIntensity] = useState<number>(1.0)
   const [timeScaleMultiplier, setTimeScaleMultiplier] = useState<number>(1)
+
+  // ========== NEW: Focused Object ID ==========
+  const [focusedObjectId, setFocusedObjectIdState] = useState<string | null>(initialObjectId)
 
   const addToast = useCallback((message: string, type: "success" | "error" | "info" = "info") => {
     const id = nextToastId.current++
@@ -204,9 +219,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const toggleRightSidebar = useCallback(() => setRightSidebarOpen((prev) => !prev), [])
   const toggleTerminal = useCallback(() => setTerminalExpanded((prev) => !prev), [])
 
-  const registerAsteroidData = useCallback((data: AsteroidData[]) => {
-    asteroidDataRef.current = data
-  }, [])
+  const registerAsteroidData = useCallback(
+    (data: AsteroidData[]) => {
+      asteroidDataRef.current = data
+      if (focusedObjectId) {
+        const numId = parseInt(focusedObjectId.replace(/\D/g, ""), 10)
+        if (!isNaN(numId)) {
+          const found = data.find((item) => item.id === numId)
+          if (found) {
+            setSelectedAsteroid(found)
+          }
+        }
+      }
+    },
+    [focusedObjectId]
+  )
 
   const searchAsteroidById = useCallback((id: number) => {
     const found = asteroidDataRef.current.find((item) => item.id === id)
@@ -303,6 +330,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setRiskLevel("LOW")
   }, [])
 
+  // ========== NEW: setFocusedObjectId ==========
+  const setFocusedObjectId = useCallback((id: string | null) => {
+    setFocusedObjectIdState(id)
+    if (id) {
+      const numId = parseInt(id.replace(/\D/g, ""), 10)
+      if (!isNaN(numId) && asteroidDataRef.current.length > 0) {
+        const found = asteroidDataRef.current.find((item) => item.id === numId)
+        if (found) {
+          setSelectedAsteroid(found)
+        }
+      }
+    }
+  }, [])
+
   return (
     <AppContext.Provider
       value={{
@@ -348,6 +389,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addToast,
         removeToast,
         claimHistory,
+        // ========== NEW: include the new state and setter ==========
+        focusedObjectId,
+        setFocusedObjectId,
       }}
     >
       {children}
@@ -373,8 +417,6 @@ export function useAppState(): AppState {
   }
   return ctx
 }
-
-export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
 // Development warning for out-of-bounds context consumption
 export const verifyProviderBounds = (ctx: any) => { if(!ctx) console.warn('Missing Provider Context'); return ctx; };
@@ -407,8 +449,6 @@ export const AppDispatchContext = null;
 export const fetchAsteroidsAPI = async () => [];
 // Polling refresh interval for asteroid data
 export const DATA_REFRESH_INTERVAL_MS = 60000;
-// Modern strict typing for AppProvider
-export type AppState = { isReady: boolean; };
 // Unified context exports
 export const useUnifiedContext = () => { return null; };
 // Asteroid data fetch caching helper

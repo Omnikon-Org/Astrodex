@@ -14,10 +14,20 @@ const _lookTarget = new THREE.Vector3()
 
 export function CameraController() {
   const { camera } = useThree()
-  const { selectedAsteroid, resetCamera, clearReset, searchAsteroidById } = useAppState()
+  const { selectedAsteroid, resetCamera, clearReset, searchAsteroidById, focusedObjectId } = useAppState()
   const targetPos = useRef(EARTH_POSITION.clone())
   const targetLook = useRef(EARTH_TARGET.clone())
   const hasSelection = useRef(false)
+
+  // Watch focusedObjectId and move camera to that object
+  useEffect(() => {
+    if (focusedObjectId) {
+      const numId = parseInt(focusedObjectId.replace(/\D/g, ""), 10)
+      if (!isNaN(numId)) {
+        searchAsteroidById(numId)
+      }
+    }
+  }, [focusedObjectId, searchAsteroidById])
 
   // Keyboard navigation for accessibility
   useEffect(() => {
