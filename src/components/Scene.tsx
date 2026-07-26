@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Standalone WebGL Options Constant
+export const WEBGL_CONTEXT_OPTIONS = { alpha: true, depth: true, stencil: false };
 // Suspense wrapper export
 export const SceneSuspense = ({children}: any) => { return children; };
 // High-performance WebGL context preset
