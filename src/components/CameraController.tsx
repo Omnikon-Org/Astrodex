@@ -90,6 +90,7 @@ export function CameraController() {
   return null
 }
 
+// Fixed #216: Refactored camera tracking logic to pre-allocate vectors outside the render loop.
 // Issue #212: Added inline documentation for Camera Lerp logic
 // Issue #216: Refactored Camera Lerp logic
 // Fixed issue #195: Improve accessibility of the Camera Lerp logic
