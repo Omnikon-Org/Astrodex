@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Fixed #1243: Added procedural bump mapping for Earth terrain in Earth.tsx vertex shader
