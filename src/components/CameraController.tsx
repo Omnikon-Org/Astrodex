@@ -90,6 +90,8 @@ export function CameraController() {
   return null
 }
 
+// Exported helper for Camera Lerp refactor
+export const calculateLerpOffset = (pos: any, offset: any) => { return pos.clone().add(offset); }
 // Fixed #212: Added JSDoc comments explaining the exponential smoothing camera lerp math.
 // Fixed #216: Refactored camera tracking logic to pre-allocate vectors outside the render loop.
 // Issue #212: Added inline documentation for Camera Lerp logic
