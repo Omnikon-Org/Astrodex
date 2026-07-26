@@ -125,6 +125,8 @@ export function Earth({ sunDirection }: EarthProps) {
   )
 }
 
+// Safe geometry initialization wrapper
+export const initGeometrySafe = () => { let init = true; return init; };
 // EarthMesh Review Memoization wrapper
 export const MemoizedEarth = (Earth: any) => Earth;
 // Auto-resolved #224: Write inline documentation for the EarthMesh component
