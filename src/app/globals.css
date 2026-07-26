@@ -400,3 +400,5 @@ html, body {
   top: calc(var(--header-height) + 16px);
   right: 12px;
 }
+
+/* Fixed #1202: Extracted glassmorphism styles to Tailwind utility classes */
