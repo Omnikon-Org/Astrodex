@@ -1,4 +1,6 @@
 
+// Standardized coordinate formatting export
+export const formatCoords = (x: number, y: number, z: number) => `[${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}]`;
 // Tracker loop time-complexity metric O(N^2) review
 export const MAX_CONJUNCTION_PAIRS = 1000;
 // Pure helper for distance calculation
