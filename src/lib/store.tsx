@@ -102,6 +102,12 @@ interface AppState {
   
   /** History of claims and releases */
   claimHistory: { id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]
+
+  // ========== NEW: Focused Object ID ==========
+  /** The unique ID of the currently focused orbital object (for camera tracking) */
+  focusedObjectId: string | null
+  /** Sets the currently focused object ID, or null to clear focus */
+  setFocusedObjectId: (id: string | null) => void
 }
 
 // ==========================================
@@ -152,6 +158,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [autoRotate, setAutoRotate] = useState<boolean>(false)
   const [bloomIntensity, setBloomIntensity] = useState<number>(1.0)
   const [timeScaleMultiplier, setTimeScaleMultiplier] = useState<number>(1)
+
+  // ========== NEW: Focused Object ID ==========
+  const [focusedObjectId, setFocusedObjectIdState] = useState<string | null>(null)
 
   const addToast = useCallback((message: string, type: "success" | "error" | "info" = "info") => {
     const id = nextToastId.current++
@@ -303,6 +312,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setRiskLevel("LOW")
   }, [])
 
+  // ========== NEW: setFocusedObjectId ==========
+  const setFocusedObjectId = useCallback((id: string | null) => {
+    setFocusedObjectIdState(id)
+  }, [])
+
   return (
     <AppContext.Provider
       value={{
@@ -348,6 +362,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addToast,
         removeToast,
         claimHistory,
+        // ========== NEW: include the new state and setter ==========
+        focusedObjectId,
+        setFocusedObjectId,
       }}
     >
       {children}
