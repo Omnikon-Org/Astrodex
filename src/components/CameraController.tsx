@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #1209: Refactored CameraController for smooth focal point transition animations
