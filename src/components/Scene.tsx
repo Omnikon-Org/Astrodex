@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Strict typing for WebGL context configuration
+export interface StrictWebGLConfig { antialias: boolean; powerPreference: 'high-performance' | 'default'; }
 // Generic aria-busy state binding for WebGL canvas
 export const getSceneA11yState = (loading: boolean) => ({ 'aria-busy': loading, 'aria-live': 'polite' });
 // Null selection guard for asteroid details
