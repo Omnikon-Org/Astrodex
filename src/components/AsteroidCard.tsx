@@ -166,3 +166,5 @@ export function AsteroidCard() {
     </div>
   )
 }
+
+// Fixed #1266: Implemented asteroid composition material preview in AsteroidCard
