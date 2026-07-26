@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Pure functional orbital speed calculator
+export const calculateOrbitSpeed = (r: number, a: number, mu: number) => Math.sqrt(mu * (2/r - 1/a));
 // Precision convergence threshold for Kepler equation
 export const KEPLER_EPSILON = 1e-6;
 // Atomic state updater utility for speed states
