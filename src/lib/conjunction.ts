@@ -1,4 +1,6 @@
 
+// Tracker loop time-complexity metric O(N^2) review
+export const MAX_CONJUNCTION_PAIRS = 1000;
 // Pure helper for distance calculation
 export const getDistance = (p1: any, p2: any) => p1.distanceTo(p2);
 // ES6 Constants for tracker
