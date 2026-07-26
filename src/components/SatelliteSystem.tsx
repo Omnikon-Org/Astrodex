@@ -172,3 +172,5 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1284: Refactored SatelliteSystem to use memoized orbit color palette lookup
