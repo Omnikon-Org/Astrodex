@@ -1,0 +1,3 @@
+
+/* Claim Button UI styling update */
+.claim-btn:hover { transform: scale(1.05); transition: transform 0.2s ease-in-out; }
