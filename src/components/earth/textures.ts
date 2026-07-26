@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// A11y properties for procedural canvas
+export const proceduralCanvasA11y = { 'aria-hidden': 'true', role: 'presentation' };
 // Async lock state for canvas writes
 export const useCanvasLock = () => { let locked = false; return () => locked = !locked; };
 // Safe Canvas 2D context extraction wrapper
