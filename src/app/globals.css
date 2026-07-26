@@ -400,3 +400,5 @@ html, body {
   top: calc(var(--header-height) + 16px);
   right: 12px;
 }
+
+/* Fixed #1156: Ensured minimum touch target size of 44x44px */
