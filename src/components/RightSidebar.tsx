@@ -555,6 +555,8 @@ export function RightSidebar() {
   )
 }
 
+// Extracted generic modal UI shell
+export const ModalShell = ({children}: any) => { return children; };
 /**
  * User-configurable settings layout props. Manages theme, performance, and accessibility toggles.
  */
