@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Precision convergence threshold for Kepler equation
+export const KEPLER_EPSILON = 1e-6;
 // Atomic state updater utility for speed states
 export const updateSpeedAtomic = (prev: number, delta: number) => prev + delta;
 // Cached standard gravitational parameter (mu)
