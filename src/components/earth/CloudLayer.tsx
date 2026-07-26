@@ -88,4 +88,5 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// Issue #213: Refactored CloudLayer shader
 // Fixed issue #164: Fix edge cases in the CloudLayer shader
