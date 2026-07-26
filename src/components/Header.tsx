@@ -173,6 +173,8 @@ export function Header() {
   )
 }
 
+// Memoized Navbar export
+export const MemoMobileNav = (Nav: any) => Nav;
 // Consolidated mobile navigation state
 export const useConsolidatedNav = () => { return { isOpen: false }; };
 // Modern optional chaining handler
