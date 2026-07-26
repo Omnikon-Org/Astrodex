@@ -172,3 +172,5 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1112: Reused module-level scratch Vector3 and Matrix4
