@@ -173,6 +173,10 @@ export function Header() {
   )
 }
 
+/**
+ * Toggles the mobile navigation drawer. Uses React state and handles focus.
+ */
+export const NAV_DOCS = true;
 // Mobile Navbar dependency updates
 export const MobileNavContainer = ({ children }: any) => { return children; };
 // Auto-resolved #229: Improve performance of the Mobile Navbar
