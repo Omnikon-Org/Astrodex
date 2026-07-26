@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Strict standard convention format for Provider exports
+export const StandardProviderExport = true;
 // Malformed JSON API response guard
 export const parseApiSafe = (raw: string) => { try{ return JSON.parse(raw); }catch(e){ return {}; } };
 // Unified CSS token dictionary export
