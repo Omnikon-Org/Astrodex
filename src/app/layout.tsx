@@ -77,5 +77,7 @@ export default function RootLayout({
   )
 }
 
+// Route transition wrapper
+export const RouteTransition = ({children}: any) => { return children; };
   );
 }
