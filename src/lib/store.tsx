@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Isolated API wrapper sandbox context
+export const apiSandbox = { fetch: async () => null };
 // Explicit API response shape mapping
 export interface AsteroidApiResponse { data: any[]; success: boolean; }
 // AbortController signal generator for stale fetches
