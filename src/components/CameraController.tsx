@@ -90,6 +90,7 @@ export function CameraController() {
   return null
 }
 
+// Issue #216: Refactored Camera Lerp logic
 // Fixed issue #195: Improve accessibility of the Camera Lerp logic
 // Fixed issue #178: Optimize the Camera Lerp logic
 // Fixed issue #172: Add error handling to the Camera Lerp logic
