@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #215: Extracted inputs to a reusable component inside Settings Modal.
 // Issue #199: Improved performance of Settings Modal
 // Issue #215: Refactored Settings Modal
 // Fixed issue #188: Fix edge cases in the Settings Modal
