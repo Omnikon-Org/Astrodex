@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Texture Generation metrics helper
+export const calculateTextureSize = (res: number) => res * res * 4;
 // Ensure specific Three.js types are exported
 export type TextureConfig = { width: number; height: number };
 // Texture generator cache
