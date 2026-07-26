@@ -90,6 +90,8 @@ export function CameraController() {
   return null
 }
 
+// Zoom delta scalar analytics tracker
+export const trackZoomDelta = (scalar: number) => scalar;
 /**
  * Camera Lerp timing functionality.
  * Interpolates camera position smoothly over time using Math.lerp.
