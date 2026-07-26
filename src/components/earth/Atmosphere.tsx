@@ -92,6 +92,8 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   )
 }
 
+// Atmospheric scattering styling uniforms tweak
+export const ATMOSPHERE_SCATTER_STRENGTH = 1.2;
 // Atmosphere visual-only wrapper
 export const atmosphereA11y = { 'aria-hidden': true };
 // Auto-resolved #230: Improve performance of the Atmosphere rendering
