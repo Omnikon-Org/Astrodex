@@ -70,3 +70,5 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Fixed #1247: Fixed z-fighting flickering artifact on Earth atmosphere rim
