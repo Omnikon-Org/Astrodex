@@ -1,2 +1,4 @@
 
+/* Local scoped tokens */
+.local-scope { --local-color: #eee; }
 :root { --animation-speed: 0.3s; --primary-hover: #ffcc00; }
