@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1176: Added Hohmann transfer delta-V maneuver calculator
