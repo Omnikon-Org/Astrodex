@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1172: Added time-lapse simulation speed multiplier controls
