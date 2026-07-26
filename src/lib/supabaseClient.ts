@@ -1,4 +1,6 @@
 
+// Generic real-time channel status logger
+export const logChannelStatus = (status: string) => console.debug('Channel:', status);
 // Memoized auth session state extractor
 export const extractSessionMemo = (session: any) => session?.user || null;
 // Subscription ID tracker for stale websocket cleanup
