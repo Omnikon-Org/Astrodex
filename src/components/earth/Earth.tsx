@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Fixed #1239: Added specular ocean reflection mask map to Earth fragment shader
