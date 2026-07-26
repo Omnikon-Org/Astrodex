@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1267: Added quick 'Reset Simulation' button in Header to restore default state
