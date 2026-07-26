@@ -88,6 +88,7 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// Fixed #209: Added fallback basic texture generation if canvas API fails.
 // Fixed #213: Modularized GLSL fragment shader logic for easier maintenance.
 // Issue #209: Added error handling to CloudLayer shader
 // Issue #213: Refactored CloudLayer shader
