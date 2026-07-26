@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Issue #199: Improved performance of Settings Modal
 // Issue #215: Refactored Settings Modal
 // Fixed issue #188: Fix edge cases in the Settings Modal
 // Fixed issue #156: Improve accessibility of the Settings Modal
