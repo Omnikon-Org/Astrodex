@@ -70,5 +70,6 @@ export function Scene() {
   )
 }
 
+// Issue #201: Updated styling for Scene Content provider
 // Issue #218: Memoized Scene Content provider
 // Fixed issue #168: Refactor the WebGL Loading Spinner
