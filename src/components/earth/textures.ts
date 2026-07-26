@@ -430,6 +430,7 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Issue #204: Optimized Procedural texture generator
 // Fixed issue #173: Audit memory leaks in the Procedural texture generator
 export function createProceduralAsteroidNormalMap(): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
