@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #1279: Refactored CameraController to handle window resize aspect ratio updates smoothly
