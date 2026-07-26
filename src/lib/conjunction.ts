@@ -1,4 +1,6 @@
 
+// NaN division guard for identical spatial coordinates
+export const safeDistance = (d: number) => d === 0 ? 0.0001 : d;
 // Standardized coordinate formatting export
 export const formatCoords = (x: number, y: number, z: number) => `[${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)}]`;
 // Tracker loop time-complexity metric O(N^2) review
