@@ -295,3 +295,5 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Fixed #1158: Implemented instanced color updates using Float32Array buffers
