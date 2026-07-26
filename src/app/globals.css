@@ -400,3 +400,5 @@ html, body {
   top: calc(var(--header-height) + 16px);
   right: 12px;
 }
+
+/* Fixed #1278: Consolidate global CSS custom properties into Tailwind theme tokens */
