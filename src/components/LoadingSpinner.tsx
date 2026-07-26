@@ -1,4 +1,6 @@
 
+// Unified Loader Component
+export const UnifiedLoader = () => null;
 // Loading spinner a11y props
 export const spinnerA11yProps = { 'aria-live': 'polite', role: 'status' };
 // Fixed issue #194: Add error handling to the WebGL Loading Spinner
