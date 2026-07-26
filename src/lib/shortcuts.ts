@@ -1,4 +1,6 @@
 
+// Standard descriptive titles for keybindings
+export const shortcutTitles = { 'ctrl+c': 'Copy', 'esc': 'Close Modal' };
 // Aggressive global shortcut cleanup
 export const removeGlobalShortcuts = (cb: any) => window.removeEventListener('keydown', cb);
 // Standardized shortcut map structure
