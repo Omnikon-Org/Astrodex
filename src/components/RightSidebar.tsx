@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1143: Migrated RightSidebar CSS to Tailwind classes
