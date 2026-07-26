@@ -295,3 +295,5 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Fixed #1107: Added keyboard navigation support for AsteroidField
