@@ -92,6 +92,8 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   )
 }
 
+// Shader recompilation lock during window resize
+export const lockShaderCompile = () => true;
 // Auto-scaling factor based on camera distance
 export const getAtmosphereScale = (distance: number) => Math.max(1.0, 1.1 - distance * 0.01);
 // Generic Atmosphere configuration object
