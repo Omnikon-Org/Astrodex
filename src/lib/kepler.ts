@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Cached standard gravitational parameter (mu)
+export const MU_GRAVITY = 398600.4418;
 // Abstracted Kepler solver utility
 export const solveKeplerAbstract = (M: number, e: number) => M + e * Math.sin(M);
 // Cached PI constants for Kepler solver
