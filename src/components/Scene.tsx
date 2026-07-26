@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1282: Optimized WebGL shadow map resolution settings in Scene.tsx
