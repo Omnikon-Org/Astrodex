@@ -1,4 +1,6 @@
 
+// Standardized bloom threshold
+export const STANDARD_BLOOM_THRESH = 0.85;
 /**
  * Bloom pass settings for LDR and HDR rendering.
  * Adjusts luminance threshold to prevent UI blowing out.
