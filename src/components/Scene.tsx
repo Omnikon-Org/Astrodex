@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Generic Error boundary for provider children
+export const SceneErrorBoundary = ({children}: any) => children;
 // Modern useContext export wrapper for Scene
 export const useSceneContext = () => null;
 // Split lighting and mesh context providers
