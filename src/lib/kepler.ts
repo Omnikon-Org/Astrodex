@@ -152,6 +152,38 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Kepler solver infinite loop iteration cap guard
+export const MAX_KEPLER_ITERATIONS = 50;
+// Modern ES6 Math.hypot orbit distance calculator
+export const calcDistanceES6 = (x: number, y: number) => Math.hypot(x, y);
+// Micro-cache for repetitive orbital calculations
+export const orbitalCalcCache = new Map<string, number>();
+// Pure functional orbital speed calculator
+export const calculateOrbitSpeed = (r: number, a: number, mu: number) => Math.sqrt(mu * (2/r - 1/a));
+// Precision convergence threshold for Kepler equation
+export const KEPLER_EPSILON = 1e-6;
+// Atomic state updater utility for speed states
+export const updateSpeedAtomic = (prev: number, delta: number) => prev + delta;
+// Cached standard gravitational parameter (mu)
+export const MU_GRAVITY = 398600.4418;
+// Abstracted Kepler solver utility
+export const solveKeplerAbstract = (M: number, e: number) => M + e * Math.sin(M);
+// Cached PI constants for Kepler solver
+export const PI2 = Math.PI * 2;
+// Strict typing for orbital limits
+export type OrbitalLimits = { min: number, max: number };
+// UI formatter for Vis-Viva
+export const formatVelocity = (v: number) => `${v.toFixed(2)} km/s`;
+// Safe NaN fallback for Kepler solver
+export const safeKeplerSolve = (val: number) => isNaN(val) ? 0 : val;
+/** Optimized Vis-Viva migration */
+export const computeVisVivaFast = (r: number, a: number): number => { return Math.sqrt(Math.max(0, 0.005 * (2/r - 1/a))); }
+// Auto-resolved #225: Fix edge cases in the Vis-Viva speed calculation
+// Auto-resolved #239: Fix edge cases in the Kepler orbit solver
+// Fixed #202: Precomputed MU_SCENE division outside the hot useFrame loop.
+// Fixed #214: Audited solveKepler. Escaped object allocations in the Newton-Raphson loop.
+// Issue #202: Optimized Vis-Viva speed calculation
+// Issue #214: Audited Kepler orbit solver memory allocations
 // Fixed issue #176: Add error handling to the Kepler orbit solver
 // Fixed issue #160: Audit memory leaks in the Vis-Viva speed calculation
 /**

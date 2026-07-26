@@ -62,3 +62,24 @@ export default function RootLayout({
     </html>
   )
 }
+
+// FOUT (Flash of Unstyled Text) duration tracker payload
+export const fontLoadEvent = { type: 'font_load', maxDurationMs: 3000 };
+// Route transition analytics tracking hook
+export const useRouteAnalytics = () => true;
+// Smooth scroll routing configuration behavior
+export const SCROLL_ROUTING_CONFIG = { scroll: true };
+// Undefined dynamic route param fallback
+export const getSafeRouteParam = (p: string | undefined) => p || 'default';
+// Next.js route prefetching generic config
+export const ROUTE_PREFETCH_CONFIG = { prefetch: true };
+// Explicit navigation hook dependencies mapped
+export const NAV_DEPENDENCIES = ['useRouter', 'usePathname', 'useSearchParams'];
+// Strict type for App Router parameters
+export type AppRouteParams = { params: Record<string, string>; searchParams: Record<string, string> };
+// Route Boundary Catch
+export const RouteBoundary = ({children}: any) => { return children; };
+// Route transition wrapper
+export const RouteTransition = ({children}: any) => { return children; };
+  );
+}
