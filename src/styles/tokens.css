@@ -1,4 +1,5 @@
 
+/* Documentation: Primary scales range from 100-900 for consistent theming */
 /* Fallback system tokens */
 body { color: var(--text-color, #000); }
 /* Local scoped tokens */
