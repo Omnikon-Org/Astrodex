@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Modern strict typing for AppProvider
+export type AppState = { isReady: boolean; };
 // Unified context exports
 export const useUnifiedContext = () => { return null; };
 // Asteroid data fetch caching helper
