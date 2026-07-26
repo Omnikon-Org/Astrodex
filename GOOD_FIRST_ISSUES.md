@@ -2,7 +2,7 @@
 
 > A curated set of **beginner-friendly** tasks, sized to fit in a single PR
 > and gated by the [`good first issue`](https://docs.github.com/articles/applying-labels-to-issues-and-pull-requests/#about-default-labels)
-> label.  Each block below is copy-paste-ready for the GitHub Issue form.
+> label. Each block below is copy-paste-ready for the GitHub Issue form.
 >
 > The bigger items in [src/github_issues.md](src/github_issues.md) are
 > intended for experienced contributors; the issues here are intended to be
@@ -15,7 +15,7 @@
 - **Difficulty**: Easy 🟢
 - **Labels**: `good first issue`, `enhancement`, `frontend`
 - **Description**: AstroDex exposes a lot of functionality through mouse
-  clicks, but power users love keyboard shortcuts.  Add global hot-keys that
+  clicks, but power users love keyboard shortcuts. Add global hot-keys that
   work from anywhere in the dashboard:
   - `Space` — toggle the simulation (paused / running) — same action as the
     "Pause / Run" button in the Header.
@@ -48,7 +48,7 @@
 - **Labels**: `good first issue`, `testing`, `orbital-mechanics`
 - **Description**: The Keplerian propagation in
   [src/lib/kepler.ts](src/lib/kepler.ts) is the math heart of the project
-  and currently has zero automated tests.  Add a test file using
+  and currently has zero automated tests. Add a test file using
   [Vitest](https://vitest.dev/) (already a common choice with Next 16 +
   Turbopack) that verifies the solvers against known textbook values.
 - **Expected Behavior**:
@@ -83,8 +83,8 @@
 - **Difficulty**: Easy 🟢
 - **Labels**: `good first issue`, `enhancement`, `frontend`
 - **Description**: The Conjunction Alerter in the Left Sidebar shows up
-  to 15 alerts.  When many entries are stacked, scanning for the dangerous
-  ones is hard.  Add a small "Risk filter" segmented control (similar in
+  to 15 alerts. When many entries are stacked, scanning for the dangerous
+  ones is hard. Add a small "Risk filter" segmented control (similar in
   style to the existing `Filter Catalog` tabs) that lets the user show
   only `HIGH`, only `MEDIUM`, only `LOW`, or `ALL` rows.
 - **Expected Behavior**:
@@ -92,8 +92,8 @@
   - Selecting a risk level hides rows that don't match (the badge color
     is already in the data).
   - The default is `ALL` so existing behavior is preserved.
-  - The "X Active alerts" counter reflects the *filtered* count, not the
-    total.  (A tooltip clarifies this.)
+  - The "X Active alerts" counter reflects the _filtered_ count, not the
+    total. (A tooltip clarifies this.)
 - **Suggested Files**:
   - [src/components/LeftSidebar.tsx](src/components/LeftSidebar.tsx) —
     add local state for the filter, render the segmented control above
@@ -111,7 +111,7 @@
 - **Difficulty**: Medium 🟡
 - **Labels**: `good first issue`, `enhancement`, `frontend`
 - **Description**: Add a "Snapshot" button next to the "Back to Earth"
-  button in the Header.  Clicking it captures the current 3D viewport
+  button in the Header. Clicking it captures the current 3D viewport
   and triggers a browser download of the image.
 - **Expected Behavior**:
   - The button is only enabled after the scene has rendered at least one
@@ -125,7 +125,7 @@
 - **Suggested Files**:
   - [src/components/Header.tsx](src/components/Header.tsx) — add the
     button and handler.
-  - The handler should look up the canvas via the R3F store.  A common
+  - The handler should look up the canvas via the R3F store. A common
     pattern is `useThree()` inside a child component, but the snapshot
     can also be triggered from the page level by calling
     `document.querySelector('canvas')?.toDataURL('image/png')` followed
@@ -146,13 +146,13 @@
 - **Labels**: `good first issue`, `a11y`, `enhancement`
 - **Description**: AstroDex is a dashboard full of clickable buttons,
   toggles and tables, but it currently has no `aria-*` attributes or
-  focus styles.  Screen-reader users and keyboard-only users can't
+  focus styles. Screen-reader users and keyboard-only users can't
   navigate the sidebars or the conjunction table.
 - **Expected Behavior**:
   - Every `<button>` in the Header, Left Sidebar, Right Sidebar and
     AsteroidCard has a meaningful `aria-label` (the visible text is
     often abbreviated — `LOAD`, `Apply`, `×`).
-  - All sidebars and the Agent Terminal can be tabbed into.  When
+  - All sidebars and the Agent Terminal can be tabbed into. When
     focus is on a sidebar button, a visible focus ring (similar to the
     input `:focus` style in `globals.css`) appears.
   - The conjunction table has `<th scope="col">` on its headers.
@@ -178,7 +178,7 @@
 - **Difficulty**: Easy 🟢
 - **Labels**: `good first issue`, `enhancement`, `frontend`
 - **Description**: When you select an asteroid, the only visual feedback
-  is the floating `AsteroidCard` panel.  Add a small pill-shaped chip
+  is the floating `AsteroidCard` panel. Add a small pill-shaped chip
   in the Header (between the "Risk" badge and the "Back to Earth"
   button) that summarises the current selection: designator, type
   icon, and a click-to-deselect × button.
@@ -206,14 +206,14 @@
 - **Difficulty**: Easy 🟢
 - **Labels**: `good first issue`, `enhancement`, `frontend`
 - **Description**: The `ALL` / `ASTEROIDS` / `DEBRIS` filter tabs in the
-  Left Sidebar are unlabeled beyond the text.  On hover, a tooltip
+  Left Sidebar are unlabeled beyond the text. On hover, a tooltip
   should appear explaining what each filter does, including the object
   count currently in view.
 - **Expected Behavior**:
   - Hovering (or focusing) a tab for > 200 ms shows a small dark-glass
     tooltip above the tab.
   - Tooltip text: `"Show all 600 catalog items"`, `"Show 400 natural
-    asteroids"`, `"Show 200 man-made debris pieces"`.
+asteroids"`, `"Show 200 man-made debris pieces"`.
   - Object counts come from the existing `data` array length in
     `AsteroidField` (passed via the `registerAsteroidData` call) or
     recomputed in the component.
