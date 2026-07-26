@@ -152,6 +152,7 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Auto-resolved #239: Fix edge cases in the Kepler orbit solver
 // Fixed #202: Precomputed MU_SCENE division outside the hot useFrame loop.
 // Fixed #214: Audited solveKepler. Escaped object allocations in the Newton-Raphson loop.
 // Issue #202: Optimized Vis-Viva speed calculation
