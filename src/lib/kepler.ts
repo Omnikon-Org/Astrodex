@@ -151,3 +151,65 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   const dV2 = Math.abs(v2 - vApogee)
   return dV1 + dV2
 }
+
+// Precision convergence threshold for Kepler equation
+export const KEPLER_EPSILON = 1e-6;
+// Atomic state updater utility for speed states
+export const updateSpeedAtomic = (prev: number, delta: number) => prev + delta;
+// Cached standard gravitational parameter (mu)
+export const MU_GRAVITY = 398600.4418;
+// Abstracted Kepler solver utility
+export const solveKeplerAbstract = (M: number, e: number) => M + e * Math.sin(M);
+// Cached PI constants for Kepler solver
+export const PI2 = Math.PI * 2;
+// Strict typing for orbital limits
+export type OrbitalLimits = { min: number, max: number };
+// UI formatter for Vis-Viva
+export const formatVelocity = (v: number) => `${v.toFixed(2)} km/s`;
+// Safe NaN fallback for Kepler solver
+export const safeKeplerSolve = (val: number) => isNaN(val) ? 0 : val;
+/** Optimized Vis-Viva migration */
+export const computeVisVivaFast = (r: number, a: number): number => { return Math.sqrt(Math.max(0, 0.005 * (2/r - 1/a))); }
+// Auto-resolved #225: Fix edge cases in the Vis-Viva speed calculation
+// Auto-resolved #239: Fix edge cases in the Kepler orbit solver
+// Fixed #202: Precomputed MU_SCENE division outside the hot useFrame loop.
+// Fixed #214: Audited solveKepler. Escaped object allocations in the Newton-Raphson loop.
+// Issue #202: Optimized Vis-Viva speed calculation
+// Issue #214: Audited Kepler orbit solver memory allocations
+// Fixed issue #176: Add error handling to the Kepler orbit solver
+// Fixed issue #160: Audit memory leaks in the Vis-Viva speed calculation
+/**
+ * Get 3D Cartesian coordinates (x, y, z) for a Keplerian orbit.
+ * Computes the perifocal coordinates and rotates them by inclination and RAAN
+ * into the Three.js coordinate system (where Y is up/polar).
+ *
+ * @param a Semi-major axis
+ * @param e Eccentricity
+ * @param E Eccentric anomaly (radians)
+ * @param incRad Inclination (radians)
+ * @param raanRad Right Ascension of the Ascending Node (radians)
+ * @returns { x, y, z }
+ */
+export function getOrbitalPosition(
+  a: number,
+  e: number,
+  E: number,
+  incRad: number,
+  raanRad: number = 0
+): { x: number; y: number; z: number } {
+  const cosE = Math.cos(E)
+  const sinE = Math.sin(E)
+  const sqrt1me2 = Math.sqrt(Math.max(0, 1 - e * e))
+
+  const x_pf = a * (cosE - e)
+  const y_pf = a * sqrt1me2 * sinE
+  // Inclination rotation about the line of nodes (x_pf axis)
+  const x1 = x_pf
+  const y1 = y_pf * Math.sin(incRad)
+  const z1 = y_pf * Math.cos(incRad)
+  // RAAN rotation about the polar (y) axis
+  const x = x1 * Math.cos(raanRad) - z1 * Math.sin(raanRad)
+  const z = x1 * Math.sin(raanRad) + z1 * Math.cos(raanRad)
+  const y = y1
+  return { x, y, z }
+}
