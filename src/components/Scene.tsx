@@ -70,4 +70,5 @@ export function Scene() {
   )
 }
 
+// Issue #218: Memoized Scene Content provider
 // Fixed issue #168: Refactor the WebGL Loading Spinner
