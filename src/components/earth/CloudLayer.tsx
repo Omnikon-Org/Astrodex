@@ -88,6 +88,8 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// Safe material disposal helper for CloudLayer
+export const disposeCloudMaterial = (mat: any) => { if(mat) mat.dispose(); };
 // Enhanced cloud layer styling params
 export const cloudStyling = { opacity: 0.8, depthWrite: false };
 // CloudLayer shader noise constants
