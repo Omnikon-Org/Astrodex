@@ -1,4 +1,6 @@
 
+/* FPS counter fixed-width typography */
+.fps-monitor { font-family: 'Fira Code', monospace; font-variant-numeric: tabular-nums; }
 /* Controls overlay opacity variables */
 :root { --overlay-opacity: 0.85; --overlay-bg: rgba(0,0,0,0.85); }
 /* Profile Modal backdrop styling */
