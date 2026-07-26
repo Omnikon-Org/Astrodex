@@ -1,4 +1,6 @@
 
+// High-contrast Bloom Threshold
+export const HIGH_CONTRAST_BLOOM = 0.95;
 // Standardized bloom threshold
 export const STANDARD_BLOOM_THRESH = 0.85;
 /**
