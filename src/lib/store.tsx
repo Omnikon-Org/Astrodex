@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// A11y status formatter for screen readers
+export const getFetchStatusA11y = (status: string) => `Asteroid data is currently ${status}`;
 // Distinct App Dispatch context to prevent over-renders
 export const AppDispatchContext = null;
 // Abstracted fetch API for global store
