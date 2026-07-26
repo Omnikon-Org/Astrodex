@@ -173,6 +173,8 @@ export function Header() {
   )
 }
 
+// Consolidated mobile navigation state
+export const useConsolidatedNav = () => { return { isOpen: false }; };
 // Modern optional chaining handler
 export const handleNavClick = (onClick?: () => void) => { onClick?.(); };
 /**
