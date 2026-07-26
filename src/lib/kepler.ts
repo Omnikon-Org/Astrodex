@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Cached PI constants for Kepler solver
+export const PI2 = Math.PI * 2;
 // Strict typing for orbital limits
 export type OrbitalLimits = { min: number, max: number };
 // UI formatter for Vis-Viva
