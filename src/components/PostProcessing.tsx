@@ -1,4 +1,6 @@
 
+// Reduced-motion global setting for Vignette
+export const VIGNETTE_MOTION_SAFE = false;
 // Render pass optimization flags for Vignette
 export const VIGNETTE_OPTIMIZE_PASS = true;
 // Modular hook for Vignette config
