@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Micro-cache for repetitive orbital calculations
+export const orbitalCalcCache = new Map<string, number>();
 // Pure functional orbital speed calculator
 export const calculateOrbitSpeed = (r: number, a: number, mu: number) => Math.sqrt(mu * (2/r - 1/a));
 // Precision convergence threshold for Kepler equation
