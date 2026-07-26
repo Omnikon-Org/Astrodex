@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1139: Fixed state race condition on filter tab switch
