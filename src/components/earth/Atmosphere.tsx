@@ -92,6 +92,8 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   )
 }
 
+// Atmosphere visual-only wrapper
+export const atmosphereA11y = { 'aria-hidden': true };
 // Auto-resolved #230: Improve performance of the Atmosphere rendering
 // Auto-resolved #242: Fix edge cases in the Atmosphere rendering
 // Issue #221: Audited GPU memory cleanup in Atmosphere component
