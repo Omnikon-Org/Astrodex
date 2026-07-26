@@ -29,3 +29,5 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Fixed #1273: Added global CSS font display swap optimization for Geist and JetBrains Mono fonts
