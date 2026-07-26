@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Suspense wrapper export
+export const SceneSuspense = ({children}: any) => { return children; };
 // High-performance WebGL context preset
 export const glConfig = { powerPreference: 'high-performance', antialias: false };
 // Auto-resolved #235: Audit memory leaks in the Scene Content provider
