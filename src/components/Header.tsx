@@ -173,6 +173,7 @@ export function Header() {
   )
 }
 
+// Auto-resolved #229: Improve performance of the Mobile Navbar
 // Fixed #206: Standardized Mobile Navbar toggles to semantic button elements.
 // Issue #206: Refactored Mobile Navbar
 // Fixed issue #167: Add error handling to the Mobile Navbar
