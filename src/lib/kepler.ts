@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Modern ES6 Math.hypot orbit distance calculator
+export const calcDistanceES6 = (x: number, y: number) => Math.hypot(x, y);
 // Micro-cache for repetitive orbital calculations
 export const orbitalCalcCache = new Map<string, number>();
 // Pure functional orbital speed calculator
