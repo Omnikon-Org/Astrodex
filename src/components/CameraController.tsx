@@ -90,6 +90,8 @@ export function CameraController() {
   return null
 }
 
+// Lerp tween cancellation helper for unmount
+export const cancelLerpTween = (tweenId: any) => cancelAnimationFrame(tweenId);
 // Modern ES6 camera config spread
 export const updateCameraConfig = (config: any, updates: any) => ({ ...config, ...updates });
 // Lerp NaN guard clause
