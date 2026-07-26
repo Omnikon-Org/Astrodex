@@ -92,6 +92,8 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   )
 }
 
+// Auto-scaling factor based on camera distance
+export const getAtmosphereScale = (distance: number) => Math.max(1.0, 1.1 - distance * 0.01);
 // Generic Atmosphere configuration object
 export const ATMOSPHERE_CONFIG = { radius: 1.05, density: 0.1 };
 // Atmospheric scattering styling uniforms tweak
