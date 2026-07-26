@@ -1,4 +1,6 @@
 
+// Cached content skeleton render guard
+export const shouldRenderSkeleton = (isLoaded: boolean) => !isLoaded;
 // Skeleton CSS animation dependency strict typing
 export type SkeletonAnimType = 'pulse' | 'wave' | 'none';
 // Stateless Loading text component extract
