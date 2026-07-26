@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Texture pipeline performance audit metric export
+export const TEX_GEN_TIME_TARGET_MS = 16;
 // Aggressive 2D context cleanup helper
 export const clearCanvasContext = (ctx: any) => { if(ctx) ctx.clearRect(0,0,1,1); };
 // A11y properties for procedural canvas
