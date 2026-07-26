@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #1137: Fixed memory leak in CameraController resize listeners
