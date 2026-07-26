@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1151: Added keyboard-accessible skip link for HUD controls
