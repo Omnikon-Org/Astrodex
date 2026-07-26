@@ -430,6 +430,7 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Fixed #204: Cached procedural canvas generation globally to prevent redundant paints.
 // Issue #204: Optimized Procedural texture generator
 // Fixed issue #173: Audit memory leaks in the Procedural texture generator
 export function createProceduralAsteroidNormalMap(): HTMLCanvasElement {
