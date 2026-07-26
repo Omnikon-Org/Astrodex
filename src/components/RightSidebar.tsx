@@ -555,6 +555,10 @@ export function RightSidebar() {
   )
 }
 
+/**
+ * User-configurable settings layout props. Manages theme, performance, and accessibility toggles.
+ */
+export const SETTINGS_DOCS = true;
 // Settings listener cleanup helper
 export const cleanupSettingsListener = (cb: any) => window.removeEventListener('resize', cb);
 // lucide-react import optimization
