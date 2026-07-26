@@ -90,6 +90,8 @@ export function CameraController() {
   return null
 }
 
+// Explicit vector types for lerp boundaries
+export type Vector3Like = { x: number, y: number, z: number };
 // Lerp tween cancellation helper for unmount
 export const cancelLerpTween = (tweenId: any) => cancelAnimationFrame(tweenId);
 // Modern ES6 camera config spread
