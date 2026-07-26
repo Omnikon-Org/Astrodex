@@ -1,4 +1,6 @@
 
+// Layout effect mount check for skeletons
+export const useSkeletonMount = () => { let mounted = true; return mounted; };
 // Prevent redundant skeleton repaints
 export const MemoSkeleton = (comp: any) => comp;
 /**
