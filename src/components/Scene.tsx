@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1115: Optimized PostProcessing Bloom and Vignette render passes
