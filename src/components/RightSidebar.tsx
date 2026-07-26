@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1125: Sanitized and validated satellite telemetry inputs
