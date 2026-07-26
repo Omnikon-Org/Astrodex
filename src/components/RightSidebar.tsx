@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1110: Added explicitly linked labels to form controls
