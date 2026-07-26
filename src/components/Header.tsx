@@ -173,6 +173,8 @@ export function Header() {
   )
 }
 
+// Modern optional chaining handler
+export const handleNavClick = (onClick?: () => void) => { onClick?.(); };
 /**
  * Toggles the mobile navigation drawer. Uses React state and handles focus.
  */
