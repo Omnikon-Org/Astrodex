@@ -67,13 +67,37 @@ const LEO_CEILING_KM = 500 // hard upper bound for user-set altitude
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
-  const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
+  
+  const [claimedAsteroids, setClaimed] = useState<Set<number>>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("astrodex_claimed")
+        if (stored) return new Set(JSON.parse(stored))
+      } catch (e) {
+        console.error("Failed to parse local storage cache", e)
+      }
+    }
+    return new Set()
+  })
+  
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
 
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("astrodex_leftSidebar") !== "false"
+    }
+    return true
+  })
+  
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("astrodex_rightSidebar") !== "false"
+    }
+    return true
+  })
+  
   const [terminalExpanded, setTerminalExpanded] = useState(false)
   const asteroidDataRef = useRef<AsteroidData[]>([])
 
@@ -95,6 +119,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
       else next.add(id)
+      
+      if (typeof window !== "undefined") {
+        localStorage.setItem("astrodex_claimed", JSON.stringify(Array.from(next)))
+      }
       return next
     })
   }, [])
@@ -106,8 +134,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const clearReset = useCallback(() => setResetCamera(false), [])
 
   const toggleSimulation = useCallback(() => setSimulationRunning((p) => !p), [])
-  const toggleLeftSidebar = useCallback(() => setLeftSidebarOpen((p) => !p), [])
-  const toggleRightSidebar = useCallback(() => setRightSidebarOpen((p) => !p), [])
+  const toggleLeftSidebar = useCallback(() => {
+    setLeftSidebarOpen((p) => {
+      const next = !p
+      if (typeof window !== "undefined") {
+        localStorage.setItem("astrodex_leftSidebar", String(next))
+      }
+      return next
+    })
+  }, [])
+  const toggleRightSidebar = useCallback(() => {
+    setRightSidebarOpen((p) => {
+      const next = !p
+      if (typeof window !== "undefined") {
+        localStorage.setItem("astrodex_rightSidebar", String(next))
+      }
+      return next
+    })
+  }, [])
   const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
 
   const registerAsteroidData = useCallback((data: AsteroidData[]) => {
