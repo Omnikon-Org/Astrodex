@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// AbortController signal generator for stale fetches
+export const createFetchSignal = () => new AbortController().signal;
 // A11y status formatter for screen readers
 export const getFetchStatusA11y = (status: string) => `Asteroid data is currently ${status}`;
 // Distinct App Dispatch context to prevent over-renders
