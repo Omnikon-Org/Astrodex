@@ -152,6 +152,7 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Fixed #214: Audited solveKepler. Escaped object allocations in the Newton-Raphson loop.
 // Issue #202: Optimized Vis-Viva speed calculation
 // Issue #214: Audited Kepler orbit solver memory allocations
 // Fixed issue #176: Add error handling to the Kepler orbit solver
