@@ -1,4 +1,6 @@
 
+// Cache-hit ratio debug tracker
+export const CACHE_HIT_RATIO_TARGET = 0.9;
 // Strict typing wrapper for local storage
 export type CacheKey = 'settings' | 'user' | 'theme';
 // TTL Invalidations for local storage
