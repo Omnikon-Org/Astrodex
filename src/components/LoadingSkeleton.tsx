@@ -1,4 +1,6 @@
 
+// Safe fallback dimensions for skeletons
+export const getSafeDimensions = (w?: string, h?: string) => ({ width: w || '100%', height: h || '20px' });
 // Layout effect mount check for skeletons
 export const useSkeletonMount = () => { let mounted = true; return mounted; };
 // Prevent redundant skeleton repaints
