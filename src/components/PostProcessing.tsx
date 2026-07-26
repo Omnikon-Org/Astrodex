@@ -1,4 +1,6 @@
 
+// Auto-calculate vignette offsets by aspect ratio
+export const getAutoVignetteOffset = (w: number, h: number) => w > h ? 0.4 : 0.6;
 // Standalone generic bloom pass configurator
 export const getBloomConfig = () => ({ intensity: 1.5, radius: 0.4 });
 // Reduced-motion global setting for Vignette
