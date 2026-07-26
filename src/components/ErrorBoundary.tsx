@@ -1,4 +1,6 @@
 
+// ErrorBoundary retry logic handler
+export const handleRetry = () => { window.location.reload(); };
 // Auto-resolved #231: Add error handling to the React Error Boundary
 // Auto-resolved #243: Fix race conditions in the React Error Boundary
 // Fixed #210: Detailed JSDoc for getDerivedStateFromError and componentDidCatch.
