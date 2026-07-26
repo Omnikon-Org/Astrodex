@@ -77,6 +77,8 @@ export default function RootLayout({
   )
 }
 
+// Smooth scroll routing configuration behavior
+export const SCROLL_ROUTING_CONFIG = { scroll: true };
 // Undefined dynamic route param fallback
 export const getSafeRouteParam = (p: string | undefined) => p || 'default';
 // Next.js route prefetching generic config
