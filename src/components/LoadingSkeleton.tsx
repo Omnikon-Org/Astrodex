@@ -1,4 +1,6 @@
 
+// Skeleton CSS animation dependency strict typing
+export type SkeletonAnimType = 'pulse' | 'wave' | 'none';
 // Stateless Loading text component extract
 export const StatelessLoadingText = () => 'Loading...';
 // Safe fallback dimensions for skeletons
