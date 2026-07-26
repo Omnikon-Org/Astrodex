@@ -1,4 +1,6 @@
 
+// Localized spinner context extraction
+export const useSpinnerContext = () => { return false; };
 // Spinner Type Dependencies
 export type SpinnerDependencies = { size?: number, color?: string };
 // Unified Loader Component
