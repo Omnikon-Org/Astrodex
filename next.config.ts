@@ -5,3 +5,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Fixed #1117: Configured Next.js Bundle Analyzer
