@@ -263,6 +263,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Asteroid scaling bounds
+export const ASTEROID_MAX_SCALE = 2.5;
 // Prevent matrix race conditions on unmount
 export const useSafeMatrixUpdate = () => { let safe = true; return safe; };
 // Auto-resolved #226: Optimize the Asteroid InstancedMesh
