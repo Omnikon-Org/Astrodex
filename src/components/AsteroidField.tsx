@@ -263,6 +263,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Issue #208: Refactored Asteroid InstancedMesh
 // Fixed issue #196: Improve accessibility of the Asteroid InstancedMesh
 // Fixed issue #180: Improve accessibility of the Asteroid data fetching hook
 // Fixed issue #149: Update styling for the Asteroid InstancedMesh
