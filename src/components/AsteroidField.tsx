@@ -263,6 +263,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Instanced matrix array strict float32 typing
+export const createInstanceMatrixArray = (count: number) => new Float32Array(count * 16);
 // Negative scale instance guard
 export const safeInstanceScale = (scale: number) => scale < 0 ? 0.01 : scale;
 // Generic modern BufferGeometry fallback
