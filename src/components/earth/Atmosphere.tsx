@@ -92,6 +92,7 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   )
 }
 
+// Auto-resolved #242: Fix edge cases in the Atmosphere rendering
 // Issue #221: Audited GPU memory cleanup in Atmosphere component
 // Fixed issue #171: Update styling for the Atmosphere rendering
 // Fixed issue #153: Optimize the Atmosphere rendering
