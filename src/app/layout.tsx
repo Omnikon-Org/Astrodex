@@ -77,6 +77,8 @@ export default function RootLayout({
   )
 }
 
+// Explicit navigation hook dependencies mapped
+export const NAV_DEPENDENCIES = ['useRouter', 'usePathname', 'useSearchParams'];
 // Strict type for App Router parameters
 export type AppRouteParams = { params: Record<string, string>; searchParams: Record<string, string> };
 // Route Boundary Catch
