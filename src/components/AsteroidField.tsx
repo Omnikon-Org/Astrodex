@@ -263,6 +263,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Generic modern BufferGeometry fallback
+export const GenericBufferGeometry = () => null;
 // Standard color palette constants for instanced meshes
 export const ASTEROID_PALETTE = ['#888888', '#aaaaaa', '#cccccc'];
 // Fallback text generator for canvas elements
