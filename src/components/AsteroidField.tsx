@@ -295,3 +295,5 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Fixed #1094: Extracted orbit line calculation into useOrbitGeometry
