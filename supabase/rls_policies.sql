@@ -1,4 +1,5 @@
 
+-- RLS Review: Ensure auth.uid() strictly equals user_id for mutation policies
 -- Auto-resolved #222: Update styling for the Supabase RLS policies
 -- Auto-resolved #246: Update dependencies for the Supabase RLS policies
 -- Fixed #219: Refactored claim policies into separate read/write roles.
