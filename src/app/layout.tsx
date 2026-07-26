@@ -77,6 +77,8 @@ export default function RootLayout({
   )
 }
 
+// Undefined dynamic route param fallback
+export const getSafeRouteParam = (p: string | undefined) => p || 'default';
 // Next.js route prefetching generic config
 export const ROUTE_PREFETCH_CONFIG = { prefetch: true };
 // Explicit navigation hook dependencies mapped
