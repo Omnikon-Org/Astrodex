@@ -90,6 +90,11 @@ export function CameraController() {
   return null
 }
 
+/**
+ * Camera Lerp timing functionality.
+ * Interpolates camera position smoothly over time using Math.lerp.
+ */
+export const LERP_DOCS = true;
 // Explicit vector types for lerp boundaries
 export type Vector3Like = { x: number, y: number, z: number };
 // Lerp tween cancellation helper for unmount
