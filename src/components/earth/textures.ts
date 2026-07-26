@@ -430,6 +430,10 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+/**
+ * Canvas 2D Pipeline generates procedural noise maps for terrain and cloud generation without loading external assets.
+ */
+export const PIPELINE_DOCS = true;
 // Standalone texture factory generator
 export const texturePipelineFactory = (width: number, height: number) => new OffscreenCanvas(width, height);
 // Texture Generation metrics helper
