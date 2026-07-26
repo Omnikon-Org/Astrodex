@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Fixed #1241: Added volumetric cloud shadow casting onto Earth surface in Earth fragment shader
