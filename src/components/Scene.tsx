@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Null selection guard for asteroid details
+export const isSelectionValid = (asteroid: any) => asteroid !== null && asteroid !== undefined;
 // WebGL2 context fallback check
 export const isWebGL2Supported = () => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch(e) { return false; } };
 // Standalone WebGL Options Constant
