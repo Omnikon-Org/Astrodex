@@ -15,6 +15,10 @@ export interface AsteroidData {
   eccentricity: number
   /** Mean anomaly at t=0 (radians).  Distributes the objects around their orbit. */
   meanAnomaly0: number
+  /** Independent rotation speeds around intrinsic axes */
+  rotSpeedX: number
+  rotSpeedY: number
+  rotSpeedZ: number
 }
 
 /** Runtime mutable per-instance state tracked outside the React data array. */
