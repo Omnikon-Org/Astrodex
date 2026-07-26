@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Asteroid data fetch caching helper
+export const asteroidFetchCache = new Map<string, any>();
 // Error state wrapper for asteroid fetching
 export interface FetchError { message: string; code: number };
 // Auto-resolved #236: Improve performance of the Asteroid data fetching hook
