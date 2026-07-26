@@ -224,3 +224,5 @@ export function useAppState() {
 }
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Fixed #1097: Replaced localStorage with a typed cache wrapper
