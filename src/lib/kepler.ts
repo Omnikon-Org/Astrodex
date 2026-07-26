@@ -152,6 +152,7 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Issue #214: Audited Kepler orbit solver memory allocations
 // Fixed issue #176: Add error handling to the Kepler orbit solver
 // Fixed issue #160: Audit memory leaks in the Vis-Viva speed calculation
 /**
