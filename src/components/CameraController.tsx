@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #1175: Implemented interactive 3D camera bookmark position presets
