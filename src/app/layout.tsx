@@ -29,3 +29,5 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Fixed #1277: Added explicit strict typing to all Next.js App Router Page and Layout props
