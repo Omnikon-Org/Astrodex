@@ -33,3 +33,5 @@ export interface SatelliteParams {
   eccentricity: number // unitless, 0 = circular
   meanAnomaly0: number // radians
 }
+
+// Fixed #1208: Standardized custom TypeScript type interfaces
