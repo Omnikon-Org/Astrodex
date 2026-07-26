@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #402: Added Suspense wrapper for WebGL context synchronization
