@@ -1,4 +1,6 @@
 
+// Low-poly geometry configuration for spinner
+export const SPINNER_GEOMETRY_CONFIG = { segments: 16 };
 // WebGL Spinner React Suspense fallback pattern
 export const SpinnerSuspenseFallback = () => 'Loading WebGL...';
 // WebGL spinner specific error boundary
