@@ -77,6 +77,8 @@ export default function RootLayout({
   )
 }
 
+// Strict type for App Router parameters
+export type AppRouteParams = { params: Record<string, string>; searchParams: Record<string, string> };
 // Route Boundary Catch
 export const RouteBoundary = ({children}: any) => { return children; };
 // Route transition wrapper
