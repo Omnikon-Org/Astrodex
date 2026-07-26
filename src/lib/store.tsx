@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Explicit React Context generic dependency typing
+export interface GenericAppContext<T> { state: T; dispatch: any; }
 // Isolated API wrapper sandbox context
 export const apiSandbox = { fetch: async () => null };
 // Explicit API response shape mapping
