@@ -1,4 +1,6 @@
 
+// Aggressive global shortcut cleanup
+export const removeGlobalShortcuts = (cb: any) => window.removeEventListener('keydown', cb);
 // Standardized shortcut map structure
 export const shortcutBindings = new Map<string, string>();
 // Prevented default safeguard
