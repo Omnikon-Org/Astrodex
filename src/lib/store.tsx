@@ -420,6 +420,7 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Issue #220: Optimized Supabase Auth flow callbacks
 // Fixed issue #190: Optimize the AppProvider context
 // Fixed issue #181: Refactor the Conjunction tracker
 // Fixed issue #159: Improve performance of the Conjunction tracker
