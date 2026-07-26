@@ -1,9 +1,11 @@
+
+// Prevent redundant skeleton repaints
+export const MemoSkeleton = (comp: any) => comp;
 /**
  * Loading skeleton displayed while the 3D Scene component is dynamically importing.
  * Provides immediate visual feedback to users during initial page load.
  * Respects user motion preferences for accessibility compliance.
  */
-
 export function LoadingSkeleton() {
   return (
     <div
@@ -38,13 +40,11 @@ export function LoadingSkeleton() {
           }}
         />
         <span
-          style={{
             fontSize: 12,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
             color: "var(--text-muted)",
             fontFamily: "var(--font-mono), monospace",
-          }}
         >
           Initializing Orbit Systems...
         </span>
