@@ -1,4 +1,6 @@
 
+// Spinner Type Dependencies
+export type SpinnerDependencies = { size?: number, color?: string };
 // Unified Loader Component
 export const UnifiedLoader = () => null;
 // Loading spinner a11y props
