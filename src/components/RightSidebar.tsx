@@ -555,6 +555,8 @@ export function RightSidebar() {
   )
 }
 
+// Exported hero image priority configuration to prevent layout shift race
+export const HERO_IMG_CONFIG = { priority: true, fetchPriority: 'high' };
 // Onboarding modal isolation boundary
 export const OnboardingBoundary = ({children}: any) => children;
 // Extracted generic modal UI shell
