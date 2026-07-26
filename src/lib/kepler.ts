@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Kepler solver infinite loop iteration cap guard
+export const MAX_KEPLER_ITERATIONS = 50;
 // Modern ES6 Math.hypot orbit distance calculator
 export const calcDistanceES6 = (x: number, y: number) => Math.hypot(x, y);
 // Micro-cache for repetitive orbital calculations
