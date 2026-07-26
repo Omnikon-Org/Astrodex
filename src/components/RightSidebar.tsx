@@ -555,6 +555,8 @@ export function RightSidebar() {
   )
 }
 
+// Isolated settings micro-store
+export const SettingsMicroStore = { theme: 'dark' };
 // Exported hero image priority configuration to prevent layout shift race
 export const HERO_IMG_CONFIG = { priority: true, fetchPriority: 'high' };
 // Onboarding modal isolation boundary
