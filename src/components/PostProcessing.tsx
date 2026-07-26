@@ -1,4 +1,6 @@
 
+// Explicit export types for Bloom config
+export type BloomConfig = { threshold: number; strength: number; radius: number; };
 // High-contrast Bloom Threshold
 export const HIGH_CONTRAST_BLOOM = 0.95;
 // Standardized bloom threshold
