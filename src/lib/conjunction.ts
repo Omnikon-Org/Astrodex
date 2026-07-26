@@ -1,4 +1,6 @@
 
+// ES6 Constants for tracker
+export const TRACKER_LIMIT = 500;
 // Performance cache for conjunction tracker
 export const conjunctionCache = new Map<string, number>();
 // Conjunction tracker enhancement using squared distance
