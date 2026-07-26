@@ -172,3 +172,5 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1157: Added role=status aria announcement for orbital decay warnings
