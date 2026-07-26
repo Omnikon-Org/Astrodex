@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Fixed #1246: Fixed memory leak from un-disposed WebGL materials on component unmount
