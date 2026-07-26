@@ -263,6 +263,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Fixed #208: Extracted matrix calculation to a dedicated InstancedMesh utility.
 // Issue #205: Inline documentation for Asteroid InstancedMesh
 // Issue #208: Refactored Asteroid InstancedMesh
 // Fixed issue #196: Improve accessibility of the Asteroid InstancedMesh
