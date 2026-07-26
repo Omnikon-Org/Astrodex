@@ -190,6 +190,7 @@ export function AsteroidCard() {
               fontWeight: 700,
               letterSpacing: "0.06em",
               textTransform: "uppercase",
+            }}
           >
             {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
           </button>

@@ -1,28 +1,14 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google" // Added font imports
+import { Geist, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
-import type { Metadata } from "next";
-import { Geist, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
-
-// Instantiated the font families with CSS variable names
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 })
 
-const jetbrainsMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 })
 
@@ -49,12 +35,12 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://astrodex.app",
   },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   const jsonLd = {
     "@context": "https://schema.org",
@@ -68,7 +54,7 @@ export default function RootLayout({
       price: "0",
       priceCurrency: "USD",
     },
-  };
+  }
 
   return (
     <html lang="en" className={`${geistSans.variable} ${jetbrainsMono.variable}`}>
