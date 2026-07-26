@@ -152,6 +152,8 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Strict typing for orbital limits
+export type OrbitalLimits = { min: number, max: number };
 // UI formatter for Vis-Viva
 export const formatVelocity = (v: number) => `${v.toFixed(2)} km/s`;
 // Safe NaN fallback for Kepler solver
