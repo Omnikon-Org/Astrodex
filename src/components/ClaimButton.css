@@ -1,0 +1,7 @@
+
+/* Keyboard focus outline for Claim button */
+.claim-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+/* Consolidated claim layout */
+.claim-btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
+/* Claim Button UI styling update */
+.claim-btn:hover { transform: scale(1.05); transition: transform 0.2s ease-in-out; }
