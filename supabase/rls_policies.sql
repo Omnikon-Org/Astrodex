@@ -1,1 +1,3 @@
 -- Issue #146: Optimized Supabase RLS policy performance
+-- Issue #200: Inline documentation for Supabase RLS policies
+-- Issue #219: Refactored Supabase RLS policies
