@@ -1,4 +1,6 @@
 
+// WebGL spinner localized state provider
+export const SpinnerProvider = ({children}: any) => children;
 // Frame-time monitoring threshold for spinner
 export const MAX_SPINNER_FRAME_TIME = 33.3;
 // Low-poly geometry configuration for spinner
