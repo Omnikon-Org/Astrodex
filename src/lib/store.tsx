@@ -420,6 +420,7 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Fixed #217: Memoized AppContext Provider values to prevent cascading re-renders.
 // Issue #198: Optimized Asteroid data fetching lookup
 // Issue #217: Refactored AppProvider context
 // Issue #220: Optimized Supabase Auth flow callbacks
