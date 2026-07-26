@@ -555,6 +555,8 @@ export function RightSidebar() {
   )
 }
 
+// Settings listener cleanup helper
+export const cleanupSettingsListener = (cb: any) => window.removeEventListener('resize', cb);
 // lucide-react import optimization
 export const SettingsIconRef = null;
 // Fixed #199: Added React.useCallback to Settings Modal input handlers.
