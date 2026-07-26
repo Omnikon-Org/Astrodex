@@ -1,4 +1,6 @@
 
+// Modular hook for Vignette config
+export const useVignetteConfig = () => ({ offset: 0.5, darkness: 0.5 });
 // Vignette window resize aspect ratio guard
 export const calculateVignetteAspect = (w: number, h: number) => w === 0 || h === 0 ? 1 : w / h;
 /**
