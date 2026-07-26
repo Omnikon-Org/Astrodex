@@ -86,3 +86,5 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Fixed #1162: Optimized CloudLayer GLSL fragment shader noise computation
