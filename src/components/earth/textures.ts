@@ -430,6 +430,8 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Texture generator cache
+export const textureCache = new Map<string, HTMLCanvasElement>();
 // Auto-resolved #234: Improve accessibility of the Procedural texture generator
 // Fixed #204: Cached procedural canvas generation globally to prevent redundant paints.
 // Issue #204: Optimized Procedural texture generator
