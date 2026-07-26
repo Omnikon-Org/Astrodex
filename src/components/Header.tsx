@@ -173,6 +173,8 @@ export function Header() {
   )
 }
 
+// Aria-labels for cache data warnings
+export const cacheAriaProps = { 'aria-label': 'Cached data displayed', 'aria-live': 'polite' };
 // Memoized Navbar export
 export const MemoMobileNav = (Nav: any) => Nav;
 // Consolidated mobile navigation state
