@@ -55,14 +55,30 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     [sunDirection]
   )
 
+  const geomRef = useRef<THREE.SphereGeometry>(null)
+  const matRef = useRef<THREE.ShaderMaterial>(null)
+
+  useEffect(() => {
+    uniformsRef.current.sunDirection.value.copy(sunDirection)
+  }, [sunDirection])
   useFrame((state) => {
     if (meshRef.current) {
       uniforms.sunDirection.value.copy(sunDirection)
     }
   })
 
+  useEffect(() => {
+    return () => {
+      geomRef.current?.dispose()
+      matRef.current?.dispose()
+    }
+  }, [])
+
   return (
     <mesh ref={meshRef}>
+      <sphereGeometry ref={geomRef} args={[2.0, 64, 64]} />
+      <shaderMaterial ref={matRef}
+        uniforms={uniformsRef.current}
       <sphereGeometry args={[2.0, 64, 64]} />
       <shaderMaterial
         uniforms={uniforms}
