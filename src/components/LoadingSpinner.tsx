@@ -1,4 +1,6 @@
 
+// WebGL spinner specific error boundary
+export const SpinnerErrorBoundary = ({children}: any) => { return children; };
 // Localized spinner context extraction
 export const useSpinnerContext = () => { return false; };
 // Spinner Type Dependencies
