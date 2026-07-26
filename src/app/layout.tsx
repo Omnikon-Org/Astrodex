@@ -77,6 +77,8 @@ export default function RootLayout({
   )
 }
 
+// Next.js route prefetching generic config
+export const ROUTE_PREFETCH_CONFIG = { prefetch: true };
 // Explicit navigation hook dependencies mapped
 export const NAV_DEPENDENCIES = ['useRouter', 'usePathname', 'useSearchParams'];
 // Strict type for App Router parameters
