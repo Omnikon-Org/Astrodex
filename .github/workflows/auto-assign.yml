@@ -1,0 +1,200 @@
+name: Auto Assign Issue
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  pull-requests: read
+  contents: read
+
+jobs:
+  assign:
+    name: Handle assignment commands
+    if: github.event.issue.pull_request == null
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Assign issue from comment command
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue = context.payload.issue;
+            const comment = context.payload.comment;
+            const body = (comment.body || "").trim();
+            const MAX_ACTIVE_ASSIGNMENTS = 3;
+            const MAINTAINER_PERMISSIONS = new Set(["admin", "maintain", "write"]);
+
+            if (issue.pull_request) {
+              core.info("Ignoring pull request comments.");
+              return;
+            }
+
+            if (comment.user.type === "Bot") {
+              core.info(`Ignoring bot comment from ${comment.user.login}.`);
+              return;
+            }
+
+            const forceAssignMatch = body.match(/^\/force-assign\s+@?([A-Za-z0-9-]+)\s*$/);
+            const isAssignCommand = body === "/assign";
+
+            if (!isAssignCommand && !forceAssignMatch) {
+              core.info("Comment does not contain a supported assignment command.");
+              return;
+            }
+
+            async function ensureLabel(name, color, description) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name });
+              } catch (error) {
+                if (error.status !== 404) {
+                  core.warning(`Could not read label "${name}": ${error.message}`);
+                  return;
+                }
+
+                try {
+                  await github.rest.issues.createLabel({ owner, repo, name, color, description });
+                  core.info(`Created missing label "${name}".`);
+                } catch (createError) {
+                  if (createError.status === 422) {
+                    core.info(`Label "${name}" already exists.`);
+                  } else {
+                    core.warning(`Could not create label "${name}": ${createError.message}`);
+                  }
+                }
+              }
+            }
+
+            async function hasExistingBotComment(text) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: issue.number,
+                per_page: 100,
+              });
+
+              return comments.some((existingComment) => {
+                return existingComment.user?.type === "Bot" && existingComment.body?.includes(text);
+              });
+            }
+
+            async function createCommentOnce(body, duplicateText = body) {
+              if (await hasExistingBotComment(duplicateText)) {
+                core.info(`Skipping duplicate comment: ${duplicateText}`);
+                return;
+              }
+
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: issue.number,
+                body,
+              });
+            }
+
+            async function getPermission(login) {
+              try {
+                const response = await github.rest.repos.getCollaboratorPermissionLevel({
+                  owner,
+                  repo,
+                  username: login,
+                });
+                return response.data.permission;
+              } catch (error) {
+                if (error.status === 404) {
+                  return "none";
+                }
+                core.warning(`Could not determine permission for ${login}: ${error.message}`);
+                return "none";
+              }
+            }
+
+            async function countOpenAssignedIssues(login) {
+              const assignedItems = await github.paginate(github.rest.issues.listForRepo, {
+                owner,
+                repo,
+                state: "open",
+                assignee: login,
+                per_page: 100,
+              });
+
+              return assignedItems.filter((item) => !item.pull_request).length;
+            }
+
+            async function assignUser(login) {
+              await ensureLabel("waiting-for-pr", "FBCA04", "Assigned issue waiting for a linked pull request.");
+              await ensureLabel("stale-assignment", "B60205", "Assignment expired because no linked pull request was opened in time.");
+
+              await github.rest.issues.addAssignees({
+                owner,
+                repo,
+                issue_number: issue.number,
+                assignees: [login],
+              });
+
+              try {
+                await github.rest.issues.addLabels({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  labels: ["waiting-for-pr"],
+                });
+              } catch (error) {
+                core.warning(`Issue was assigned, but adding waiting-for-pr failed: ${error.message}`);
+              }
+            }
+
+            if (forceAssignMatch) {
+              const actor = comment.user.login;
+              const target = forceAssignMatch[1];
+              const permission = await getPermission(actor);
+
+              if (!MAINTAINER_PERMISSIONS.has(permission)) {
+                await createCommentOnce("Only maintainers can use this command.", "Only maintainers can use this command.");
+                return;
+              }
+
+              if (issue.assignees.some((assignee) => assignee.login.toLowerCase() === target.toLowerCase())) {
+                await createCommentOnce(`✅ Assigned to @${target}.`, `Assigned to @${target}`);
+                return;
+              }
+
+              try {
+                await assignUser(target);
+                await createCommentOnce(`✅ Assigned to @${target}.`, `Assigned to @${target}`);
+              } catch (error) {
+                core.setFailed(`Failed to force-assign @${target}: ${error.message}`);
+              }
+              return;
+            }
+
+            if (issue.assignees.length > 0) {
+              await createCommentOnce("This issue has already been assigned.", "This issue has already been assigned.");
+              return;
+            }
+
+            const actor = comment.user.login;
+            const activeAssignments = await countOpenAssignedIssues(actor);
+
+            if (activeAssignments >= MAX_ACTIVE_ASSIGNMENTS) {
+              await createCommentOnce(
+                "❌ You already have the maximum limit of 3 active assigned issues. Complete one before claiming another.",
+                "maximum limit of 3 active assigned issues"
+              );
+              return;
+            }
+
+            try {
+              await assignUser(actor);
+            } catch (error) {
+              core.setFailed(`Failed to assign @${actor}: ${error.message}`);
+              return;
+            }
+
+            const newAssignmentCount = activeAssignments + 1;
+            await createCommentOnce(
+              `✅ Assigned to @${actor}.\n\nYou currently have ${newAssignmentCount}/3 active assignments.\n\nPlease open a linked pull request within **5 days**, otherwise the assignment will be removed automatically.`,
+              `Assigned to @${actor}`
+            );
