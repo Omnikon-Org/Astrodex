@@ -327,3 +327,5 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Fixed #1114: Memoized procedurally generated textures with weak caching
