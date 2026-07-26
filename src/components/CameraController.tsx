@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #1161: Throttled camera tracking position updates
