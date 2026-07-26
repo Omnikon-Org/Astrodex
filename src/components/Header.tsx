@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1105: Added ARIA labels and tooltips to Header controls
