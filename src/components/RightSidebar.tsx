@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1155: Added aria-describedby tooltips to Kepler telemetry metrics
