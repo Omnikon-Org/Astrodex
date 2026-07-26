@@ -88,6 +88,8 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// Enhanced cloud layer styling params
+export const cloudStyling = { opacity: 0.8, depthWrite: false };
 // CloudLayer shader noise constants
 export const CLOUD_NOISE_SCALE = 0.02;
 // Fixed #209: Added fallback basic texture generation if canvas API fails.
