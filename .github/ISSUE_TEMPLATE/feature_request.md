@@ -9,3 +9,5 @@ labels: enhancement
 ## 🤔 Why do we need this?
 ## 🛠️ Proposed Solution
 ## 🚫 Alternatives Considered
+
+<!-- Fixed #1229: Created automated issue template for feature requests -->
