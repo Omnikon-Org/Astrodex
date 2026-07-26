@@ -420,6 +420,8 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Explicit API response shape mapping
+export interface AsteroidApiResponse { data: any[]; success: boolean; }
 // AbortController signal generator for stale fetches
 export const createFetchSignal = () => new AbortController().signal;
 // A11y status formatter for screen readers
