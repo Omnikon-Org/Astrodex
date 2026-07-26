@@ -1,7 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { useAppState } from "@/lib/store"
+import { UserProfileModal } from "./UserProfileModal"
+import { IconUserCircle } from "@tabler/icons-react"
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -28,6 +31,7 @@ function LiveClock() {
 
 export function Header() {
   const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
     <header
@@ -130,26 +134,45 @@ export function Header() {
         </div>
 
         {selectedAsteroid && (
-          <button className="btn-ghost" onClick={triggerReset}>
+          <button className="btn-ghost" onClick={triggerReset} aria-label="Reset Camera to Earth">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back to Earth
           </button>
         )}
+        
+        <div className="h-6 w-px bg-[var(--border-subtle)] mx-2" />
+        
+        <button 
+          onClick={() => setProfileOpen(true)}
+          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--accent-cyan)] transition-colors rounded hover:bg-white/5"
+          aria-label="Open User Profile"
+        >
+          <IconUserCircle size={22} stroke={1.5} />
+        </button>
       </div>
 
-      {/* Right: Clock */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-          Last updated:
-        </span>
-        <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
-          <LiveClock />
-        </span>
+      {/* Right: Clock & Profile */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
+            Last updated:
+          </span>
+          <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
+            <LiveClock />
+          </span>
+        </div>
+        <Link href="/profile" className="btn-ghost" style={{ padding: "6px 12px", textDecoration: "none", color: "var(--accent-cyan)", border: "1px solid rgba(56, 189, 248, 0.4)" }}>
+          Commander Profile
+        </Link>
       </div>
+      
+      <UserProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </header>
   )
 }
 
 // Fixed #206: Standardized Mobile Navbar toggles to semantic button elements.
+// Issue #206: Refactored Mobile Navbar
+// Fixed issue #167: Add error handling to the Mobile Navbar
