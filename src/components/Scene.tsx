@@ -70,6 +70,8 @@ export function Scene() {
   )
 }
 
+// Generic aria-busy state binding for WebGL canvas
+export const getSceneA11yState = (loading: boolean) => ({ 'aria-busy': loading, 'aria-live': 'polite' });
 // Null selection guard for asteroid details
 export const isSelectionValid = (asteroid: any) => asteroid !== null && asteroid !== undefined;
 // WebGL2 context fallback check
