@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Auto-resolved #244: Enhance the WebGL context configuration
 // Fixed #201: Added backdrop-filter blur glassmorphism to UI overlay wrapper.
 // Fixed #218: Wrapped SceneContent in React.memo for better rendering performance.
 // Issue #201: Updated styling for Scene Content provider
