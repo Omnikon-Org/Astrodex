@@ -1,0 +1,1 @@
+-- Issue #219: Refactored Supabase RLS policies
