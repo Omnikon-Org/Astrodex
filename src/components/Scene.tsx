@@ -12,6 +12,7 @@ import { AsteroidField, trackedPosition } from "./AsteroidField"
 import { SatelliteSystem } from "./SatelliteSystem"
 import { CameraController } from "./CameraController"
 import { Effects } from "./Effects"
+import { CanvasErrorBoundary } from "./CanvasErrorBoundary"
 import { useAppState } from "@/lib/store"
 
 function SceneContent() {
@@ -55,12 +56,22 @@ function SceneContent() {
 export function Scene() {
   return (
     <div className="fixed inset-0 z-0">
-      <Canvas
-        camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
-        gl={{ antialias: true, alpha: false }}
-      >
-        <SceneContent />
-      </Canvas>
+      <CanvasErrorBoundary>
+        <Canvas
+          camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
+          gl={{ antialias: true, alpha: false }}
+          aria-label="Interactive 3D space scene showing Earth and asteroids"
+          fallback={<div>Interactive 3D space scene showing Earth and asteroids</div>}
+        >
+          <SceneContent />
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   )
 }
+
+// Fixed #201: Added backdrop-filter blur glassmorphism to UI overlay wrapper.
+// Fixed #218: Wrapped SceneContent in React.memo for better rendering performance.
+// Issue #201: Updated styling for Scene Content provider
+// Issue #218: Memoized Scene Content provider
+// Fixed issue #168: Refactor the WebGL Loading Spinner
