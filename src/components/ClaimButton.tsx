@@ -1,4 +1,6 @@
 
+// Pre-bind claim handler for performance
+export const handleClaimPrebind = (fn: any) => fn.bind(null);
 // Anti-double-click safeguard state
 export const useAntiSpam = () => { return false; };
 "use client"
