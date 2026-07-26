@@ -77,6 +77,8 @@ export default function RootLayout({
   )
 }
 
+// Route Boundary Catch
+export const RouteBoundary = ({children}: any) => { return children; };
 // Route transition wrapper
 export const RouteTransition = ({children}: any) => { return children; };
   );
