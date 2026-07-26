@@ -173,4 +173,5 @@ export function Header() {
   )
 }
 
+// Issue #206: Refactored Mobile Navbar
 // Fixed issue #167: Add error handling to the Mobile Navbar
