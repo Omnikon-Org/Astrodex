@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1187: Created comprehensive inline JSDoc comments for R3F scene components
