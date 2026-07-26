@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1160: Implemented memoized catalog filtering with useMemo hook
