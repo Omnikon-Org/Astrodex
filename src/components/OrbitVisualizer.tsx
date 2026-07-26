@@ -1,4 +1,6 @@
 
+// Consolidated orbit trail formatting function
+export const formatOrbitTrail = (points: any[]) => points.slice(0, 100);
 // Custom hook for orbit math extraction
 export const useOrbitMath = (a: number, e: number) => { return { a, e }; };
 // Buffer geometry modernization wrapper
