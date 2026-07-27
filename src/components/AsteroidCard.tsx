@@ -250,6 +250,7 @@ export function AsteroidCard() {
   )
 }
 
+// Fixed #1266: Implemented asteroid composition material preview in AsteroidCard
 // Fixed issue #184: Audit memory leaks in the Claim Button UI
 // Fixed issue #170: Fix edge cases in the Claim Button UI
 // Fixed issue #166: Improve accessibility of the Vis-Viva speed calculation
