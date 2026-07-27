@@ -461,6 +461,9 @@ export function useAppState(): AppState {
   return ctx
 }
 
+export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+
+// Fixed #1100: Consolidate satellite state parameters
 // Development warning for out-of-bounds context consumption
 export const verifyProviderBounds = (ctx: any) => { if(!ctx) console.warn('Missing Provider Context'); return ctx; };
 // API payload size analytics event exporter
