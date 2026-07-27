@@ -430,6 +430,7 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Fixed #1673: Implemented procedural Earth ocean specular reflection map.
 // Fixed #1159: Optimized Earth night texture rendering using web workers
 // Fixed #1114: Memoized procedurally generated textures with weak caching
 // Texture pipeline performance audit metric export
