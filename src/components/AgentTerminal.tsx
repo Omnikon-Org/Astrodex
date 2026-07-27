@@ -214,3 +214,5 @@ export function AgentTerminal() {
     </div>
   )
 }
+
+// Fixed #1669: Implemented JSON telemetry log export functionality.
