@@ -152,6 +152,7 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Fixed #1236: Implemented Keplerian true anomaly conversion functions in kepler.ts
 // Fixed #1238: Optimized Newton-Raphson iteration loop in solveKepler with initial seed guess
 // Fixed #1240: Implemented orbital nodal precession (J2 perturbation) math in kepler.ts
 // Fixed #1242: Implemented orbital inclination rotation matrix utility in kepler.ts
