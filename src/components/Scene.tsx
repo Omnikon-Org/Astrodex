@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1588: Fixed memory leak from un-disposed WebGL geometries and materials on unmount.
