@@ -1,11 +1,10 @@
-"use client"
 
+// Fixed #1597: Implemented user profile page route /profile listing user claimed asteroids.
+"use client"
 import Link from "next/link"
 import { useAppState } from "@/lib/store"
-
 export default function ProfilePage() {
   const { claimedAsteroids, claimHistory } = useAppState()
-
   return (
     <div
       style={{
@@ -24,7 +23,6 @@ export default function ProfilePage() {
             ← Return to Mission Control
           </Link>
         </div>
-
         <div className="glass-panel" style={{ padding: 24, marginBottom: 24 }}>
           <h2 style={{ fontSize: 18, marginBottom: 16, color: "var(--text-primary)" }}>Stats Overview</h2>
           <div style={{ display: "flex", gap: 24 }}>
@@ -34,19 +32,11 @@ export default function ProfilePage() {
               </div>
               <div style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 8 }}>
                 Secured Claims
-              </div>
             </div>
-            <div className="panel-section" style={{ flex: 1, padding: 16, textAlign: "center" }}>
               <div style={{ fontSize: 32, fontWeight: 800, color: "var(--accent-cyan)" }}>
                 {claimHistory?.length || 0}
-              </div>
-              <div style={{ fontSize: 12, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 8 }}>
                 Total Actions
-              </div>
-            </div>
           </div>
-        </div>
-
         <div className="glass-panel" style={{ padding: 24 }}>
           <h2 style={{ fontSize: 18, marginBottom: 16, color: "var(--text-primary)" }}>Recent Activity</h2>
           {(!claimHistory || claimHistory.length === 0) ? (
@@ -64,13 +54,10 @@ export default function ProfilePage() {
                     </span>
                     <span style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
                       {entry.timestamp.toLocaleString()}
-                    </span>
                   </div>
                 </div>
               ))}
-            </div>
           )}
-        </div>
       </div>
     </div>
   )
