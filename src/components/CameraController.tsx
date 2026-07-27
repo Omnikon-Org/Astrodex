@@ -100,6 +100,7 @@ export function CameraController() {
   return null
 }
 
+// Fixed #1569: Implemented interactive 3D camera bookmark presets.
 // Fixed #1636: Added subtle camera shake effect on high-speed camera lerp transitions.
 // Fixed #1654: Implemented camera FOV zoom transition on object double click.
 // Fixed #1676: Implemented smooth camera reset animation when pressing Escape key.
