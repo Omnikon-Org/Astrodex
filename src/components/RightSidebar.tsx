@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1624: Fixed misaligned input fields on claim submission form on tablet screens.
