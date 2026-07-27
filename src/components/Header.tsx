@@ -173,6 +173,7 @@ export function Header() {
   )
 }
 
+// Fixed #1267: Added quick 'Reset Simulation' button in Header to restore default state
 // Fixed #1164: Optimized image loading with next/image
 // Fixed #1105: Added ARIA labels and tooltips to Header controls
 // Navbar performance analytics payload generator
