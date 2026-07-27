@@ -299,6 +299,7 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1154: Ensured table headers have scope attributes
 // Fixed #1160: Implemented memoized catalog filtering with useMemo hook
 // Fixed #1116: Debounced search filter input to prevent re-render lag
 // Fixed #1222: Added custom asteroid bookmarking in LeftSidebar
