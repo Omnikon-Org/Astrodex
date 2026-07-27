@@ -152,6 +152,7 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Fixed #1593: Implemented Keplerian true anomaly conversion functions.
 // Fixed #1595: Implemented J2 orbital nodal precession calculation.
 // Fixed #1596: Implemented orbital inclination matrix transformation utility.
 // Fixed #1598: Implemented orbital period calculator helper function.
