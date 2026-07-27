@@ -196,8 +196,9 @@ def process_batch(batch_num, batch_prs):
             
         # Checkout PR branch
         verify_identity()
-        run_cmd("rm -rf docs/architecture.md docs/ARCHITECTURE.md")
         run_cmd("git checkout main -f")
+        run_cmd("git rm --cached -f docs/ARCHITECTURE.md docs/architecture.md 2>/dev/null || true")
+        run_cmd("rm -rf docs/architecture.md docs/ARCHITECTURE.md")
         run_cmd("git reset --hard HEAD")
         run_cmd("git clean -fdx -e process_prs_batch.py")
         checkout_res = run_cmd(f"gh pr checkout {num} --repo {REPO} --force")
