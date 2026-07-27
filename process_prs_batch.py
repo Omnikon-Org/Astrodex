@@ -213,13 +213,8 @@ def process_batch(batch_num, batch_prs):
         
         if merge_res.returncode != 0:
             print(f"Merge conflict detected in PR #{num}. Resolving...")
-            status_res = run_cmd("git status --porcelain")
-            unmerged_files = []
-            for line in status_res.stdout.splitlines():
-                if len(line) >= 3 and "U" in line[:3]:
-                    fpath = line[3:].strip().strip('"')
-                    unmerged_files.append(fpath)
-                    
+            unmerged_res = run_cmd("git diff --name-only --diff-filter=U")
+            unmerged_files = [f.strip() for f in unmerged_res.stdout.splitlines() if f.strip()]
             print(f"Conflicting files: {unmerged_files}")
             
             # Check rewrite size
