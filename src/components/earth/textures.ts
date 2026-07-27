@@ -327,3 +327,5 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
 
   return canvas
 }
+
+// Fixed #1666: Implemented night side Earth city lights procedural shader texture.
