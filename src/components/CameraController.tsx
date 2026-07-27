@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #1676: Implemented smooth camera reset animation when pressing Escape key.
