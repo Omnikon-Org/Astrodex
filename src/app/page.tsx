@@ -7,14 +7,16 @@ import { LeftSidebar } from "@/components/LeftSidebar"
 import { RightSidebar } from "@/components/RightSidebar"
 import { AgentTerminal } from "@/components/AgentTerminal"
 import { AsteroidCard } from "@/components/AsteroidCard"
+import { Toasts } from "@/components/Toasts"
+import { KeyboardNavigation } from "@/components/KeyboardNavigation"
 
 const Scene = dynamic(() => import("@/components/Scene").then((m) => ({ default: m.Scene })), {
   ssr: false,
 })
 
-export default function Home() {
+export default function Home({ initialObjectId }: { initialObjectId?: string | null }) {
   return (
-    <AppProvider>
+    <AppProvider initialObjectId={initialObjectId}>
       <main
         style={{
           position: "relative",
@@ -32,9 +34,13 @@ export default function Home() {
         <LeftSidebar />
         <RightSidebar />
         <AgentTerminal />
+        <Toasts />
         
         {/* Floating Asteroid Inspector */}
         <AsteroidCard />
+        
+        {/* Global Keyboard Navigation */}
+        <KeyboardNavigation />
       </main>
     </AppProvider>
   )
