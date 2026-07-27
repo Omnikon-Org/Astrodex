@@ -28,11 +28,11 @@ Thank you for taking the time to contribute to **AstroDex**! This guide covers e
 
 Make sure you have the following installed before proceeding:
 
-| Tool | Version | Download |
-|------|---------|----------|
-| Node.js | 18 + | [nodejs.org][nodejs] |
-| npm | 9 + | Bundled with Node.js |
-| Git | Any recent version | [git-scm.com](https://git-scm.com) |
+| Tool    | Version            | Download                           |
+| ------- | ------------------ | ---------------------------------- |
+| Node.js | 18 +               | [nodejs.org][nodejs]               |
+| npm     | 9 +                | Bundled with Node.js               |
+| Git     | Any recent version | [git-scm.com](https://git-scm.com) |
 
 ### Local Setup
 
@@ -42,7 +42,7 @@ git clone https://github.com/<your-username>/astrodex.git
 cd astrodex
 
 # 2. Add the upstream remote so you can pull future changes
-git remote add upstream https://github.com/SourabhX16/astrodex.git
+git remote add upstream https://github.com/Omnikon-Org/Astrodex.git
 
 # 3. Install dependencies
 npm install
@@ -65,19 +65,71 @@ git merge upstream/main
 
 ## Claiming an Issue
 
-- **Comment on the issue** expressing interest
-- **We'll assign it within 24-48 hours**
-- If multiple people are interested, preference order:
-  1. Collaboration (joint PR encouraged)
-  2. Experience level (we prioritize helping new contributors)
-  3. First-comment basis (if tied)
+AstroDex uses automated issue assignment to keep work moving and prevent issue hoarding.
 
 - **Timeline:** Once assigned, you have:
   - **3-5 days** for `easy` labeled issues
   - **5-7 days** for `intermediate` labeled issues
-  - *Contact us if you need an extension — we're here to support you!*
+  - _Contact us if you need an extension — we're here to support you!_
 
-- **Next step:** Open a **draft PR** to let us know you're working on it. This helps prevent duplicate efforts.
+Comment exactly:
+
+```text
+/assign
+```
+
+The bot will assign the issue to you when:
+
+- The issue is not already assigned
+- You have fewer than **3 active assigned open issues**
+- The comment is on an issue, not a pull request
+
+After a successful claim, the issue receives the `waiting-for-pr` label and the bot confirms your current assignment count.
+
+### Assignment Limits
+
+Each contributor may have up to **3 active assigned open issues** at a time.
+
+If you already have 3 assigned open issues, the bot will not assign another one. Complete one of your current issues before claiming more work.
+
+### Pull Request Deadline
+
+After assignment, open a linked pull request within **5 days**. Link the PR using GitHub-supported issue references such as:
+
+```text
+Fixes #123
+Closes #123
+Resolves #123
+```
+
+GitHub's linked issue UI is also supported.
+
+If no linked pull request is found after 5 days, the assignment is removed automatically, the `stale-assignment` label is added, and the issue becomes available for other contributors.
+
+Closed pull requests that were not merged do not keep an assignment active. Open a new linked PR if you still want to work on the issue.
+
+### Opening Issues
+
+Each contributor may have up to **5 open issues** that they created.
+
+If you open or reopen an issue while you already have more than 5 open issues, the bot will comment and close the newest issue. Please wait until one of your existing issues is resolved before opening another.
+
+### Maintainer Commands
+
+Maintainers can bypass assignment limits with:
+
+```text
+/force-assign @username
+```
+
+Only repository maintainers can use this command. It is intended for manual triage, GSSoC coordination, and cases where maintainers intentionally want to assign work outside the normal contributor limits.
+
+### Automation Labels
+
+The workflows create these labels automatically if they are missing:
+
+- `waiting-for-pr` — assigned issue waiting for a linked pull request
+- `stale-assignment` — assignment expired because no linked pull request was opened in time
 
 ---
 
@@ -103,14 +155,14 @@ astrodex/
 
 ## Code Style
 
-| Area | Rule |
-|------|------|
-| **Language** | [TypeScript][ts] — strict mode is enabled. Avoid `any`; prefer `unknown` and narrow types explicitly |
-| **Components** | Add `"use client"` at the top of any component that uses hooks or browser APIs |
-| **Imports** | Always use the `@/` path alias (resolves to `src/`). Avoid relative `../` chains |
-| **Formatting** | [ESLint][eslint] is configured — run `npm run lint` before every commit |
-| **CSS** | [Tailwind CSS][tailwind] utility classes are preferred. Custom CSS is only acceptable for global resets or styles that Tailwind cannot handle |
-| **No unused imports** | Remove any unused imports before opening a PR |
+| Area                  | Rule                                                                                                                                          |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Language**          | [TypeScript][ts] — strict mode is enabled. Avoid `any`; prefer `unknown` and narrow types explicitly                                          |
+| **Components**        | Add `"use client"` at the top of any component that uses hooks or browser APIs                                                                |
+| **Imports**           | Always use the `@/` path alias (resolves to `src/`). Avoid relative `../` chains                                                              |
+| **Formatting**        | [ESLint][eslint] is configured — run `npm run lint` before every commit                                                                       |
+| **CSS**               | [Tailwind CSS][tailwind] utility classes are preferred. Custom CSS is only acceptable for global resets or styles that Tailwind cannot handle |
+| **No unused imports** | Remove any unused imports before opening a PR                                                                                                 |
 
 ### Running the Linter and Type Checker
 
@@ -130,16 +182,16 @@ Both commands must pass with **zero errors** before you open a pull request.
 
 ### Naming Conventions
 
-| Thing | Convention | Example |
-|-------|-----------|---------|
-| Components | PascalCase | `AsteroidBelt.tsx` |
-| Functions / variables | camelCase | `claimAsteroid()` |
-| Types and interfaces | PascalCase | `AsteroidRecord` |
-| Component files | PascalCase | `Earth.tsx` |
-| Utility / hook files | camelCase | `useAsteroidStore.ts` |
+| Thing                  | Convention             | Example                |
+| ---------------------- | ---------------------- | ---------------------- |
+| Components             | PascalCase             | `AsteroidBelt.tsx`     |
+| Functions / variables  | camelCase              | `claimAsteroid()`      |
+| Types and interfaces   | PascalCase             | `AsteroidRecord`       |
+| Component files        | PascalCase             | `Earth.tsx`            |
+| Utility / hook files   | camelCase              | `useAsteroidStore.ts`  |
 | GLSL uniform variables | `u` prefix + camelCase | `uTime`, `uResolution` |
-| GLSL varying variables | `v` prefix + camelCase | `vNormal`, `vUv` |
-| Constants | SCREAMING_SNAKE_CASE | `MAX_ASTEROID_COUNT` |
+| GLSL varying variables | `v` prefix + camelCase | `vNormal`, `vUv`       |
+| Constants              | SCREAMING_SNAKE_CASE   | `MAX_ASTEROID_COUNT`   |
 
 ### 3D / WebGL Component Guidelines
 
@@ -181,16 +233,16 @@ We follow a simplified version of [Conventional Commits](https://www.conventiona
 <type>(<optional scope>): <short summary>
 ```
 
-| Type | When to use |
-|------|------------|
-| `feat` | A new feature |
-| `fix` | A bug fix |
-| `docs` | Documentation changes only |
-| `style` | Formatting, missing semicolons — no logic change |
+| Type       | When to use                                             |
+| ---------- | ------------------------------------------------------- |
+| `feat`     | A new feature                                           |
+| `fix`      | A bug fix                                               |
+| `docs`     | Documentation changes only                              |
+| `style`    | Formatting, missing semicolons — no logic change        |
 | `refactor` | Code restructure without adding features or fixing bugs |
-| `perf` | Performance improvements |
-| `test` | Adding or updating tests |
-| `chore` | Dependency updates, build scripts, tooling |
+| `perf`     | Performance improvements                                |
+| `test`     | Adding or updating tests                                |
+| `chore`    | Dependency updates, build scripts, tooling              |
 
 **Examples:**
 
@@ -201,7 +253,7 @@ docs(contributing): add commit message guidelines
 chore: upgrade three.js to v0.164
 ```
 
-- Use the **imperative mood** in the summary: *"add feature"* not *"added feature"*
+- Use the **imperative mood** in the summary: _"add feature"_ not _"added feature"_
 - Keep the summary line under **72 characters**
 - Reference relevant issues at the end of the body: `Closes #42`
 
@@ -210,6 +262,7 @@ chore: upgrade three.js to v0.164
 ## Pull Request Process
 
 1. **Sync with upstream** before branching to avoid merge conflicts:
+
    ```bash
    git fetch upstream
    git checkout main
@@ -217,6 +270,7 @@ chore: upgrade three.js to v0.164
    ```
 
 2. **Create a focused branch** with a descriptive name:
+
    ```bash
    git checkout -b feat/atmosphere-shader
    # or
@@ -228,6 +282,7 @@ chore: upgrade three.js to v0.164
 3. **Make small, atomic commits.** Each commit should represent one logical change.
 
 4. **Lint and build — both must pass:**
+
    ```bash
    npm run lint
    npm run build
@@ -235,7 +290,7 @@ chore: upgrade three.js to v0.164
 
 5. **Open a pull request** against the `main` branch and fill in the PR template with:
    - A clear, descriptive title following the commit convention
-   - A summary of *what* changed and *why*
+   - A summary of _what_ changed and _why_
    - Steps to test or reproduce the changes
    - Screenshots or screen recordings for any visual changes
    - A reference to the related issue (e.g., `Closes #12`)
@@ -263,10 +318,7 @@ export function Earth() {
   return (
     <mesh>
       <sphereGeometry args={[1, 64, 64]} />
-      <meshPhongMaterial
-        map={dayMap}
-        specularMap={specMap}
-      />
+      <meshPhongMaterial map={dayMap} specularMap={specMap} />
     </mesh>
   )
 }
@@ -281,11 +333,11 @@ export function Earth() {
 
 ### Recommended Free Texture Sources
 
-| Source | Notes |
-|--------|-------|
-| [NASA Visible Earth](https://visibleearth.nasa.gov) | Public domain satellite imagery |
+| Source                                                           | Notes                                             |
+| ---------------------------------------------------------------- | ------------------------------------------------- |
+| [NASA Visible Earth](https://visibleearth.nasa.gov)              | Public domain satellite imagery                   |
 | [Solar System Scope](https://www.solarsystemscope.com/textures/) | High-res planetary textures (free tier available) |
-| [3D Planet Textures](https://planetpixelemporium.com) | Lightweight planet texture maps |
+| [3D Planet Textures](https://planetpixelemporium.com)            | Lightweight planet texture maps                   |
 
 ---
 
@@ -326,12 +378,12 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 Create an `asteroids` table with the following columns:
 
-| Column | Type | Notes |
-|--------|------|-------|
-| `id` | `uuid` | Primary key, default `gen_random_uuid()` |
-| `asteroid_id` | `text` | Unique identifier from the NASA API; add a `UNIQUE` constraint |
-| `claimed_by` | `text` | User identifier (e.g., Supabase Auth `user.id`) |
-| `claimed_at` | `timestamptz` | Defaults to `now()` |
+| Column        | Type          | Notes                                                          |
+| ------------- | ------------- | -------------------------------------------------------------- |
+| `id`          | `uuid`        | Primary key, default `gen_random_uuid()`                       |
+| `asteroid_id` | `text`        | Unique identifier from the NASA API; add a `UNIQUE` constraint |
+| `claimed_by`  | `text`        | User identifier (e.g., Supabase Auth `user.id`)                |
+| `claimed_at`  | `timestamptz` | Defaults to `now()`                                            |
 
 ### 4. Replacing the Mock Store
 
@@ -341,16 +393,14 @@ Swap the mock `claimAsteroid` function in `src/lib/store.tsx` with a real Supaba
 import { supabase } from "@/lib/supabaseClient"
 
 export async function claimAsteroid(asteroidId: string, userId: string): Promise<void> {
-  const { error } = await supabase
-    .from("asteroids")
-    .upsert(
-      {
-        asteroid_id: asteroidId,
-        claimed_by: userId,
-        claimed_at: new Date().toISOString(),
-      },
-      { onConflict: "asteroid_id" }
-    )
+  const { error } = await supabase.from("asteroids").upsert(
+    {
+      asteroid_id: asteroidId,
+      claimed_by: userId,
+      claimed_at: new Date().toISOString(),
+    },
+    { onConflict: "asteroid_id" }
+  )
 
   if (error) throw new Error(`Failed to claim asteroid: ${error.message}`)
 }
@@ -380,7 +430,7 @@ If you witness or experience unacceptable behavior, please report it by opening 
 
 ---
 
-[issues]: https://github.com/SourabhX16/astrodex/issues
+[issues]: https://github.com/Omnikon-Org/Astrodex/issues
 [nodejs]: https://nodejs.org
 [npm]: https://www.npmjs.com
 [ts]: https://www.typescriptlang.org
