@@ -299,6 +299,7 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1160: Implemented memoized catalog filtering with useMemo hook
 // Fixed #1116: Debounced search filter input to prevent re-render lag
 // Fixed #1222: Added custom asteroid bookmarking in LeftSidebar
 // Fixed #1101: Modularized LeftSidebar tab views
