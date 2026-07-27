@@ -263,6 +263,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Fixed #1525: Added keyboard navigable 3D reticle selection for AsteroidField instanced mesh.
 // Fixed #1540: Implemented frustum culling for AsteroidField instanced mesh instances.
 // Fixed #1630: Implemented LOD (Level of Detail) lower-poly meshes for distant asteroids.
 // Fixed #1632: Added procedural asteroid axial spin animation.
