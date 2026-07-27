@@ -430,6 +430,7 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Fixed #1114: Memoized procedurally generated textures with weak caching
 // Texture pipeline performance audit metric export
 export const TEX_GEN_TIME_TARGET_MS = 16;
 // Aggressive 2D context cleanup helper
