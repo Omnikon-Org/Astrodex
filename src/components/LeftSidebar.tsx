@@ -299,6 +299,7 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1620: Added multi-criteria sorting (Distance, Speed, Size) for asteroid catalog.
 // Fixed #1656: Implemented orbit inclination and eccentricity filters.
 // Fixed #1668: Added CSV catalog export button.
 // Fixed #1672: Added orbital inclination angle filtering slider.
