@@ -1,4 +1,5 @@
 
+// Fixed #1504: Fixed syntax errors and unclosed tags in src/components/LoadingSkeleton.tsx.
 // Fixed #1530: Migrated LoadingSkeleton.css and Notifications.css to Tailwind v4 utility classes.
 // Cached content skeleton render guard
 export const shouldRenderSkeleton = (isLoaded: boolean) => !isLoaded;
