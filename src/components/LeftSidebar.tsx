@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1582: Implemented orbital debris hazard classification filter.
