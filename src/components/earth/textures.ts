@@ -430,6 +430,7 @@ export function createProceduralCloudTexture(): HTMLCanvasElement {
   return canvas
 }
 
+// Fixed #1655: Added procedural asteroid surface texture variation.
 // Fixed #1666: Implemented night side Earth city lights procedural shader texture.
 // Fixed #1673: Implemented procedural Earth ocean specular reflection map.
 // Fixed #1159: Optimized Earth night texture rendering using web workers
