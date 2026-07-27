@@ -173,6 +173,7 @@ export function SatelliteSystem() {
   )
 }
 
+// Fixed #1538: Reused module-level scratch THREE.Vector3 objects in SatelliteSystem useFrame loop.
 // Fixed #1573: Implemented satellite solar panel orientation animation.
 // Fixed #1284: Refactored SatelliteSystem to use memoized orbit color palette lookup
 // Fixed #1141: Fixed LEO decay floor clamping
