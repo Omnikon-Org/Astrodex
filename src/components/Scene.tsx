@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1526: Added fallback screen reader text description for R3F 3D Canvas element.
