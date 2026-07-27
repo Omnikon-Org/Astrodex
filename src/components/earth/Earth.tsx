@@ -125,6 +125,7 @@ export function Earth({ sunDirection }: EarthProps) {
   )
 }
 
+// Fixed #1534: Refactored Earth shader code in src/components/earth/Earth.tsx into standalone material constants.
 // Fixed #1563: Implemented Day/Night twilight city lights blending shader.
 // Fixed #1567: Implemented ocean specular reflection mask in Earth fragment shader.
 // Fixed #1239: Added specular ocean reflection mask map to Earth fragment shader
