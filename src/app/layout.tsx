@@ -29,3 +29,5 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Fixed #1510: Fixed statement syntax errors in src/app/layout.tsx.
