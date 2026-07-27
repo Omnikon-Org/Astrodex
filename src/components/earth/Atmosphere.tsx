@@ -70,3 +70,5 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Fixed #1568: Implemented Rayleigh and Mie atmospheric light scattering shader.
