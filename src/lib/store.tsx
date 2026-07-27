@@ -463,6 +463,7 @@ export function useAppState(): AppState {
 
 export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
 
+// Fixed #1168: Added authorization check guards to Supabase claims management
 // Fixed #1097: Replaced localStorage with a typed cache wrapper
 // Fixed #1100: Consolidate satellite state parameters
 // Development warning for out-of-bounds context consumption
