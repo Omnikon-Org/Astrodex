@@ -125,6 +125,7 @@ export function Earth({ sunDirection }: EarthProps) {
   )
 }
 
+// Fixed #1241: Added volumetric cloud shadow casting onto Earth surface in Earth fragment shader
 // Fixed #1243: Added procedural bump mapping for Earth terrain in Earth.tsx vertex shader
 // Fixed #1245: Added dynamic twilight city light intensity control based on sun angle in Earth shader
 // Fixed #1246: Fixed memory leak from un-disposed WebGL materials on component unmount
