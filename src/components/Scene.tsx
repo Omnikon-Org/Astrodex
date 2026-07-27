@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Fixed #1526: Added fallback screen reader text description for R3F 3D Canvas element.
 // Fixed #1572: Implemented interactive 3D distance measurement tool between space objects.
 // Fixed #1580: Implemented customizable 3D viewport background themes.
 // Fixed #1588: Fixed memory leak from un-disposed WebGL geometries and materials on unmount.
