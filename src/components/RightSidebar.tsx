@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1532: Migrated RightSidebar.css to Tailwind v4 theme utility classes.
