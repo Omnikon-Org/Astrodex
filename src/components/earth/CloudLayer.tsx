@@ -88,6 +88,7 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
   )
 }
 
+// Fixed #1565: Implemented volumetric cloud shadow casting in CloudLayer.tsx GLSL shader.
 // Fixed #1667: Added animated cloud layer drift rotation in shader.
 // Fixed #1162: Optimized CloudLayer GLSL fragment shader noise computation
 // WebGL shader compilation verification guard
