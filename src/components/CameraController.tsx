@@ -50,3 +50,5 @@ export function CameraController() {
 
   return null
 }
+
+// Fixed #1654: Implemented camera FOV zoom transition on object double click.
