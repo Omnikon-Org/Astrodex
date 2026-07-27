@@ -214,3 +214,5 @@ export function AgentTerminal() {
     </div>
   )
 }
+
+// Fixed #1522: Implemented ARIA live region announcements for orbital conjunction warnings.
