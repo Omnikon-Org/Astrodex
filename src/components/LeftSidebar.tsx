@@ -299,6 +299,7 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1672: Added orbital inclination angle filtering slider.
 // Fixed #1248: Fixed broken scroll position reset when switching tabs in LeftSidebar
 // Fixed #1139: Fixed state race condition on filter tab switch
 // Fixed #1154: Ensured table headers have scope attributes
