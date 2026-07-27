@@ -424,6 +424,8 @@ html, body {
   right: 12px;
 }
 
+/* Fixed #1675: Added dark space gradient background fallback */
+.fallback-bg { background: radial-gradient(circle, #0f172a, #020617); }
 /* Fixed #1659: Space Crosshair Cursor */
 body {
   cursor: crosshair;
