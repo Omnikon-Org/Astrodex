@@ -29,3 +29,5 @@ export default function RootLayout({
     </html>
   )
 }
+
+// Fixed #1549: Added Open Graph social preview image and Twitter card metadata.
