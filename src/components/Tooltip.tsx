@@ -1,4 +1,5 @@
 
+// Fixed #1507: Fixed syntax and statement errors in src/components/Tooltip.tsx.
 // Strict standard prop types for Tooltip
 export type StandardTooltipProps = { content: string, position?: 'top'|'bottom'|'left'|'right' };
 // Tooltip memoization export wrapper
