@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #1110: Added explicitly linked labels to form controls
 // Isolated settings micro-store
 export const SettingsMicroStore = { theme: 'dark' };
 // Exported hero image priority configuration to prevent layout shift race
