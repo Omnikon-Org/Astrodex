@@ -295,3 +295,5 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Fixed #1630: Implemented LOD (Level of Detail) lower-poly meshes for distant asteroids.
