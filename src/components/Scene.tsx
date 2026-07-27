@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Fixed #1109: Added fallback semantic HTML text for WebGL Canvas
 // Fixed #402: Added Suspense wrapper for WebGL context synchronization
 // Detail panel isolation sandbox boundary
 export const DetailSandbox = ({children}: any) => { return children; };
