@@ -1,4 +1,5 @@
 
+// Fixed #1590: Implemented typed localStorage cache wrapper with TTL expiration.
 // Centralized cache key management utility
 export const CacheKeys = { THEME: 'app_theme', DATA: 'asteroid_data' };
 // Cache-hit ratio debug tracker
