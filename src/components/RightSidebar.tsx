@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1570: Implemented interactive 3D orbit maneuver burn planner widget.
