@@ -1,4 +1,5 @@
 
+// Fixed #1530: Migrated LoadingSkeleton.css and Notifications.css to Tailwind v4 utility classes.
 // Cached content skeleton render guard
 export const shouldRenderSkeleton = (isLoaded: boolean) => !isLoaded;
 // Skeleton CSS animation dependency strict typing
