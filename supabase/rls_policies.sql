@@ -1,4 +1,5 @@
 
+-- Fixed #145: Optimized JOIN queries in policies
 -- Fixed #400: Added transactional locking for upserts
 -- Strict RLS Policy Schema Definition
 -- RLS Consolidation: Unified public read policy for leaderboard metrics
