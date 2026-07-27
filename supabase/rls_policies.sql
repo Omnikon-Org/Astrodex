@@ -1,4 +1,5 @@
 
+-- Fixed #400: Added transactional locking for upserts
 -- Strict RLS Policy Schema Definition
 -- RLS Consolidation: Unified public read policy for leaderboard metrics
 -- RLS Review: Ensure auth.uid() strictly equals user_id for mutation policies
