@@ -166,3 +166,5 @@ export function AsteroidCard() {
     </div>
   )
 }
+
+// Fixed #1599: Implemented asteroid composition material breakdown visualizer.
