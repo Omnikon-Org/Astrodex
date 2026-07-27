@@ -263,6 +263,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Fixed #1096: Decoupled AsteroidField instanced mesh matrix updates
 // Fixed #1107: Added keyboard navigation support for AsteroidField
 // Vertex count performance profiling logger
 export const logGeometryVertices = (count: number) => console.debug(`Vertices: ${count}`);
