@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #1611: Added informative tooltips to complex Keplerian orbital parameters.
 // Fixed #1622: Display live 3D XYZ coordinate readout for selected object.
 // Fixed #1624: Fixed misaligned input fields on claim submission form on tablet screens.
 // Fixed #1626: Added confirmation modal prompt before unclaiming an asteroid.
