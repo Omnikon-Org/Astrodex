@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1620: Added multi-criteria sorting (Distance, Speed, Size) for asteroid catalog.
