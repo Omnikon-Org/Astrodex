@@ -152,6 +152,7 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Fixed #1242: Implemented orbital inclination rotation matrix utility in kepler.ts
 // Fixed #1244: Implemented orbital period calculator helper function in kepler.ts
 // Fixed #1251: Fixed incorrect scale factor conversion in kmToSceneUnits helper function
 // Fixed #1136: Fixed division by zero in Vis-Viva velocity calculation
