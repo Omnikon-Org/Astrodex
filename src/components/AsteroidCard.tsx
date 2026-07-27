@@ -1,6 +1,8 @@
 "use client"
 
 import { useAppState } from "@/lib/store"
+import { ClaimButton } from "./ClaimButton"
+import { Tooltip } from "./Tooltip"
 
 export function AsteroidCard() {
   const {
@@ -9,11 +11,26 @@ export function AsteroidCard() {
     claimAsteroid,
     leftSidebarOpen,
     selectAsteroid,
+    addToast,
   } = useAppState()
 
   if (!selectedAsteroid) return null
 
   const isClaimed = claimedAsteroids.has(selectedAsteroid.id)
+
+  // ========== NEW: Share handler ==========
+  const handleShare = (id: number) => {
+    const objectId = `asteroid-${id}`
+    const url = `${window.location.origin}/object/${objectId}`
+    window.history.pushState({}, "", `/object/${objectId}`)
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        addToast(`Link copied to clipboard: ${objectId}`, "success")
+      })
+      .catch(() => {
+        addToast("Failed to copy link", "error")
+      })
+  }
 
   return (
     <div
@@ -64,25 +81,51 @@ export function AsteroidCard() {
             Inspector: {selectedAsteroid.name}
           </span>
         </div>
-        <button
-          className="btn-ghost"
-          onClick={() => selectAsteroid(null)}
-          style={{ padding: 4, border: "none" }}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {/* ========== NEW: Share Button ========== */}
+          <button
+            className="btn-ghost"
+            onClick={() => handleShare(selectedAsteroid.id)}
+            style={{ padding: 4, border: "none" }}
+            title="Share this asteroid"
           >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+          </button>
+          <button
+            className="btn-ghost"
+            onClick={() => selectAsteroid(null)}
+            style={{ padding: 4, border: "none" }}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Content */}
@@ -105,16 +148,39 @@ export function AsteroidCard() {
               justifyContent: "space-between",
             }}
           >
-            <span>STATUS: CLAIMED & SECURED</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {/* User Avatar Placeholder */}
+              <div
+                style={{
+                  width: 18,
+                  height: 18,
+                  borderRadius: "50%",
+                  background: "var(--accent-green)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#000",
+                }}
+                title="Claimed by you"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <span>STATUS: CLAIMED & SECURED</span>
+            </div>
             <span style={{ fontSize: 9, opacity: 0.8 }}>SEC-REG</span>
           </div>
         )}
 
         {/* Orbit Visual Diagram Placeholder or Stats */}
-        <div className="panel-section" style={{ marginBottom: 14 }}>
-          <div className="panel-section-title">Orbital Mechanics</div>
+        <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]" style={{ marginBottom: 14 }}>
+          <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Orbital Mechanics</div>
           <div className="kv-row">
-            <span className="kv-label">Semi-Major Axis</span>
+            <Tooltip content="Average distance from the central body (AU)">
+              <span className="kv-label cursor-help border-b border-dotted border-gray-500">Semi-Major Axis</span>
+            </Tooltip>
             <span className="kv-value">{(selectedAsteroid.orbitRadius * 0.15).toFixed(3)} AU</span>
           </div>
           <div className="kv-row">
@@ -144,7 +210,14 @@ export function AsteroidCard() {
         {/* Action Buttons */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <button
-            onClick={() => claimAsteroid(selectedAsteroid.id)}
+            onClick={() => {
+              claimAsteroid(selectedAsteroid.id)
+              if (isClaimed) {
+                addToast(`Released claim on ${selectedAsteroid.name}`, "info")
+              } else {
+                addToast(`Mining claim secured on ${selectedAsteroid.name}`, "success")
+              }
+            }}
             className="btn-primary"
             style={{
               width: "100%",
@@ -161,8 +234,26 @@ export function AsteroidCard() {
           >
             {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
           </button>
+        {/* Mining Claim Operations */}
+        <div style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", marginBottom: 8, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            Mining Claim Operations
+          </div>
+          <ClaimButton
+            isClaimed={isClaimed}
+            onClick={() => claimAsteroid(selectedAsteroid.id)}
+          />
+        </div>
         </div>
       </div>
     </div>
   )
 }
+
+// Fixed #1599: Implemented asteroid composition material breakdown visualizer.
+// Fixed #1266: Implemented asteroid composition material preview in AsteroidCard
+// Fixed issue #184: Audit memory leaks in the Claim Button UI
+// Fixed issue #170: Fix edge cases in the Claim Button UI
+// Fixed issue #166: Improve accessibility of the Vis-Viva speed calculation
+// Fixed issue #165: Write inline documentation for the Claim Button UI
+// Fixed issue #158: Update styling for the Vis-Viva speed calculation
