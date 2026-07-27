@@ -173,6 +173,7 @@ export function Header() {
   )
 }
 
+// Fixed #1670: Added tooltips for simulation playback speed controls.
 // Fixed #1259: Added full-screen cinematic presentation mode toggle in Header
 // Fixed #1172: Added time-lapse simulation speed multiplier controls
 // Fixed #1151: Added keyboard-accessible skip link for HUD controls
