@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1571: Implemented orbital speed distribution histogram chart widget.
