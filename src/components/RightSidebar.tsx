@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #1674: Added satellite mission operational status badge.
 // Fixed #1176: Added Hohmann transfer delta-V maneuver calculator
 // Fixed #1143: Migrated RightSidebar CSS to Tailwind classes
 // Fixed #1155: Added aria-describedby tooltips to Kepler telemetry metrics
