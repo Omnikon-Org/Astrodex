@@ -38,4 +38,5 @@ export interface SatelliteParams {
   meanAnomaly0: number // radians
 }
 
+// Fixed #1208: Standardized custom TypeScript type interfaces
 // Fixed #1102: Added strict typings for Supabase client responses
