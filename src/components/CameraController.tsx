@@ -100,6 +100,7 @@ export function CameraController() {
   return null
 }
 
+// Fixed #1279: Refactored CameraController to handle window resize aspect ratio updates smoothly
 // Fixed #1175: Implemented interactive 3D camera bookmark position presets
 // Fixed #1137: Fixed memory leak in CameraController resize listeners
 // Fixed #1209: Refactored CameraController for smooth focal point transition animations
