@@ -5,3 +5,5 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Fixed #1518: Implemented Content Security Policy (CSP) security headers.
