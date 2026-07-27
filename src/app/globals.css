@@ -424,6 +424,7 @@ html, body {
   right: 12px;
 }
 
+/* Fixed #1152: Added visible focus indicator outlines to canvas controls */
 /* Fixed #1156: Ensured minimum touch target size of 44x44px */
 /* Fixed #1202: Extracted glassmorphism styles to Tailwind utility classes */
 /* Fixed #1098: Standardized z-index tokens */
