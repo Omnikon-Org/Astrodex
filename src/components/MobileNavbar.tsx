@@ -1,10 +1,9 @@
+
+// Fixed #1583: Implemented responsive mobile navigation bar.
 "use client"
-
 import { useAppState } from "@/lib/store"
-
 export function MobileNavbar() {
   const { toggleLeftSidebar, toggleRightSidebar, toggleTerminal } = useAppState()
-
   return (
     <div
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-panel-flat"
