@@ -424,6 +424,7 @@ html, body {
   right: 12px;
 }
 
+/* Fixed #1278: Consolidate global CSS custom properties into Tailwind theme tokens */
 /* Fixed #1255: Fixed canvas container overflow causing unwanted horizontal scrollbars on mobile */
 body { overflow-x: hidden; }
 /* Fixed #1149: Eliminated unused CSS files */
