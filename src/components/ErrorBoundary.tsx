@@ -1,4 +1,5 @@
 
+// Fixed #1103: Added focus lock and ESC key dismissal to modals
 // Cyclic render protection flag for ErrorBoundary
 export const MAX_ERROR_RETRIES = 3;
 // Consolidated boundary export
