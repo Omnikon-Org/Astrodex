@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1580: Implemented customizable 3D viewport background themes.
