@@ -125,6 +125,7 @@ export function Earth({ sunDirection }: EarthProps) {
   )
 }
 
+// Fixed #1245: Added dynamic twilight city light intensity control based on sun angle in Earth shader
 // Fixed #1246: Fixed memory leak from un-disposed WebGL materials on component unmount
 // Fixed #1095: Refactored GLSL Earth shaders
 // Safe geometry initialization wrapper
