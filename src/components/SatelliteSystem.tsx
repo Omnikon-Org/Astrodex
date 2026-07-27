@@ -173,4 +173,5 @@ export function SatelliteSystem() {
   )
 }
 
+// Fixed #1157: Added role=status aria announcement for orbital decay warnings
 // Fixed #1112: Reused module-level scratch Vector3 and Matrix4
