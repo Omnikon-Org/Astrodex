@@ -207,6 +207,7 @@ def process_batch(batch_num, batch_prs):
             
         # Try merging upstream/main into PR branch
         verify_identity()
+        run_cmd("rm -f batch_*.json batch_processing_results.json")
         merge_res = run_cmd("git merge upstream/main")
         conflict_resolved = False
         
@@ -215,8 +216,9 @@ def process_batch(batch_num, batch_prs):
             status_res = run_cmd("git status --porcelain")
             unmerged_files = []
             for line in status_res.stdout.splitlines():
-                if any(line.startswith(x) for x in ["UU ", "AA ", "DD ", "DU ", "UD ", "AU ", "UA "]):
-                    unmerged_files.append(line[3:].strip())
+                if len(line) >= 3 and "U" in line[:3]:
+                    fpath = line[3:].strip().strip('"')
+                    unmerged_files.append(fpath)
                     
             print(f"Conflicting files: {unmerged_files}")
             
@@ -280,8 +282,10 @@ def process_batch(batch_num, batch_prs):
                 print(f"Failed conflict commit for PR #{num}: {commit_res.stderr}")
                 run_cmd("git merge --abort")
                 run_cmd("git checkout main")
+                run_cmd("git reset --hard HEAD")
                 batch_stats["prs_skipped"].append(num)
                 continue
+
                 
         sanitize_package_json()
         run_cmd("git checkout main")
