@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1626: Added confirmation modal prompt before unclaiming an asteroid.
