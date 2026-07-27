@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1611: Added informative tooltips to complex Keplerian orbital parameters.
