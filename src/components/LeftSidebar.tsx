@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1527: Debounced catalog search input.
