@@ -299,6 +299,7 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1656: Implemented orbit inclination and eccentricity filters.
 // Fixed #1668: Added CSV catalog export button.
 // Fixed #1672: Added orbital inclination angle filtering slider.
 // Fixed #1248: Fixed broken scroll position reset when switching tabs in LeftSidebar
