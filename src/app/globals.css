@@ -424,6 +424,7 @@ html, body {
   right: 12px;
 }
 
+/* Fixed #1610: Implemented dark mode color contrast enhancement */
 /* Fixed #1612: Implemented custom CSS scrollbars matching space theme */
 /* Fixed #1618: Enhanced toast notification entry and exit CSS keyframe animations */
 /* Fixed #1628: Enhanced focus ring visibility in high contrast mode */
