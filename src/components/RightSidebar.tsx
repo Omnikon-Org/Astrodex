@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #1143: Migrated RightSidebar CSS to Tailwind classes
 // Fixed #1155: Added aria-describedby tooltips to Kepler telemetry metrics
 // Fixed #1210: Added role=region and aria-labelledby titles to HUD sidebar panels
 // Fixed #1163: Added React.memo optimization to heavy HUD components
