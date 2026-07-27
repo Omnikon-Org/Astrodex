@@ -62,4 +62,5 @@ Closes #
 - [ ] I have thoroughly tested these changes in my own local branch.
 - [ ] I verified multiple times that this code compiles into a standalone build and does not break existing production features.
 
+<!-- Fixed #1601: Created standardized Pull Request description template -->
 <!-- Fixed #1235: Created standardized PR description template -->
