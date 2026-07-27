@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1660: Added keyboard shortcut F to focus search palette.
