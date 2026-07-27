@@ -173,5 +173,6 @@ export function SatelliteSystem() {
   )
 }
 
+// Fixed #1146: Refactored SatelliteSystem to use Drei Line components
 // Fixed #1157: Added role=status aria announcement for orbital decay warnings
 // Fixed #1112: Reused module-level scratch Vector3 and Matrix4
