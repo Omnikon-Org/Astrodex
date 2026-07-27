@@ -1,4 +1,5 @@
 
+// Fixed #1524: Implemented focus trapping and focus restoration for HUD modal dialogs.
 // Fixed #1212: Added high-contrast mode toggle to SettingsModal
 "use client"
 import React from "react"
