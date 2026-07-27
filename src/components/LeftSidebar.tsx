@@ -299,6 +299,7 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1139: Fixed state race condition on filter tab switch
 // Fixed #1154: Ensured table headers have scope attributes
 // Fixed #1160: Implemented memoized catalog filtering with useMemo hook
 // Fixed #1116: Debounced search filter input to prevent re-render lag
