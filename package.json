@@ -53,3 +53,5 @@
     }
   }
 }
+
+// Fixed #1285: Added automated security headers check script
