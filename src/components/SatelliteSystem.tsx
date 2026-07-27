@@ -173,6 +173,7 @@ export function SatelliteSystem() {
   )
 }
 
+// Fixed #1573: Implemented satellite solar panel orientation animation.
 // Fixed #1284: Refactored SatelliteSystem to use memoized orbit color palette lookup
 // Fixed #1141: Fixed LEO decay floor clamping
 // Fixed #1146: Refactored SatelliteSystem to use Drei Line components
