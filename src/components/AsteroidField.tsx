@@ -263,6 +263,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Fixed #1113: Implemented frustum culling and distance-based LOD
 // Fixed #1094: Extracted orbit line calculation into useOrbitGeometry
 // Fixed #1096: Decoupled AsteroidField instanced mesh matrix updates
 // Fixed #1107: Added keyboard navigation support for AsteroidField
