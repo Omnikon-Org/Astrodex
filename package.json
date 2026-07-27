@@ -53,5 +53,3 @@
     }
   }
 }
-
-// Fixed #1185: Added Husky and lint-staged configuration
