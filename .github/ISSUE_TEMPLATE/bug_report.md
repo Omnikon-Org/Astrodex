@@ -8,6 +8,7 @@ labels: bug
 ## 💥 What is broken?
 
 ## 👣 Steps to Reproduce
+
 1. Go to '...'
 2. Click on '...'
 3. Scroll down to '...'
@@ -16,6 +17,7 @@ labels: bug
 ## 🎯 Expected Behavior
 
 ## 🖥️ Environment Context
+
 - **OS (Operating System):**
 - **Browser (if applicable):**
 - **Version/Dependency:**
