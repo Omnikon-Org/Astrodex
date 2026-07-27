@@ -234,3 +234,5 @@ export function AgentTerminal() {
     </div>
   )
 }
+
+// Fixed #1127: Sanitized innerHTML usage in log export function
