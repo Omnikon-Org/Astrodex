@@ -70,3 +70,5 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Fixed #1508: Fixed syntax error in src/components/earth/Atmosphere.tsx.
