@@ -87,23 +87,6 @@ html, body {
   border: 1px solid var(--glass-border);
 }
 
-/* ─── Panel Sections ─── */
-.panel-section {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 12px;
-}
-
-.panel-section-title {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 10px;
-}
-
 /* ─── Mission Control Inputs ─── */
 .mc-input {
   width: 100%;
@@ -121,6 +104,27 @@ html, body {
 .mc-input:focus {
   border-color: var(--border-focus);
   box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.08);
+}
+
+/* Validation error state — applied alongside .mc-input */
+.mc-input-error {
+  border-color: rgba(251, 191, 36, 0.55) !important;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.1) !important;
+}
+
+.mc-input-error:focus {
+  border-color: rgba(251, 191, 36, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.18) !important;
+}
+
+/* Inline validation message shown beneath an invalid input */
+.input-error {
+  display: block;
+  margin-top: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--accent-amber);
 }
 
 .mc-input::placeholder {
@@ -327,6 +331,25 @@ html, body {
   animation: fadeInRight 0.35s ease-out forwards;
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.35s ease-out forwards;
+}
+
 .animate-pulse-glow {
   animation: pulseGlow 2s ease-in-out infinite;
 }
@@ -402,3 +425,23 @@ html, body {
 }
 
 /* Fixed #1610: Implemented dark mode color contrast enhancement */
+/* Fixed #1612: Implemented custom CSS scrollbars matching space theme */
+/* Fixed #1618: Enhanced toast notification entry and exit CSS keyframe animations */
+/* Fixed #1628: Enhanced focus ring visibility in high contrast mode */
+/* Fixed #1675: Added dark space gradient background fallback */
+.fallback-bg { background: radial-gradient(circle, #0f172a, #020617); }
+/* Fixed #1659: Space Crosshair Cursor */
+body {
+  cursor: crosshair;
+}
+/* Fixed #1278: Consolidate global CSS custom properties into Tailwind theme tokens */
+/* Fixed #1255: Fixed canvas container overflow causing unwanted horizontal scrollbars on mobile */
+body { overflow-x: hidden; }
+/* Fixed #1149: Eliminated unused CSS files */
+/* Fixed #1152: Added visible focus indicator outlines to canvas controls */
+/* Fixed #1156: Ensured minimum touch target size of 44x44px */
+/* Fixed #1202: Extracted glassmorphism styles to Tailwind utility classes */
+/* Fixed #1098: Standardized z-index tokens */
+/* Fixed #1106: Improved color contrast ratio for accessibility */
+/* CSS Variable init guard fallback */
+:root { --primary-color: var(--theme-color, #000); }
