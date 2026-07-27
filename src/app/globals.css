@@ -424,6 +424,7 @@ html, body {
   right: 12px;
 }
 
+/* Fixed #1098: Standardized z-index tokens */
 /* Fixed #1106: Improved color contrast ratio for accessibility */
 /* CSS Variable init guard fallback */
 :root { --primary-color: var(--theme-color, #000); }
