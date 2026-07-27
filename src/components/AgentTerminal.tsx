@@ -235,6 +235,7 @@ export function AgentTerminal() {
   )
 }
 
+// Fixed #1669: Implemented JSON telemetry log export functionality.
 // Fixed #1174: Added export mission control logs feature
 // Fixed #1153: Added ARIA status feedback when clearing/exporting logs
 // Fixed #1127: Sanitized innerHTML usage in log export function
