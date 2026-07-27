@@ -173,6 +173,7 @@ export function Header() {
   )
 }
 
+// Fixed #1616: Added Return to Earth reset view button.
 // Fixed #1660: Added keyboard shortcut F to focus search palette.
 // Fixed #1662: Added screenshot capture button exporting high res 3D canvas PNG.
 // Fixed #1670: Added tooltips for simulation playback speed controls.
