@@ -400,3 +400,8 @@ html, body {
   top: calc(var(--header-height) + 16px);
   right: 12px;
 }
+
+/* Fixed #1659: Space Crosshair Cursor */
+body {
+  cursor: crosshair;
+}
