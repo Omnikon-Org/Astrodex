@@ -1,5 +1,6 @@
-import * as THREE from "three"
 
+// Fixed #1099: Refactored camera lerping into a separate module
+import * as THREE from "three"
 /**
  * Calculates the target position and look-at target for the camera.
  * Extracted from CameraController for easier testing.
@@ -12,7 +13,6 @@ export function calculateCameraTargets(
 ): { targetPos: THREE.Vector3; targetLook: THREE.Vector3 } {
   const newTargetLook = currentTargetLook.clone()
   const newTargetPos = currentTargetPos.clone()
-
   if (hasSelection) {
     if (trackedPosition.lengthSq() > 0) {
       newTargetLook.copy(trackedPosition)
@@ -20,6 +20,5 @@ export function calculateCameraTargets(
       newTargetPos.copy(trackedPosition).add(offset)
     }
   }
-
   return { targetPos: newTargetPos, targetLook: newTargetLook }
 }
