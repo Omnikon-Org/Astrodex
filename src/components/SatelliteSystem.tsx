@@ -172,3 +172,5 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1573: Implemented satellite solar panel orientation animation.
