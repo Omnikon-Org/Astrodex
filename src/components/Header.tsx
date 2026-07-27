@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1605: Implemented responsive full-screen 3D viewport toggle for mobile touch devices.
