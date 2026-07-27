@@ -100,6 +100,7 @@ export function CameraController() {
   return null
 }
 
+// Fixed #1137: Fixed memory leak in CameraController resize listeners
 // Fixed #1209: Refactored CameraController for smooth focal point transition animations
 // Fixed #1161: Throttled camera tracking position updates
 // Fixed #1108: Added prefers-reduced-motion media query support
