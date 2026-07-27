@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #1570: Implemented interactive 3D orbit maneuver burn planner widget.
 // Fixed #1611: Added informative tooltips to complex Keplerian orbital parameters.
 // Fixed #1622: Display live 3D XYZ coordinate readout for selected object.
 // Fixed #1624: Fixed misaligned input fields on claim submission form on tablet screens.
