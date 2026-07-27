@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #1210: Added role=region and aria-labelledby titles to HUD sidebar panels
 // Fixed #1163: Added React.memo optimization to heavy HUD components
 // Fixed #1125: Sanitized and validated satellite telemetry inputs
 // Fixed #1110: Added explicitly linked labels to form controls
