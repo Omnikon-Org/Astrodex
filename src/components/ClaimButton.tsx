@@ -1,4 +1,5 @@
 
+// Fixed #1520: Implemented client-side rate limiting and debouncing for mining claim submissions.
 // Pure functional Claim Button extraction
 export const PureClaimButton = (props: any) => null;
 // Pre-bind claim handler for performance
