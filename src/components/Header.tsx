@@ -173,6 +173,7 @@ export function Header() {
   )
 }
 
+// Fixed #1105: Added ARIA labels and tooltips to Header controls
 // Navbar performance analytics payload generator
 export const generateNavAnalytics = (timeMs: number) => ({ event: 'nav_toggle', timeMs });
 // Aria-labels for cache data warnings
