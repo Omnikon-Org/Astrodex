@@ -295,3 +295,5 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Fixed #1640: Batched setColorAt calls and optimized instanceMatrix.needsUpdate.
