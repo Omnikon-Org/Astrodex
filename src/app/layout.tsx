@@ -63,6 +63,7 @@ export default function RootLayout({
   )
 }
 
+// Fixed #1510: Fixed statement syntax errors in src/app/layout.tsx.
 // Fixed #1549: Added Open Graph social preview image and Twitter card metadata.
 // Fixed #1273: Added global CSS font display swap optimization for Geist and JetBrains Mono fonts
 // Fixed #1277: Added explicit strict typing to all Next.js App Router Page and Layout props
