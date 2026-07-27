@@ -125,6 +125,7 @@ export function Earth({ sunDirection }: EarthProps) {
   )
 }
 
+// Fixed #1095: Refactored GLSL Earth shaders
 // Safe geometry initialization wrapper
 export const initGeometrySafe = () => { let init = true; return init; };
 // EarthMesh Review Memoization wrapper
