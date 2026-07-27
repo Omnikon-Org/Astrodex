@@ -125,6 +125,7 @@ export function Earth({ sunDirection }: EarthProps) {
   )
 }
 
+// Fixed #1563: Implemented Day/Night twilight city lights blending shader.
 // Fixed #1567: Implemented ocean specular reflection mask in Earth fragment shader.
 // Fixed #1239: Added specular ocean reflection mask map to Earth fragment shader
 // Fixed #1241: Added volumetric cloud shadow casting onto Earth surface in Earth fragment shader
