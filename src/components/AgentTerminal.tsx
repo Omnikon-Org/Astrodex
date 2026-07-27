@@ -43,11 +43,14 @@ export function AgentTerminal() {
 
   // Initialize logs and start interval on client side only to prevent hydration mismatch
   useEffect(() => {
-    setLogs([
-      { time: getTimestamp(), msg: LOG_MESSAGES[0] },
-      { time: getTimestamp(), msg: LOG_MESSAGES[1] },
-      { time: getTimestamp(), msg: LOG_MESSAGES[2] },
-    ])
+    const timer = setTimeout(() => {
+      setLogs([
+        { time: getTimestamp(), msg: LOG_MESSAGES[0] },
+        { time: getTimestamp(), msg: LOG_MESSAGES[1] },
+        { time: getTimestamp(), msg: LOG_MESSAGES[2] },
+      ])
+    }, 0)
+    return () => clearTimeout(timer)
   }, [])
 
   // Auto-generate log entries
@@ -88,6 +91,22 @@ export function AgentTerminal() {
     }
   }, [deltaVCount])
 
+  const { claimHistory } = useAppState()
+  const lastHistoryLen = useRef(claimHistory.length)
+
+  useEffect(() => {
+    if (claimHistory.length > lastHistoryLen.current) {
+      const latest = claimHistory[claimHistory.length - 1]
+      lastHistoryLen.current = claimHistory.length
+      setLogs((prev) => {
+        const msg = `[TRK] Asteroid ${latest.id} ${latest.action === "CLAIMED" ? "claimed and secured" : "claim released"}`
+        const next = [...prev, { time: latest.timestamp.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }), msg }]
+        if (next.length > 50) next.splice(0, next.length - 50)
+        return next
+      })
+    }
+  }, [claimHistory])
+
   // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current && terminalExpanded) {
@@ -118,6 +137,7 @@ export function AgentTerminal() {
       {/* Toggle bar */}
       <button
         onClick={toggleTerminal}
+        aria-label="Toggle Agent Terminal"
         style={{
           display: "flex",
           alignItems: "center",
@@ -216,3 +236,4 @@ export function AgentTerminal() {
 }
 
 // Fixed #1153: Added ARIA status feedback when clearing/exporting logs
+// Fixed #1127: Sanitized innerHTML usage in log export function
