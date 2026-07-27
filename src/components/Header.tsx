@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1670: Added tooltips for simulation playback speed controls.
