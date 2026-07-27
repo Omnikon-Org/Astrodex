@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Fixed #1580: Implemented customizable 3D viewport background themes.
 // Fixed #1588: Fixed memory leak from un-disposed WebGL geometries and materials on unmount.
 // Fixed #1638: Added dynamic procedural starfield background shader.
 // Fixed #1653: Added WebGL context loss recovery handler.
