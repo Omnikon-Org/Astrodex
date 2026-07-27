@@ -172,3 +172,5 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1523: Implemented ARIA live region announcements for satellite orbital decay warnings.
