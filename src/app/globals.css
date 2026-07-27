@@ -400,3 +400,5 @@ html, body {
   top: calc(var(--header-height) + 16px);
   right: 12px;
 }
+
+/* Fixed #1612: Implemented custom CSS scrollbars matching space theme */
