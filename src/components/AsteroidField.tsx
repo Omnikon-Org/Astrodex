@@ -263,6 +263,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Fixed #1630: Implemented LOD (Level of Detail) lower-poly meshes for distant asteroids.
 // Fixed #1632: Added procedural asteroid axial spin animation.
 // Fixed #1640: Batched setColorAt calls and optimized instanceMatrix.needsUpdate.
 // Fixed #1158: Implemented instanced color updates using Float32Array buffers
