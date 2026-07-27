@@ -126,3 +126,5 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
+
+// Fixed #1534: Refactored Earth shader code in src/components/earth/Earth.tsx into standalone material constants.
