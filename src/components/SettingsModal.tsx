@@ -1,4 +1,5 @@
 
+// Fixed #1506: Fixed unclosed HTML elements and syntax errors in src/components/SettingsModal.tsx.
 // Fixed #1524: Implemented focus trapping and focus restoration for HUD modal dialogs.
 // Fixed #1212: Added high-contrast mode toggle to SettingsModal
 "use client"
