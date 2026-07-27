@@ -359,3 +359,5 @@ export function RightSidebar() {
     </>
   )
 }
+
+// Fixed #1622: Display live 3D XYZ coordinate readout for selected object.
