@@ -134,10 +134,32 @@ export function AppProvider({
 }) {
   // 1. Asteroid Data States
   const [selectedAsteroid, setSelectedAsteroid] = useState<AsteroidData | null>(null)
-  const [claimedAsteroids, setClaimed] = useState<Set<number>>(new Set())
+  
+  const [claimedAsteroids, setClaimed] = useState<Set<number>>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("astrodex_claimed")
+        if (stored) return new Set(JSON.parse(stored))
+      } catch (e) {
+        console.error("Failed to parse local storage cache", e)
+      }
+    }
+    return new Set()
+  })
+  
   const [resetCamera, setResetCamera] = useState(false)
   const [simulationRunning, setSimulationRunning] = useState(true)
   const [riskLevel, setRiskLevel] = useState<"HIGH" | "MEDIUM" | "LOW">("LOW")
+
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("astrodex_leftSidebar") !== "false"
+    }
+    return true
+  })
+  
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(() => {
+      return localStorage.getItem("astrodex_rightSidebar") !== "false"
   const [claimHistory, setClaimHistory] = useState<{ id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]>([])
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
   const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
@@ -197,12 +219,17 @@ export function AppProvider({
   const claimAsteroid = useCallback((id: number) => {
     setClaimed((prev) => {
       const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      
+      if (typeof window !== "undefined") {
+        localStorage.setItem("astrodex_claimed", JSON.stringify(Array.from(next)))
+      }
       const action = next.has(id) ? "RELEASED" : "CLAIMED"
       if (next.has(id)) {
         next.delete(id)
       } else {
         next.add(id)
-      }
       setClaimHistory(h => [...h, { id, action, timestamp: new Date() }])
       return next
     })
@@ -219,6 +246,23 @@ export function AppProvider({
   const toggleRightSidebar = useCallback(() => setRightSidebarOpen((prev) => !prev), [])
   const toggleTerminal = useCallback(() => setTerminalExpanded((prev) => !prev), [])
 
+  const toggleSimulation = useCallback(() => setSimulationRunning((p) => !p), [])
+  const toggleLeftSidebar = useCallback(() => {
+    setLeftSidebarOpen((p) => {
+      const next = !p
+      if (typeof window !== "undefined") {
+        localStorage.setItem("astrodex_leftSidebar", String(next))
+      }
+      return next
+    })
+  }, [])
+  const toggleRightSidebar = useCallback(() => {
+    setRightSidebarOpen((p) => {
+        localStorage.setItem("astrodex_rightSidebar", String(next))
+  const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
+
+  const registerAsteroidData = useCallback((data: AsteroidData[]) => {
+    asteroidDataRef.current = data
   const registerAsteroidData = useCallback(
     (data: AsteroidData[]) => {
       asteroidDataRef.current = data
@@ -230,7 +274,6 @@ export function AppProvider({
             setSelectedAsteroid(found)
           }
         }
-      }
     },
     [focusedObjectId]
   )
