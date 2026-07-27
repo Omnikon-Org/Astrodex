@@ -299,5 +299,6 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1101: Modularized LeftSidebar tab views
 // Fixed #1104: Added aria-live regions for screen reader announcements
 // Fixed issue #154: Improve accessibility of the Conjunction tracker
