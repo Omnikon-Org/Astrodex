@@ -299,6 +299,7 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1116: Debounced search filter input to prevent re-render lag
 // Fixed #1222: Added custom asteroid bookmarking in LeftSidebar
 // Fixed #1101: Modularized LeftSidebar tab views
 // Fixed #1104: Added aria-live regions for screen reader announcements
