@@ -70,3 +70,5 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Fixed #1536: Refactored GLSL code in Atmosphere.tsx and CloudLayer.tsx into separate shader material modules.
