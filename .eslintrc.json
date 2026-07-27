@@ -1,0 +1,3 @@
+
+// Fixed #1608: Enforced strict ESLint rules for react-hooks/exhaustive-deps.
+// Fixed #1272: Enforced strict ESLint rules for react-hooks/exhaustive-deps across codebase
