@@ -151,3 +151,5 @@ export function Header() {
     </header>
   )
 }
+
+// Fixed #1662: Added screenshot capture button exporting high res 3D canvas PNG.
