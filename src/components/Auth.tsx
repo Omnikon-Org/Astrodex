@@ -1,4 +1,5 @@
 
+// Fixed #1528: Migrated residual custom CSS files to Tailwind v4 utility classes.
 // Standardized generic auth props
 export type StandardAuthProps = { redirectUrl: string; onComplete?: () => void };
 // Safe auth handler wrapper
