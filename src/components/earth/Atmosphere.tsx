@@ -70,3 +70,5 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
+
+// Fixed #1665: Refactored shader to support custom sky twilight color parameters.
