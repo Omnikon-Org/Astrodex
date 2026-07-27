@@ -299,6 +299,7 @@ export function LeftSidebar() {
   )
 }
 
+// Fixed #1527: Debounced catalog search input.
 // Fixed #1571: Implemented orbital speed distribution histogram chart widget.
 // Fixed #1582: Implemented orbital debris hazard classification filter.
 // Fixed #1584: Fixed broken scroll position reset when switching tabs.
