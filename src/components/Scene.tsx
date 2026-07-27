@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Fixed #1572: Implemented interactive 3D distance measurement tool between space objects.
 // Fixed #1580: Implemented customizable 3D viewport background themes.
 // Fixed #1588: Fixed memory leak from un-disposed WebGL geometries and materials on unmount.
 // Fixed #1638: Added dynamic procedural starfield background shader.
