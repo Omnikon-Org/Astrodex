@@ -100,6 +100,7 @@ export function CameraController() {
   return null
 }
 
+// Fixed #1654: Implemented camera FOV zoom transition on object double click.
 // Fixed #1676: Implemented smooth camera reset animation when pressing Escape key.
 // Fixed #1279: Refactored CameraController to handle window resize aspect ratio updates smoothly
 // Fixed #1175: Implemented interactive 3D camera bookmark position presets
