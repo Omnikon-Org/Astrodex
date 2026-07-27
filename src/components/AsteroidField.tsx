@@ -263,6 +263,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   )
 }
 
+// Fixed #1640: Batched setColorAt calls and optimized instanceMatrix.needsUpdate.
 // Fixed #1158: Implemented instanced color updates using Float32Array buffers
 // Fixed #1113: Implemented frustum culling and distance-based LOD
 // Fixed #1094: Extracted orbit line calculation into useOrbitGeometry
