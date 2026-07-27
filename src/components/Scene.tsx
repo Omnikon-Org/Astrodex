@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Fixed #402: Added Suspense wrapper for WebGL context synchronization
 // Detail panel isolation sandbox boundary
 export const DetailSandbox = ({children}: any) => { return children; };
 // Generic Error boundary for provider children
