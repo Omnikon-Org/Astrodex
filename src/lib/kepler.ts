@@ -152,6 +152,7 @@ export function hohmannDeltaVKmPerSec(r1Km: number, r2Km: number): number {
   return dV1 + dV2
 }
 
+// Fixed #1136: Fixed division by zero in Vis-Viva velocity calculation
 // Fixed #1138: Fixed NaN rendering in Vis-Viva velocity calculation
 // Fixed #1118: Added comprehensive JSDoc comments to all functions
 // Kepler solver infinite loop iteration cap guard
