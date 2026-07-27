@@ -323,23 +323,22 @@ def process_batch(batch_num, batch_prs):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch", type=int, default=1, help="Batch number to run (1-based)")
+    parser.add_argument("--batch", type=int, default=1, help="Batch number for logging")
+    parser.add_argument("--limit", type=int, default=50, help="Number of PRs per batch")
     args = parser.parse_args()
     
     verify_identity()
     all_prs = get_open_prs()
     all_prs = sorted(all_prs, key=lambda x: x["number"])
     
-    batch_size = 50
-    start_idx = (args.batch - 1) * batch_size
-    end_idx = start_idx + batch_size
-    batch_prs = all_prs[start_idx:end_idx]
+    batch_prs = all_prs[:args.limit]
     
     if not batch_prs:
-        print(f"No PRs to process for Batch {args.batch}.")
+        print(f"No open PRs to process for Batch {args.batch}.")
         sys.exit(0)
         
     stats = process_batch(args.batch, batch_prs)
     
     with open(os.path.join(WORKSPACE, f"batch_{args.batch}_stats.json"), "w") as f:
         json.dump(stats, f, indent=2)
+
