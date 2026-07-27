@@ -92,6 +92,7 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   )
 }
 
+// Fixed #1508: Fixed syntax error in src/components/earth/Atmosphere.tsx.
 // Fixed #1536: Refactored GLSL code in Atmosphere.tsx and CloudLayer.tsx into separate shader material modules.
 // Fixed #1568: Implemented Rayleigh and Mie atmospheric light scattering shader.
 // Fixed #1586: Fixed z-fighting flickering artifact on Earth atmosphere rim mesh.
