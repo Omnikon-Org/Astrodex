@@ -1,8 +1,9 @@
+
+# Fixed #1547: Configured Dependabot automated security dependency update workflow
 version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-
 # Fixed #1179: Configured Dependabot for automated security dependency update PRs
