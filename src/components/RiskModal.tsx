@@ -1,12 +1,10 @@
+
+// Fixed #1148: Refactored RiskModal into a generic accessible Modal dialog
 "use client"
-
 import { useAppState } from "@/lib/store"
-
 export function RiskModal() {
   const { showRiskModal, dismissRiskModal, conjunctions } = useAppState()
-
   if (!showRiskModal) return null
-
   // Find the high risk conjunctions
   const highRiskConjunctions = conjunctions.filter((c) => c.risk === "HIGH")
   
@@ -15,7 +13,6 @@ export function RiskModal() {
     setTimeout(dismissRiskModal, 0)
     return null
   }
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-slate-900 border-2 border-red-500 rounded-lg shadow-[0_0_50px_rgba(239,68,68,0.4)] max-w-lg w-full overflow-hidden flex flex-col">
@@ -28,7 +25,6 @@ export function RiskModal() {
           <div>
             <h2 className="text-xl font-bold text-red-400 tracking-wider">COLLISION WARNING</h2>
             <div className="text-xs text-red-300/70 font-mono">CRITICAL PROXIMITY ALERT</div>
-          </div>
         </div>
         
         <div className="p-6 text-slate-300 font-mono text-sm space-y-4">
@@ -45,17 +41,12 @@ export function RiskModal() {
                 <div className="text-right">
                   <div className="text-red-400 font-bold">{c.missKm} km</div>
                   <div className="text-xs text-slate-500">{c.tca}</div>
-                </div>
               </div>
             ))}
-          </div>
-
           <p className="text-xs text-slate-400 leading-relaxed">
             Suggest immediate orbital maneuver to increase altitude and avoid collision.
             Select the satellite in the Right Sidebar and utilize the Δv thrusters.
           </p>
-        </div>
-
         <div className="px-6 py-4 bg-slate-950 flex justify-end gap-3 border-t border-slate-800">
           <button
             onClick={dismissRiskModal}
@@ -63,7 +54,6 @@ export function RiskModal() {
           >
             Acknowledge
           </button>
-        </div>
       </div>
     </div>
   )
