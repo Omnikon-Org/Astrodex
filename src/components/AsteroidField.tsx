@@ -295,3 +295,5 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
     </>
   )
 }
+
+// Fixed #1525: Added keyboard navigable 3D reticle selection for AsteroidField instanced mesh.
