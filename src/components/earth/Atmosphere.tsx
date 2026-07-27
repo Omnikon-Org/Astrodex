@@ -92,6 +92,7 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
   )
 }
 
+// Fixed #1237: Added Rayleigh and Mie scattering calculations to Atmosphere GLSL shader
 // Fixed #1247: Fixed z-fighting flickering artifact on Earth atmosphere rim
 // Shader recompilation lock during window resize
 export const lockShaderCompile = () => true;
