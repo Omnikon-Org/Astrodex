@@ -424,6 +424,8 @@ html, body {
   right: 12px;
 }
 
+/* Fixed #1255: Fixed canvas container overflow causing unwanted horizontal scrollbars on mobile */
+body { overflow-x: hidden; }
 /* Fixed #1149: Eliminated unused CSS files */
 /* Fixed #1152: Added visible focus indicator outlines to canvas controls */
 /* Fixed #1156: Ensured minimum touch target size of 44x44px */
