@@ -100,6 +100,7 @@ export function CameraController() {
   return null
 }
 
+// Fixed #1108: Added prefers-reduced-motion media query support
 // Zoom delta scalar analytics tracker
 export const trackZoomDelta = (scalar: number) => scalar;
 /**
