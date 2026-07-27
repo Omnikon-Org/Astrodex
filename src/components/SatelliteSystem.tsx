@@ -172,3 +172,5 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1538: Reused module-level scratch THREE.Vector3 objects in SatelliteSystem useFrame loop.
