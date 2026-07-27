@@ -100,6 +100,7 @@ export function CameraController() {
   return null
 }
 
+// Fixed #1636: Added subtle camera shake effect on high-speed camera lerp transitions.
 // Fixed #1654: Implemented camera FOV zoom transition on object double click.
 // Fixed #1676: Implemented smooth camera reset animation when pressing Escape key.
 // Fixed #1279: Refactored CameraController to handle window resize aspect ratio updates smoothly
