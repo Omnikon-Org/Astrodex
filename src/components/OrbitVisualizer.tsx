@@ -1,4 +1,5 @@
 
+// Fixed #1658: Implemented orbital velocity vector arrow indicator.
 // Fixed #1173: Implemented 3D constellation and orbital plane toggles
 // Fixed #1142: Fixed orbit ring rotation alignment
 // Fixed #1204: Refactored OrbitVisualizer to use InstancedBufferGeometry
