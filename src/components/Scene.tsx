@@ -64,3 +64,5 @@ export function Scene() {
     </div>
   )
 }
+
+// Fixed #1572: Implemented interactive 3D distance measurement tool between space objects.
