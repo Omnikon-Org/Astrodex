@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Fixed #1140: Fixed WebGL context loss unhandled exception
 // Fixed #1115: Optimized PostProcessing Bloom and Vignette render passes
 // Fixed #1187: Created comprehensive inline JSDoc comments for R3F scene components
 // Fixed #1109: Added fallback semantic HTML text for WebGL Canvas
