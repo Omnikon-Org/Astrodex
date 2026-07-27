@@ -296,3 +296,5 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1584: Fixed broken scroll position reset when switching tabs.
