@@ -196,8 +196,11 @@ def process_batch(batch_num, batch_prs):
             
         # Checkout PR branch
         verify_identity()
+        run_cmd("git reset --hard HEAD")
+        run_cmd("git clean -fd")
         checkout_res = run_cmd(f"gh pr checkout {num} --repo {REPO}")
         if checkout_res.returncode != 0:
+
             print(f"Checkout failed: {checkout_res.stderr}")
             batch_stats["prs_skipped"].append(num)
             continue
