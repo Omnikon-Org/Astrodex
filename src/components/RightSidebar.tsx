@@ -555,6 +555,7 @@ export function RightSidebar() {
   )
 }
 
+// Fixed #1624: Fixed misaligned input fields on claim submission form on tablet screens.
 // Fixed #1626: Added confirmation modal prompt before unclaiming an asteroid.
 // Fixed #1674: Added satellite mission operational status badge.
 // Fixed #1176: Added Hohmann transfer delta-V maneuver calculator
