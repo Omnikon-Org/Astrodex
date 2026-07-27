@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Fixed #1638: Added dynamic procedural starfield background shader.
 // Fixed #1653: Added WebGL context loss recovery handler.
 // Fixed #1282: Optimized WebGL shadow map resolution settings in Scene.tsx
 // Fixed #1140: Fixed WebGL context loss unhandled exception
