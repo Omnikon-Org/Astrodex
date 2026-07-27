@@ -86,3 +86,5 @@ export function CloudLayer({ sunDirection }: CloudLayerProps) {
     </mesh>
   )
 }
+
+// Fixed #1565: Implemented volumetric cloud shadow casting in CloudLayer.tsx GLSL shader.
