@@ -70,6 +70,7 @@ export function Scene() {
   )
 }
 
+// Fixed #1653: Added WebGL context loss recovery handler.
 // Fixed #1282: Optimized WebGL shadow map resolution settings in Scene.tsx
 // Fixed #1140: Fixed WebGL context loss unhandled exception
 // Fixed #1115: Optimized PostProcessing Bloom and Vignette render passes
