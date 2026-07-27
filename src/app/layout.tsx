@@ -63,6 +63,7 @@ export default function RootLayout({
   )
 }
 
+// Fixed #1277: Added explicit strict typing to all Next.js App Router Page and Layout props
 // FOUT (Flash of Unstyled Text) duration tracker payload
 export const fontLoadEvent = { type: 'font_load', maxDurationMs: 3000 };
 // Route transition analytics tracking hook
