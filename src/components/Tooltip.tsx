@@ -31,16 +31,23 @@ export function Tooltip({ content, children, position = "top" }: TooltipProps) {
       </div>
     </TooltipErrorBoundary>
   )
+}
+
 class TooltipErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
     super(props)
     this.state = { hasError: false }
+  }
   static getDerivedStateFromError(_: Error) {
     return { hasError: true }
+  }
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Tooltip error:", error, errorInfo)
+  }
   render() {
     if (this.state.hasError) {
       return <span className="text-red-500 text-xs">[Tooltip Error]</span>
     }
     return this.props.children
+  }
+}

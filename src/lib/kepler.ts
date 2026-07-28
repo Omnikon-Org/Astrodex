@@ -125,6 +125,15 @@ export function velocityToKmPerSec(sceneV: number): number {
  */
 export const LEO_DECAY_KM_PER_SEC = 0.05
 
+/**
+ * Calculate LEO orbital decay rate (km per real-second) for a given altitude in km.
+ */
+export function calculateLEODecayRate(altitudeKm: number): number {
+  if (altitudeKm > 2000) return 0
+  const scale = Math.max(0.01, Math.exp(-Math.max(0, altitudeKm - 200) / 400))
+  return LEO_DECAY_KM_PER_SEC * scale
+}
+
 export const KM_PER_UNIT_CONST = KM_PER_UNIT
 
 /**

@@ -234,8 +234,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         args={[undefined as unknown as THREE.BufferGeometry, undefined as unknown as THREE.Material, ASTEROID_COUNT]}
         onClick={handleAsteroidClick}
         frustumCulled={false}
-        role="button"
-        aria-label="Interactive asteroid field"
       >
         <dodecahedronGeometry args={[1, 1]} />
         <meshStandardMaterial roughness={0.9} metalness={0.1} flatShading />
@@ -247,8 +245,6 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
         args={[undefined as unknown as THREE.BufferGeometry, undefined as unknown as THREE.Material, DEBRIS_COUNT]}
         onClick={handleDebrisClick}
         frustumCulled={false}
-        role="button"
-        aria-label="Interactive space debris field"
       >
         <boxGeometry args={[0.7, 0.7, 0.7]} />
         <meshStandardMaterial roughness={0.2} metalness={0.9} envMapIntensity={1.5} />

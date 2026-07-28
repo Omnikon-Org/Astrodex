@@ -37,6 +37,8 @@ export const metadata: Metadata = {
   },
 }
 
+import { AppProvider } from "@/lib/store"
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -58,7 +60,9 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`${geistSans.variable} ${jetbrainsMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <AppProvider>{children}</AppProvider>
+      </body>
     </html>
   )
 }
@@ -85,5 +89,3 @@ export type AppRouteParams = { params: Record<string, string>; searchParams: Rec
 export const RouteBoundary = ({children}: any) => { return children; };
 // Route transition wrapper
 export const RouteTransition = ({children}: any) => { return children; };
-  );
-}

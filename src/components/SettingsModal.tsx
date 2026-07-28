@@ -1,13 +1,14 @@
-
-// Fixed #1506: Fixed unclosed HTML elements and syntax errors in src/components/SettingsModal.tsx.
-// Fixed #1524: Implemented focus trapping and focus restoration for HUD modal dialogs.
-// Fixed #1212: Added high-contrast mode toggle to SettingsModal
 "use client"
-import React from "react"
+
+import React, { useState } from "react"
 import { useAppState } from "../lib/store"
+
 export function SettingsModal() {
-  const { settingsOpen, toggleSettings, simulationRunning, toggleSimulation } = useAppState()
-  if (!settingsOpen) return null
+  const [isOpen, setIsOpen] = useState(false)
+  const { simulationRunning, toggleSimulation } = useAppState()
+
+  if (!isOpen) return null
+
   return (
     <div
       style={{
@@ -23,7 +24,7 @@ export function SettingsModal() {
         alignItems: "center",
         justifyContent: "center",
       }}
-      onClick={toggleSettings}
+      onClick={() => setIsOpen(false)}
     >
       <div
         className="glass-panel"
@@ -41,13 +42,14 @@ export function SettingsModal() {
           <h2 style={{ fontSize: 16, margin: 0, color: "var(--text-primary)", letterSpacing: "0.05em" }}>
             System Settings
           </h2>
-          <button className="btn-ghost" onClick={toggleSettings} style={{ padding: 4 }}>
+          <button className="btn-ghost" onClick={() => setIsOpen(false)} style={{ padding: 4 }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
+
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Simulation Toggle */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -83,22 +85,13 @@ export function SettingsModal() {
               />
             </button>
           </div>
-          {/* Placeholder Audio */}
-              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>Ambient Audio</div>
-              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>Enable command center soundscape</div>
-                backgroundColor: "var(--bg-input)",
-                cursor: "not-allowed",
-                opacity: 0.6
-                  left: 2,
-          {/* Render Quality */}
-              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>Post-Processing</div>
-              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>Bloom and vignette effects</div>
-                backgroundColor: "var(--accent-cyan)",
-                border: "1px solid var(--accent-cyan)",
-                  left: 22,
+        </div>
+
         <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
-          <button className="mc-button" onClick={toggleSettings}>
+          <button className="btn-ghost" onClick={() => setIsOpen(false)}>
             Done
+          </button>
+        </div>
       </div>
     </div>
   )

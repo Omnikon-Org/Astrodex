@@ -9,8 +9,10 @@ export const ORBIT_LINE_OPACITY_MIN = 0.5;
 export const formatOrbitTrail = (points: any[]) => points.slice(0, 100);
 // Custom hook for orbit math extraction
 export const useOrbitMath = (a: number, e: number) => { return { a, e }; };
+import * as THREE from "three"
+
 // Buffer geometry modernization wrapper
-export const createModernOrbitBuffer = () => new window.THREE.BufferGeometry();
+export const createModernOrbitBuffer = () => new THREE.BufferGeometry();
 // Orbit visualizer optimization: LOD resolution
 export const getOrbitResolution = (distance: number) => distance > 100 ? 32 : 128;
 // OrbitVisualizer cleanup helper

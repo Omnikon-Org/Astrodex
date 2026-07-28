@@ -48,9 +48,11 @@ export default function NotFound() {
           WebkitBackdropFilter: "blur(var(--glass-blur))",
         }}
       >
+        <div
           aria-hidden="true"
           className="mx-auto mb-6 h-2 w-24 rounded-full"
           style={{ background: "var(--accent-cyan)", boxShadow: "0 0 18px rgba(56, 189, 248, 0.35)" }}
+        />
         <p
           className="mb-3 font-mono text-xs uppercase tracking-[0.35em]"
           style={{ color: "var(--text-muted)" }}
@@ -62,14 +64,19 @@ export default function NotFound() {
         </h1>
         <p className="mt-6 text-xl font-semibold sm:text-2xl" style={{ color: "var(--text-primary)" }}>
           This orbit does not exist.
+        </p>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 sm:text-base" style={{ color: "var(--text-secondary)" }}>
           The page or route you requested could not be found.
+        </p>
         <Link
           href="/"
           className="mt-8 inline-flex items-center justify-center rounded-[var(--radius-md)] border px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] transition-colors hover:bg-[rgba(56,189,248,0.12)]"
+          style={{
             borderColor: "var(--glass-border)",
             color: "var(--accent-cyan)",
             background: "var(--accent-cyan-dim)",
+          }}
+        >
           Return to dashboard
         </Link>
       </section>

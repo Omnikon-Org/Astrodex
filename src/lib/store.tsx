@@ -25,6 +25,8 @@ interface AppState {
   claimedAsteroids: Set<number>
   /** Updates the currently selected asteroid */
   selectAsteroid: (a: AsteroidData | null) => void
+  selectNextAsteroid: () => void
+  selectPrevAsteroid: () => void
   /** Toggles the claim status for a given asteroid ID */
   claimAsteroid: (id: number) => void
   /** Flag indicating if the camera should be reset to its default position */
@@ -39,6 +41,10 @@ interface AppState {
   simulationRunning: boolean
   /** Toggles the running state of the orbital simulation */
   toggleSimulation: () => void
+  /** Time scale multiplier for simulation speed */
+  timeScaleMultiplier: number
+  /** Updates the time scale multiplier */
+  setTimeScaleMultiplier: React.Dispatch<React.SetStateAction<number>>
   /** Global risk level based on the most severe active conjunction alert */
   riskLevel: "HIGH" | "MEDIUM" | "LOW"
   
@@ -159,10 +165,13 @@ export function AppProvider({
   })
   
   const [rightSidebarOpen, setRightSidebarOpen] = useState(() => {
+    if (typeof window !== "undefined") {
       return localStorage.getItem("astrodex_rightSidebar") !== "false"
+    }
+    return true
+  })
+
   const [claimHistory, setClaimHistory] = useState<{ id: number; action: "CLAIMED" | "RELEASED"; timestamp: Date }[]>([])
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(true)
   const [terminalExpanded, setTerminalExpanded] = useState(false)
 
   const [asteroidCatalog, setAsteroidCatalog] = useState<AsteroidData[]>([])
@@ -218,19 +227,19 @@ export function AppProvider({
 
   const claimAsteroid = useCallback((id: number) => {
     setClaimed((prev) => {
+      const isCurrentlyClaimed = prev.has(id)
+      const action = isCurrentlyClaimed ? "RELEASED" : "CLAIMED"
       const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
+      if (isCurrentlyClaimed) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       
       if (typeof window !== "undefined") {
         localStorage.setItem("astrodex_claimed", JSON.stringify(Array.from(next)))
       }
-      const action = next.has(id) ? "RELEASED" : "CLAIMED"
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      setClaimHistory(h => [...h, { id, action, timestamp: new Date() }])
+      setClaimHistory((h) => [...h, { id, action, timestamp: new Date() }])
       return next
     })
   }, [])
@@ -242,11 +251,6 @@ export function AppProvider({
 
   const clearReset = useCallback(() => setResetCamera(false), [])
   const toggleSimulation = useCallback(() => setSimulationRunning((prev) => !prev), [])
-  const toggleLeftSidebar = useCallback(() => setLeftSidebarOpen((prev) => !prev), [])
-  const toggleRightSidebar = useCallback(() => setRightSidebarOpen((prev) => !prev), [])
-  const toggleTerminal = useCallback(() => setTerminalExpanded((prev) => !prev), [])
-
-  const toggleSimulation = useCallback(() => setSimulationRunning((p) => !p), [])
   const toggleLeftSidebar = useCallback(() => {
     setLeftSidebarOpen((p) => {
       const next = !p
@@ -258,11 +262,15 @@ export function AppProvider({
   }, [])
   const toggleRightSidebar = useCallback(() => {
     setRightSidebarOpen((p) => {
+      const next = !p
+      if (typeof window !== "undefined") {
         localStorage.setItem("astrodex_rightSidebar", String(next))
+      }
+      return next
+    })
+  }, [])
   const toggleTerminal = useCallback(() => setTerminalExpanded((p) => !p), [])
 
-  const registerAsteroidData = useCallback((data: AsteroidData[]) => {
-    asteroidDataRef.current = data
   const registerAsteroidData = useCallback(
     (data: AsteroidData[]) => {
       asteroidDataRef.current = data
@@ -274,6 +282,7 @@ export function AppProvider({
             setSelectedAsteroid(found)
           }
         }
+      }
     },
     [focusedObjectId]
   )
@@ -461,7 +470,7 @@ export function useAppState(): AppState {
   return ctx
 }
 
-export const LEO_LIMITS = { FLOOR: LEO_FLOOR_KM, CEILING: LEO_CEILING_KM }
+export const simClock = 0
 
 // Fixed #1509: Fixed syntax errors and statement declarations in src/lib/store.tsx.
 // Fixed #1607: Cleaned up obsolete debug console statements.

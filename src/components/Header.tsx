@@ -4,7 +4,15 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useAppState } from "@/lib/store"
 import { UserProfileModal } from "./UserProfileModal"
-import { IconUserCircle } from "@tabler/icons-react"
+function IconUserCircle({ size = 22 }: { size?: number; stroke?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="10" r="3" />
+      <path d="M6.168 18.849A4 4 0 0 1 10 16h4a4 4 0 0 1 3.832 2.849" />
+    </svg>
+  )
+}
 
 function LiveClock() {
   const [time, setTime] = useState("")

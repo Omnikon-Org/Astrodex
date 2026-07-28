@@ -3,7 +3,7 @@
 import { useRef, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
-import { useAppState, simClock } from "@/lib/store"
+import { useAppState } from "@/lib/store"
 import {
   solveKepler,
   meanMotion,
@@ -108,10 +108,10 @@ export function SatelliteSystem() {
   const envisatOrbitGeo = useMemo(() => createOrbitGeometry(envisatRadius, 0.0006, 98.54, 120), [envisatRadius])
   const hubbleOrbitGeo = useMemo(() => createOrbitGeometry(hubbleRadius, 0.0003, 28.5, 45), [hubbleRadius])
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!simulationRunning) return
 
-    const time = simClock.time
+    const time = state.clock.getElapsedTime()
     const tempPos = new THREE.Vector3()
 
     // LEO atmospheric drag — slowly drop the ISS altitude in real time
