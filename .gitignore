@@ -44,3 +44,18 @@ next-env.d.ts
 batch_*.json
 batch_processing_results.json
 
+# python cache
+__pycache__/
+*.pyc
+
+# logs & generated artifacts
+run.log
+
+# generated issue data
+existing_titles.json
+issues.json
+
+# planning / automation scripts (root-level only)
+/*.py
+/*.sh
+
