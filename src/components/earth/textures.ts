@@ -496,5 +496,6 @@ export function createProceduralAsteroidNormalMap(): HTMLCanvasElement {
     ctx.beginPath()
     ctx.arc(x, y, r, 0, Math.PI * 2)
     ctx.fill()
+  }
   return canvas
 }

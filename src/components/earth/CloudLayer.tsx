@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { createProceduralCloudTexture } from "./textures"

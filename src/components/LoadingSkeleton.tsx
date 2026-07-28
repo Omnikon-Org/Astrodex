@@ -52,11 +52,13 @@ export function LoadingSkeleton() {
           }}
         />
         <span
+          style={{
             fontSize: 12,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
             color: "var(--text-muted)",
             fontFamily: "var(--font-mono), monospace",
+          }}
         >
           Initializing Orbit Systems...
         </span>
