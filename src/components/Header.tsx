@@ -171,7 +171,12 @@ export function Header() {
             <LiveClock />
           </span>
         </div>
-        <Link href="/profile" className="btn-ghost" style={{ padding: "6px 12px", textDecoration: "none", color: "var(--accent-cyan)", border: "1px solid rgba(56, 189, 248, 0.4)" }}>
+        <Link
+          href="/profile"
+          className="btn-ghost"
+          style={{ padding: "6px 12px", textDecoration: "none", color: "var(--accent-cyan)", border: "1px solid rgba(56, 189, 248, 0.4)" }}
+          aria-label="Open Commander Profile page"
+        >
           Commander Profile
         </Link>
       </div>
