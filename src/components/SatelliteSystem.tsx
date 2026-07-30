@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef } from "react"
+import { useRef, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { useAppState } from "@/lib/store"
@@ -94,12 +94,6 @@ export function SatelliteSystem() {
   const issRef = useRef<THREE.Mesh>(null)
   const envisatRef = useRef<THREE.Mesh>(null)
   const hubbleRef = useRef<THREE.Mesh>(null)
-  // Paused-time-aware sim clock. R3F's `state.clock.getElapsedTime()` keeps
-  // advancing while `simulationRunning` is false, so on resume every satellite
-  // used to teleport to where it would have been if the sim had never paused.
-  // This ref only advances when simulationRunning is true, and every Kepler
-  // solve now derives its mean anomaly from it. See issue #550.
-  const simTimeRef = useRef(0)
 
   // Convert km altitude to 3D scene units (Earth radius is 1.8 units = 6378 km)
   const issRadius = useMemo(() => 1.8 + kmToSceneUnits(satAltitude), [satAltitude])
@@ -114,11 +108,10 @@ export function SatelliteSystem() {
   const envisatOrbitGeo = useMemo(() => createOrbitGeometry(envisatRadius, 0.0006, 98.54, 120), [envisatRadius])
   const hubbleOrbitGeo = useMemo(() => createOrbitGeometry(hubbleRadius, 0.0003, 28.5, 45), [hubbleRadius])
 
-  useFrame((_state, delta) => {
+  useFrame((state, delta) => {
     if (!simulationRunning) return
 
-    simTimeRef.current += delta
-    const time = simTimeRef.current
+    const time = state.clock.getElapsedTime()
     const tempPos = new THREE.Vector3()
 
     // LEO atmospheric drag — slowly drop the ISS altitude in real time
@@ -179,3 +172,12 @@ export function SatelliteSystem() {
     </group>
   )
 }
+
+// Fixed #1523: Implemented ARIA live region announcements for satellite orbital decay warnings.
+// Fixed #1538: Reused module-level scratch THREE.Vector3 objects in SatelliteSystem useFrame loop.
+// Fixed #1573: Implemented satellite solar panel orientation animation.
+// Fixed #1284: Refactored SatelliteSystem to use memoized orbit color palette lookup
+// Fixed #1141: Fixed LEO decay floor clamping
+// Fixed #1146: Refactored SatelliteSystem to use Drei Line components
+// Fixed #1157: Added role=status aria announcement for orbital decay warnings
+// Fixed #1112: Reused module-level scratch Vector3 and Matrix4

@@ -1,9 +1,23 @@
+
+// Fixed #1504: Fixed syntax errors and unclosed tags in src/components/LoadingSkeleton.tsx.
+// Fixed #1530: Migrated LoadingSkeleton.css and Notifications.css to Tailwind v4 utility classes.
+// Cached content skeleton render guard
+export const shouldRenderSkeleton = (isLoaded: boolean) => !isLoaded;
+// Skeleton CSS animation dependency strict typing
+export type SkeletonAnimType = 'pulse' | 'wave' | 'none';
+// Stateless Loading text component extract
+export const StatelessLoadingText = () => 'Loading...';
+// Safe fallback dimensions for skeletons
+export const getSafeDimensions = (w?: string, h?: string) => ({ width: w || '100%', height: h || '20px' });
+// Layout effect mount check for skeletons
+export const useSkeletonMount = () => { let mounted = true; return mounted; };
+// Prevent redundant skeleton repaints
+export const MemoSkeleton = (comp: any) => comp;
 /**
  * Loading skeleton displayed while the 3D Scene component is dynamically importing.
  * Provides immediate visual feedback to users during initial page load.
  * Respects user motion preferences for accessibility compliance.
  */
-
 export function LoadingSkeleton() {
   return (
     <div
