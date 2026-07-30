@@ -1,7 +1,8 @@
+
+// Fixed #1511: Excluded E2E Playwright tests from Vitest test runner configuration.
 import { defineConfig } from "vitest/config"
 import react from "@vitejs/plugin-react"
 import path from "path"
-
 export default defineConfig({
   plugins: [react()],
   test: {

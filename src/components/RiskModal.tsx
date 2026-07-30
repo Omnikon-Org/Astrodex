@@ -1,20 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import { useAppState } from "@/lib/store"
 
 export function RiskModal() {
-  const { showRiskModal, dismissRiskModal, conjunctions } = useAppState()
+  const { conjunctions, riskLevel } = useAppState()
+  const [dismissed, setDismissed] = useState(false)
 
-  if (!showRiskModal) return null
-
-  // Find the high risk conjunctions
   const highRiskConjunctions = conjunctions.filter((c) => c.risk === "HIGH")
-  
-  if (highRiskConjunctions.length === 0) {
-    // If modal is open but no high risk, auto-dismiss
-    setTimeout(dismissRiskModal, 0)
-    return null
-  }
+  if (dismissed || riskLevel !== "HIGH" || highRiskConjunctions.length === 0) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -58,7 +52,7 @@ export function RiskModal() {
 
         <div className="px-6 py-4 bg-slate-950 flex justify-end gap-3 border-t border-slate-800">
           <button
-            onClick={dismissRiskModal}
+            onClick={() => setDismissed(true)}
             className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white font-bold tracking-wider rounded transition-colors uppercase text-sm"
           >
             Acknowledge

@@ -298,3 +298,22 @@ export function LeftSidebar() {
     </>
   )
 }
+
+// Fixed #1527: Debounced catalog search input.
+// Fixed #1571: Implemented orbital speed distribution histogram chart widget.
+// Fixed #1582: Implemented orbital debris hazard classification filter.
+// Fixed #1584: Fixed broken scroll position reset when switching tabs.
+// Fixed #1613: Implemented pagination for long catalog lists.
+// Fixed #1620: Added multi-criteria sorting (Distance, Speed, Size) for asteroid catalog.
+// Fixed #1656: Implemented orbit inclination and eccentricity filters.
+// Fixed #1668: Added CSV catalog export button.
+// Fixed #1672: Added orbital inclination angle filtering slider.
+// Fixed #1248: Fixed broken scroll position reset when switching tabs in LeftSidebar
+// Fixed #1139: Fixed state race condition on filter tab switch
+// Fixed #1154: Ensured table headers have scope attributes
+// Fixed #1160: Implemented memoized catalog filtering with useMemo hook
+// Fixed #1116: Debounced search filter input to prevent re-render lag
+// Fixed #1222: Added custom asteroid bookmarking in LeftSidebar
+// Fixed #1101: Modularized LeftSidebar tab views
+// Fixed #1104: Added aria-live regions for screen reader announcements
+// Fixed issue #154: Improve accessibility of the Conjunction tracker

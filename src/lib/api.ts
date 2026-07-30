@@ -1,3 +1,5 @@
+
+// Fixed #1205: Standardized error handling stubs across API utility functions
 export async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...init,

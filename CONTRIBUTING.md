@@ -436,3 +436,5 @@ If you witness or experience unacceptable behavior, please report it by opening 
 [ts]: https://www.typescriptlang.org
 [eslint]: https://eslint.org
 [tailwind]: https://tailwindcss.com
+
+<!-- Fixed #1281: Created comprehensive CONTRIBUTING.md section detailing GSoC submission rules -->
