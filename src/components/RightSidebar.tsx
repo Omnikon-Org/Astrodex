@@ -101,10 +101,10 @@ export function RightSidebar() {
 
   const handleApply = () => {
     const parsedDv = parseFloat(maxDv)
-    const maxDvVal = isNaN(parsedDv) ? 0.35 : parsedDv
+    const maxDvVal = Number.isNaN(parsedDv) ? 0.35 : parsedDv
     
     const parsedBurns = parseInt(maxBurns, 10)
-    const maxBurnsVal = isNaN(parsedBurns) ? 1 : parsedBurns
+    const maxBurnsVal = Number.isNaN(parsedBurns) ? 1 : parsedBurns
 
     const R_EARTH_KM = 6378
     const r1Km = R_EARTH_KM + satAltitude
@@ -141,16 +141,16 @@ export function RightSidebar() {
 
   const handleApplySatellite = () => {
     const parsedAlt = parseFloat(altitude)
-    const altVal = isNaN(parsedAlt) ? 400 : parsedAlt
+    const altVal = Number.isNaN(parsedAlt) ? 400 : parsedAlt
 
     const parsedInc = parseFloat(inclination)
-    const incVal = isNaN(parsedInc) ? 0 : parsedInc
+    const incVal = Number.isNaN(parsedInc) ? 0 : parsedInc
 
     const parsedRaan = parseFloat(raan)
-    const raanVal = isNaN(parsedRaan) ? 0 : parsedRaan
+    const raanVal = Number.isNaN(parsedRaan) ? 0 : parsedRaan
 
     const parsedE = parseFloat(eccentricity)
-    const eVal = isNaN(parsedE) ? 0 : parsedE
+    const eVal = Number.isNaN(parsedE) ? 0 : parsedE
 
     updateSatelliteParams(altVal, incVal, raanVal)
     updateSatelliteEccentricity(eVal)

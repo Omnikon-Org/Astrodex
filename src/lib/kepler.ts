@@ -199,7 +199,7 @@ export type OrbitalLimits = { min: number, max: number };
 // UI formatter for Vis-Viva
 export const formatVelocity = (v: number) => `${v.toFixed(2)} km/s`;
 // Safe NaN fallback for Kepler solver
-export const safeKeplerSolve = (val: number) => isNaN(val) ? 0 : val;
+export const safeKeplerSolve = (val: number) => Number.isNaN(val) ? 0 : val;
 /** Optimized Vis-Viva migration */
 export const computeVisVivaFast = (r: number, a: number): number => { return Math.sqrt(Math.max(0, 0.005 * (2/r - 1/a))); }
 // Auto-resolved #225: Fix edge cases in the Vis-Viva speed calculation
