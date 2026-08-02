@@ -272,7 +272,7 @@ export function LeftSidebar() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredConjunctions.map((c) => (
+                    {(filteredConjunctions ?? []).map((c) => (
                       <tr key={c.id}>
                         <td>
                           <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{c.satelliteName}</div>
