@@ -101,7 +101,7 @@ export function RightSidebar() {
 
   const handleApply = () => {
     const parsedDv = parseFloat(maxDv)
-    const maxDvVal = isNaN(parsedDv) ? 0.35 : parsedDv
+    const maxDvVal = Number.isNaN(parsedDv) ? 0.35 : parsedDv
     
     const parsedBurns = parseInt(maxBurns, 10)
     const maxBurnsVal = isNaN(parsedBurns) ? 1 : parsedBurns

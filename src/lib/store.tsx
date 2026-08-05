@@ -276,7 +276,7 @@ export function AppProvider({
       asteroidDataRef.current = data
       if (focusedObjectId) {
         const numId = parseInt(focusedObjectId.replace(/\D/g, ""), 10)
-        if (!isNaN(numId)) {
+        if (!Number.isNaN(numId)) {
           const found = data.find((item) => item.id === numId)
           if (found) {
             setSelectedAsteroid(found)

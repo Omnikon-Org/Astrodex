@@ -48,7 +48,7 @@ export function LeftSidebar() {
 
   const handleSearch = useCallback(() => {
     const id = parseInt(searchId, 10)
-    if (!isNaN(id) && id >= 1 && id <= 600) {
+    if (!Number.isNaN(id) && id >= 1 && id <= 600) {
       searchAsteroidById(id)
     }
   }, [searchId, searchAsteroidById])
