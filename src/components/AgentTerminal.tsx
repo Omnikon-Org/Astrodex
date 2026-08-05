@@ -96,7 +96,7 @@ export function AgentTerminal() {
 
   useEffect(() => {
     if (claimHistory.length > lastHistoryLen.current) {
-      const latest = claimHistory[claimHistory.length - 1]
+      const latest = claimHistory.at(-1)
       lastHistoryLen.current = claimHistory.length
       setLogs((prev) => {
         const msg = `[TRK] Asteroid ${latest.id} ${latest.action === "CLAIMED" ? "claimed and secured" : "claim released"}`
