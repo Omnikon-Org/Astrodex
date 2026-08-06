@@ -67,6 +67,8 @@ interface AppState {
   searchAsteroidById: (id: number) => void
   /** Registers the initial batch of asteroid data generated for the simulation */
   registerAsteroidData: (data: AsteroidData[]) => void
+  /** Catalog of orbital objects registered by the WebGL simulation */
+  asteroidCatalog: AsteroidData[]
 
   // Space Debris Filters & Satellite Parameters
   /** The current filter applied to the orbital objects rendering */
@@ -274,6 +276,7 @@ export function AppProvider({
   const registerAsteroidData = useCallback(
     (data: AsteroidData[]) => {
       asteroidDataRef.current = data
+      setAsteroidCatalog(data)
       if (focusedObjectId) {
         const numId = parseInt(focusedObjectId.replace(/\D/g, ""), 10)
         if (!isNaN(numId)) {
@@ -421,6 +424,7 @@ export function AppProvider({
         toggleTerminal,
         searchAsteroidById,
         registerAsteroidData,
+        asteroidCatalog,
         filterType,
         setFilterType,
         satAltitude,
