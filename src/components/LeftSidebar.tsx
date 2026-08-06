@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react"
 import { useAppState } from "@/lib/store"
+import { SpeedHistogram } from "@/components/SpeedHistogram"
 
 export function LeftSidebar() {
   const {
@@ -13,6 +14,7 @@ export function LeftSidebar() {
     setFilterType,
     conjunctions,
     addConjunctionAlert,
+    asteroidCatalog,
   } = useAppState()
   const [searchId, setSearchId] = useState("")
   const [riskFilter, setRiskFilter] = useState<"ALL" | "HIGH" | "MEDIUM" | "LOW">("ALL") 
@@ -224,6 +226,8 @@ export function LeftSidebar() {
                 </p>
               )}
             </div>
+
+            <SpeedHistogram objects={asteroidCatalog} />
 
             {/* Conjunction Feed */}
             <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
