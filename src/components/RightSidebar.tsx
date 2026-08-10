@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { type ReactNode, useState } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
 import { visVivaKmPerSec, calculateLEODecayRate, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
 
@@ -171,8 +171,6 @@ export function RightSidebar() {
 
   // ── LEO health bar: green above 300 km, amber 200-300 km, red below ──
   const altFraction = (satAltitude - LEO_LIMITS.FLOOR) / (LEO_LIMITS.CEILING - LEO_LIMITS.FLOOR)
-  // Add some fake variance for the display
-  const thrustVariation = (Math.sin(Date.now() / 1000) * 0.1).toFixed(2)
   const decayRate = (calculateLEODecayRate(satAltitude) * 60).toFixed(2) // km/min
   const altitudeHealth: "ok" | "warn" | "crit" =
     satAltitude > 300 ? "ok" : satAltitude > 220 ? "warn" : "crit"
@@ -211,9 +209,9 @@ export function RightSidebar() {
                   <path d="M9 18l6-6-6-6" />
                 </svg>
               </button>
-              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", color: "var(--text-primary)" }}>
+              <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", color: "var(--text-primary)", margin: 0 }}>
                 Constraints
-              </span>
+              </h2>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
               </svg>
@@ -233,7 +231,7 @@ export function RightSidebar() {
           >
             {/* Time Controls */}
             <div className="panel-section">
-              <div className="panel-section-title">Time Controls</div>
+              <h3 className="panel-section-title">Time Controls</h3>
               <div className="flex gap-2">
                 <button
                   onClick={toggleSimulation}
@@ -268,7 +266,7 @@ export function RightSidebar() {
 
             {/* Planner Constraints */}
             <div className="bg-[rgba(255,255,255,0.02)] border border-[var(--border-subtle)] rounded-[var(--radius-md)] p-[12px]">
-              <div className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Planner Constraints</div>
+              <h3 className="text-[10px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)] mb-[10px]">Planner Constraints</h3>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
@@ -310,9 +308,9 @@ export function RightSidebar() {
                 background: "rgba(56, 189, 248, 0.03)",
               }}
             >
-              <div className="text-[10px] font-bold tracking-[0.1em] uppercase mb-[10px]" style={{ color: "var(--accent-cyan)" }}>
+              <h3 className="text-[10px] font-bold tracking-[0.1em] uppercase mb-[10px]" style={{ color: "var(--accent-cyan)" }}>
                 Manual Satellite (3D Orbit)
-              </div>
+              </h3>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {/* Altitude */}
@@ -453,7 +451,7 @@ export function RightSidebar() {
                     : undefined,
               }}
             >
-              <div
+              <h3
                 className="text-[10px] font-bold tracking-[0.1em] uppercase mb-[10px]"
                 style={{
                   color:
@@ -465,7 +463,7 @@ export function RightSidebar() {
                 }}
               >
                 LEO Decay Monitor
-              </div>
+              </h3>
 
               <div className="kv-row">
                 <span className="kv-label">Current Altitude</span>
@@ -574,15 +572,15 @@ export const SettingsMicroStore = { theme: 'dark' };
 // Exported hero image priority configuration to prevent layout shift race
 export const HERO_IMG_CONFIG = { priority: true, fetchPriority: 'high' };
 // Onboarding modal isolation boundary
-export const OnboardingBoundary = ({children}: any) => children;
+export const OnboardingBoundary = ({children}: { children: ReactNode }) => children;
 // Extracted generic modal UI shell
-export const ModalShell = ({children}: any) => { return children; };
+export const ModalShell = ({children}: { children: ReactNode }) => { return children; };
 /**
  * User-configurable settings layout props. Manages theme, performance, and accessibility toggles.
  */
 export const SETTINGS_DOCS = true;
 // Settings listener cleanup helper
-export const cleanupSettingsListener = (cb: any) => window.removeEventListener('resize', cb);
+export const cleanupSettingsListener = (cb: EventListener) => window.removeEventListener('resize', cb);
 // lucide-react import optimization
 export const SettingsIconRef = null;
 // Fixed #199: Added React.useCallback to Settings Modal input handlers.
