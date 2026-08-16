@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react"
 import type { AsteroidData } from "./types"
 
 // ==========================================
@@ -116,6 +116,14 @@ interface AppState {
   focusedObjectId: string | null
   /** Sets the currently focused object ID, or null to clear focus */
   setFocusedObjectId: (id: string | null) => void
+  /** Screen-reader announcement for camera focus target changes */
+  cameraAnnouncement: string
+  cinematicMode: boolean
+  cameraFov: number
+  autoRotate: boolean
+  bloomIntensity: number
+  toggleCinematicMode: () => void
+  toggleAutoRotate: () => void
 }
 
 // ==========================================
@@ -200,6 +208,7 @@ export function AppProvider({
 
   // ========== NEW: Focused Object ID ==========
   const [focusedObjectId, setFocusedObjectIdState] = useState<string | null>(initialObjectId)
+  const [cameraAnnouncement, setCameraAnnouncement] = useState("")
 
   const addToast = useCallback((message: string, type: "success" | "error" | "info" = "info") => {
     const id = nextToastId.current++
@@ -225,6 +234,9 @@ export function AppProvider({
   // Action Handlers
   const selectAsteroid = useCallback((asteroid: AsteroidData | null) => {
     setSelectedAsteroid(asteroid)
+    setCameraAnnouncement(
+      asteroid ? `Camera focused on ${asteroid.name}.` : "Camera returned to Earth."
+    )
   }, [])
 
   const claimAsteroid = useCallback((id: number) => {
@@ -249,6 +261,7 @@ export function AppProvider({
   const triggerReset = useCallback(() => {
     setResetCamera(true)
     setSelectedAsteroid(null)
+    setCameraAnnouncement("Camera returned to Earth.")
   }, [])
 
   const clearReset = useCallback(() => setResetCamera(false), [])
@@ -294,6 +307,7 @@ export function AppProvider({
     const found = asteroidDataRef.current.find((item) => item.id === id)
     if (found) {
       setSelectedAsteroid(found)
+      setCameraAnnouncement(`Camera focused on ${found.name}.`)
     }
   }, [])
 
@@ -305,6 +319,7 @@ export function AppProvider({
       : -1
     const nextIndex = (currentIndex + 1) % catalog.length
     setSelectedAsteroid(catalog[nextIndex])
+    setCameraAnnouncement(`Camera focused on ${catalog[nextIndex].name}.`)
   }, [selectedAsteroid])
 
   const selectPrevAsteroid = useCallback(() => {
@@ -315,6 +330,7 @@ export function AppProvider({
       : catalog.length
     const prevIndex = (currentIndex - 1 + catalog.length) % catalog.length
     setSelectedAsteroid(catalog[prevIndex])
+    setCameraAnnouncement(`Camera focused on ${catalog[prevIndex].name}.`)
   }, [selectedAsteroid])
 
   const triggerDeltaVLog = useCallback(() => {
@@ -394,6 +410,7 @@ export function AppProvider({
         const found = asteroidDataRef.current.find((item) => item.id === numId)
         if (found) {
           setSelectedAsteroid(found)
+          setCameraAnnouncement(`Camera focused on ${found.name}.`)
         }
       }
     }
@@ -448,6 +465,13 @@ export function AppProvider({
         // ========== NEW: include the new state and setter ==========
         focusedObjectId,
         setFocusedObjectId,
+        cameraAnnouncement,
+        cinematicMode,
+        cameraFov,
+        autoRotate,
+        bloomIntensity,
+        toggleCinematicMode,
+        toggleAutoRotate,
       }}
     >
       {children}
@@ -482,7 +506,7 @@ export const simClock = 0
 // Fixed #1097: Replaced localStorage with a typed cache wrapper
 // Fixed #1100: Consolidate satellite state parameters
 // Development warning for out-of-bounds context consumption
-export const verifyProviderBounds = (ctx: any) => { if(!ctx) console.warn('Missing Provider Context'); return ctx; };
+export const verifyProviderBounds = <T,>(ctx: T | null) => { if(!ctx) console.warn('Missing Provider Context'); return ctx; };
 // API payload size analytics event exporter
 export const logApiPayloadSize = (bytes: number) => console.debug(`API Payload: ${bytes}b`);
 /**
@@ -493,15 +517,15 @@ export const API_WRAPPER_DOCS = true;
 // Strict standard convention format for Provider exports
 export const StandardProviderExport = true;
 // Malformed JSON API response guard
-export const parseApiSafe = (raw: string) => { try{ return JSON.parse(raw); }catch(e){ return {}; } };
+export const parseApiSafe = (raw: string) => { try{ return JSON.parse(raw); }catch{ return {}; } };
 // Unified CSS token dictionary export
 export const CSSTokens = { colors: { bg: '#000', fg: '#fff' } };
 // Explicit React Context generic dependency typing
-export interface GenericAppContext<T> { state: T; dispatch: any; }
+export interface GenericAppContext<T> { state: T; dispatch: (action: unknown) => void; }
 // Isolated API wrapper sandbox context
 export const apiSandbox = { fetch: async () => null };
 // Explicit API response shape mapping
-export interface AsteroidApiResponse { data: any[]; success: boolean; }
+export interface AsteroidApiResponse { data: unknown[]; success: boolean; }
 // AbortController signal generator for stale fetches
 export const createFetchSignal = () => new AbortController().signal;
 // A11y status formatter for screen readers
@@ -515,7 +539,7 @@ export const DATA_REFRESH_INTERVAL_MS = 60000;
 // Unified context exports
 export const useUnifiedContext = () => { return null; };
 // Asteroid data fetch caching helper
-export const asteroidFetchCache = new Map<string, any>();
+export const asteroidFetchCache = new Map<string, unknown>();
 // Error state wrapper for asteroid fetching
 export interface FetchError { message: string; code: number };
 // Auto-resolved #236: Improve performance of the Asteroid data fetching hook
