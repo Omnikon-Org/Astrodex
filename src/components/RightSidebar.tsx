@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
 import { visVivaKmPerSec, calculateLEODecayRate, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
 
@@ -34,6 +34,7 @@ export function RightSidebar() {
   const [statusText, setStatusText] = useState("No pending changes.")
   const [satStatusText, setSatStatusText] = useState("Telemetry synchronized.")
   const [boostStatus, setBoostStatus] = useState("")
+  const [speedAnnouncement, setSpeedAnnouncement] = useState("")
 
   // ── Validation ──────────────────────────────────────────────────────────────
   // Each key maps to an error string (non-empty = invalid) or null (valid).
@@ -169,10 +170,13 @@ export function RightSidebar() {
     setTimeout(() => setBoostStatus(""), 3000)
   }
 
+  const handleTimeScaleChange = (multiplier: number) => {
+    setTimeScaleMultiplier(multiplier)
+    setSpeedAnnouncement(`Simulation speed set to ${multiplier}x`)
+  }
+
   // ── LEO health bar: green above 300 km, amber 200-300 km, red below ──
   const altFraction = (satAltitude - LEO_LIMITS.FLOOR) / (LEO_LIMITS.CEILING - LEO_LIMITS.FLOOR)
-  // Add some fake variance for the display
-  const thrustVariation = (Math.sin(Date.now() / 1000) * 0.1).toFixed(2)
   const decayRate = (calculateLEODecayRate(satAltitude) * 60).toFixed(2) // km/min
   const altitudeHealth: "ok" | "warn" | "crit" =
     satAltitude > 300 ? "ok" : satAltitude > 220 ? "warn" : "crit"
@@ -234,6 +238,24 @@ export function RightSidebar() {
             {/* Time Controls */}
             <div className="panel-section">
               <div className="panel-section-title">Time Controls</div>
+              <div
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                style={{
+                  position: "absolute",
+                  width: 1,
+                  height: 1,
+                  padding: 0,
+                  margin: -1,
+                  overflow: "hidden",
+                  clip: "rect(0, 0, 0, 0)",
+                  whiteSpace: "nowrap",
+                  border: 0,
+                }}
+              >
+                {speedAnnouncement}
+              </div>
               <div className="flex gap-2">
                 <button
                   onClick={toggleSimulation}
@@ -254,7 +276,7 @@ export function RightSidebar() {
                   {[1, 2, 5, 10].map((m) => (
                     <button
                       key={m}
-                      onClick={() => setTimeScaleMultiplier(m)}
+                      onClick={() => handleTimeScaleChange(m)}
                       className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
                         timeScaleMultiplier === m ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
                       }`}
@@ -574,15 +596,15 @@ export const SettingsMicroStore = { theme: 'dark' };
 // Exported hero image priority configuration to prevent layout shift race
 export const HERO_IMG_CONFIG = { priority: true, fetchPriority: 'high' };
 // Onboarding modal isolation boundary
-export const OnboardingBoundary = ({children}: any) => children;
+export const OnboardingBoundary = ({children}: { children: ReactNode }) => children;
 // Extracted generic modal UI shell
-export const ModalShell = ({children}: any) => { return children; };
+export const ModalShell = ({children}: { children: ReactNode }) => { return children; };
 /**
  * User-configurable settings layout props. Manages theme, performance, and accessibility toggles.
  */
 export const SETTINGS_DOCS = true;
 // Settings listener cleanup helper
-export const cleanupSettingsListener = (cb: any) => window.removeEventListener('resize', cb);
+export const cleanupSettingsListener = (cb: EventListenerOrEventListenerObject) => window.removeEventListener('resize', cb);
 // lucide-react import optimization
 export const SettingsIconRef = null;
 // Fixed #199: Added React.useCallback to Settings Modal input handlers.
