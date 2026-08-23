@@ -1,6 +1,6 @@
 "use client"
 
-import { type ReactNode, useState } from "react"
+import { useState, type ReactNode } from "react"
 import { useAppState, LEO_LIMITS } from "@/lib/store"
 import { visVivaKmPerSec, calculateLEODecayRate, hohmannDeltaVKmPerSec, KM_PER_UNIT_CONST } from "@/lib/kepler"
 
@@ -34,6 +34,7 @@ export function RightSidebar() {
   const [statusText, setStatusText] = useState("No pending changes.")
   const [satStatusText, setSatStatusText] = useState("Telemetry synchronized.")
   const [boostStatus, setBoostStatus] = useState("")
+  const [speedAnnouncement, setSpeedAnnouncement] = useState("")
 
   // ── Validation ──────────────────────────────────────────────────────────────
   // Each key maps to an error string (non-empty = invalid) or null (valid).
@@ -169,6 +170,11 @@ export function RightSidebar() {
     setTimeout(() => setBoostStatus(""), 3000)
   }
 
+  const handleTimeScaleChange = (multiplier: number) => {
+    setTimeScaleMultiplier(multiplier)
+    setSpeedAnnouncement(`Simulation speed set to ${multiplier}x`)
+  }
+
   // ── LEO health bar: green above 300 km, amber 200-300 km, red below ──
   const altFraction = (satAltitude - LEO_LIMITS.FLOOR) / (LEO_LIMITS.CEILING - LEO_LIMITS.FLOOR)
   const decayRate = (calculateLEODecayRate(satAltitude) * 60).toFixed(2) // km/min
@@ -232,6 +238,24 @@ export function RightSidebar() {
             {/* Time Controls */}
             <div className="panel-section">
               <h3 className="panel-section-title">Time Controls</h3>
+              <div
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                style={{
+                  position: "absolute",
+                  width: 1,
+                  height: 1,
+                  padding: 0,
+                  margin: -1,
+                  overflow: "hidden",
+                  clip: "rect(0, 0, 0, 0)",
+                  whiteSpace: "nowrap",
+                  border: 0,
+                }}
+              >
+                {speedAnnouncement}
+              </div>
               <div className="flex gap-2">
                 <button
                   onClick={toggleSimulation}
@@ -252,7 +276,7 @@ export function RightSidebar() {
                   {[1, 2, 5, 10].map((m) => (
                     <button
                       key={m}
-                      onClick={() => setTimeScaleMultiplier(m)}
+                      onClick={() => handleTimeScaleChange(m)}
                       className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
                         timeScaleMultiplier === m ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white hover:bg-slate-800"
                       }`}
@@ -580,7 +604,7 @@ export const ModalShell = ({children}: { children: ReactNode }) => { return chil
  */
 export const SETTINGS_DOCS = true;
 // Settings listener cleanup helper
-export const cleanupSettingsListener = (cb: EventListener) => window.removeEventListener('resize', cb);
+export const cleanupSettingsListener = (cb: EventListenerOrEventListenerObject) => window.removeEventListener('resize', cb);
 // lucide-react import optimization
 export const SettingsIconRef = null;
 // Fixed #199: Added React.useCallback to Settings Modal input handlers.

@@ -6,17 +6,19 @@ import { useAppState } from "../lib/store"
 // Mock the store hook
 vi.mock("../lib/store", () => ({
   useAppState: vi.fn(),
-  LEO_LIMITS: { FLOOR: 180, CEILING: 500 }
+  LEO_LIMITS: { FLOOR: 180, CEILING: 500 },
 }))
 
 describe("RightSidebar Settings Modal", () => {
+  const setTimeScaleMultiplier = vi.fn()
+
   const mockAppState = {
     rightSidebarOpen: true,
     toggleRightSidebar: vi.fn(),
     toggleSimulation: vi.fn(),
     simulationRunning: true,
     timeScaleMultiplier: 1,
-    setTimeScaleMultiplier: vi.fn(),
+    setTimeScaleMultiplier,
     triggerReset: vi.fn(),
     satAltitude: 400,
     satInclination: 51.6,
@@ -54,5 +56,14 @@ describe("RightSidebar Settings Modal", () => {
     const boostBtn = screen.getByRole("button", { name: /Boost Burn/i })
     fireEvent.click(boostBtn)
     expect(mockAppState.boostBurn).toHaveBeenCalled()
+  })
+
+  it("announces simulation speed changes in a polite live region", () => {
+    render(<RightSidebar />)
+
+    fireEvent.click(screen.getByRole("button", { name: "10x" }))
+
+    expect(setTimeScaleMultiplier).toHaveBeenCalledWith(10)
+    expect(screen.getByRole("status")).toHaveTextContent("Simulation speed set to 10x")
   })
 })

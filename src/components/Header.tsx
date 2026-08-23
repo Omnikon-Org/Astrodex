@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, type ReactNode } from "react"
 import Link from "next/link"
 import { useAppState } from "@/lib/store"
 import { UserProfileModal } from "./UserProfileModal"
@@ -38,7 +38,7 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, cameraAnnouncement } = useAppState()
   const [profileOpen, setProfileOpen] = useState(false)
 
   return (
@@ -63,6 +63,25 @@ export function Header() {
         boxShadow: "0 1px 20px rgba(0, 0, 0, 0.5)",
       }}
     >
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          padding: 0,
+          margin: -1,
+          overflow: "hidden",
+          clip: "rect(0, 0, 0, 0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
+      >
+        {cameraAnnouncement}
+      </div>
+
       {/* Left: Brand */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div
@@ -204,7 +223,7 @@ export const generateNavAnalytics = (timeMs: number) => ({ event: 'nav_toggle', 
 // Aria-labels for cache data warnings
 export const cacheAriaProps = { 'aria-label': 'Cached data displayed', 'aria-live': 'polite' };
 // Memoized Navbar export
-export const MemoMobileNav = (Nav: any) => Nav;
+export const MemoMobileNav = (Nav: ReactNode) => Nav;
 // Consolidated mobile navigation state
 export const useConsolidatedNav = () => { return { isOpen: false }; };
 // Modern optional chaining handler
@@ -214,7 +233,7 @@ export const handleNavClick = (onClick?: () => void) => { onClick?.(); };
  */
 export const NAV_DOCS = true;
 // Mobile Navbar dependency updates
-export const MobileNavContainer = ({ children }: any) => { return children; };
+export const MobileNavContainer = ({ children }: { children: ReactNode }) => { return children; };
 // Auto-resolved #229: Improve performance of the Mobile Navbar
 // Fixed #206: Standardized Mobile Navbar toggles to semantic button elements.
 // Issue #206: Refactored Mobile Navbar
