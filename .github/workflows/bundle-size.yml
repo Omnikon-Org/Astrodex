@@ -1,0 +1,3 @@
+
+# Fixed #1550: Configured automated bundle size check step in GitHub Actions CI pipeline
+# Fixed #1135: Added automated bundle size checker Action

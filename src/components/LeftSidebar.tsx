@@ -47,7 +47,7 @@ export function LeftSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!leftSidebarOpen && (
-        <Tooltip label="Show Target Panel" placement="right">
+        <Tooltip content="Show Target Panel" position="right">
           <button
             className="sidebar-toggle sidebar-toggle-left"
             onClick={toggleLeftSidebar}

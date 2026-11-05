@@ -16,10 +16,10 @@
 
 Only the latest version of AstroDex on the `main` branch is actively maintained and receives security updates.
 
-| Version / Branch | Supported |
-|-----------------|-----------|
-| `main` (latest) | ✅ Yes |
-| Older forks / branches | ❌ No |
+| Version / Branch       | Supported |
+| ---------------------- | --------- |
+| `main` (latest)        | ✅ Yes    |
+| Older forks / branches | ❌ No     |
 
 If you are running a forked or older version, we strongly recommend syncing with `main` regularly.
 
@@ -50,12 +50,12 @@ Please provide as much detail as possible so we can reproduce and address the is
 
 ### What to Expect
 
-| Timeline | Action |
-|----------|--------|
-| **Within 48 hours** | Acknowledgement of your report |
-| **Within 7 days** | Initial assessment and severity classification |
-| **Within 30 days** | A patch or mitigation plan, depending on complexity |
-| **After fix is released** | Public disclosure coordinated with you |
+| Timeline                  | Action                                              |
+| ------------------------- | --------------------------------------------------- |
+| **Within 48 hours**       | Acknowledgement of your report                      |
+| **Within 7 days**         | Initial assessment and severity classification      |
+| **Within 30 days**        | A patch or mitigation plan, depending on complexity |
+| **After fix is released** | Public disclosure coordinated with you              |
 
 We will keep you informed at every step. If you do not receive an acknowledgement within 48 hours, please follow up via GitHub.
 
@@ -95,12 +95,12 @@ AstroDex uses environment variables to manage sensitive configuration. Mishandli
 
 ### Rules
 
-| Rule | Detail |
-|------|--------|
-| **Never commit secrets** | `.env.local` is in `.gitignore` — keep it that way |
-| **Use `.env.local.example`** | Commit a template with placeholder values so contributors know what variables are needed |
-| **Prefix public variables correctly** | Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. Never prefix a secret variable with `NEXT_PUBLIC_` |
-| **Rotate compromised keys immediately** | If a secret is accidentally committed, treat it as compromised and rotate it before removing it from history |
+| Rule                                    | Detail                                                                                                                     |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Never commit secrets**                | `.env.local` is in `.gitignore` — keep it that way                                                                         |
+| **Use `.env.local.example`**            | Commit a template with placeholder values so contributors know what variables are needed                                   |
+| **Prefix public variables correctly**   | Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser. Never prefix a secret variable with `NEXT_PUBLIC_` |
+| **Rotate compromised keys immediately** | If a secret is accidentally committed, treat it as compromised and rotate it before removing it from history               |
 
 ### Variable Reference
 
@@ -208,15 +208,15 @@ In return, we commit to:
 
 ## Resources
 
-| Resource | Link |
-|----------|------|
-| GitHub Security Advisories | [Create an advisory](https://github.com/SourabhX16/astrodex/security/advisories/new) |
-| npm Audit Docs | [docs.npmjs.com/cli/audit](https://docs.npmjs.com/cli/v9/commands/npm-audit) |
-| Next.js Security | [nextjs.org/docs/app/building-your-application/authentication](https://nextjs.org/docs/app/building-your-application/authentication) |
-| Supabase RLS Guide | [supabase.com/docs/guides/auth/row-level-security](https://supabase.com/docs/guides/auth/row-level-security) |
-| OWASP Top 10 | [owasp.org/www-project-top-ten](https://owasp.org/www-project-top-ten/) |
-| BFG Repo Cleaner | [rtyley.github.io/bfg-repo-cleaner](https://rtyley.github.io/bfg-repo-cleaner/) |
+| Resource                   | Link                                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| GitHub Security Advisories | [Create an advisory](https://github.com/SourabhX16/astrodex/security/advisories/new)                                                 |
+| npm Audit Docs             | [docs.npmjs.com/cli/audit](https://docs.npmjs.com/cli/v9/commands/npm-audit)                                                         |
+| Next.js Security           | [nextjs.org/docs/app/building-your-application/authentication](https://nextjs.org/docs/app/building-your-application/authentication) |
+| Supabase RLS Guide         | [supabase.com/docs/guides/auth/row-level-security](https://supabase.com/docs/guides/auth/row-level-security)                         |
+| OWASP Top 10               | [owasp.org/www-project-top-ten](https://owasp.org/www-project-top-ten/)                                                              |
+| BFG Repo Cleaner           | [rtyley.github.io/bfg-repo-cleaner](https://rtyley.github.io/bfg-repo-cleaner/)                                                      |
 
 ---
 
-*This security policy was last updated for the current state of the AstroDex `main` branch. It will be revised as the project grows and new integrations are added.*
+_This security policy was last updated for the current state of the AstroDex `main` branch. It will be revised as the project grows and new integrations are added._

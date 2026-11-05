@@ -17,9 +17,9 @@ All notable changes to AstroDex will be documented here.
   - Right Sidebar adds a **LEO Decay Monitor** with a green/amber/red health bar and a **Boost Burn (+50 km)** action.
   - Boost Burn is logged to the Agent Terminal as a `[MANV]` event and persisted via `boostCount` in the store.
 - **Per-Object Eccentricity**
-  - Asteroids: random `e ∈ [0, 0.28)`; Debris: random `e ∈ [0, 0.18)`.  The orbit-line and 3D position reflect the resulting ellipse.
+  - Asteroids: random `e ∈ [0, 0.28)`; Debris: random `e ∈ [0, 0.18)`. The orbit-line and 3D position reflect the resulting ellipse.
 - **Elliptical Satellites**
-  - Envisat, Hubble and the user-controlled ISS now also propagate via Kepler.  Orbit-line geometries sweep eccentric anomaly to render real ellipses.
+  - Envisat, Hubble and the user-controlled ISS now also propagate via Kepler. Orbit-line geometries sweep eccentric anomaly to render real ellipses.
 - **Eccentricity control** in the Right Sidebar's Manual Satellite panel (0–0.9).
 
 ### Fixed

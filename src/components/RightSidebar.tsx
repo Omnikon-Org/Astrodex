@@ -109,7 +109,7 @@ export function RightSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!rightSidebarOpen && (
-        <Tooltip label="Show Satellite Systems Panel" placement="left">
+        <Tooltip content="Show Satellite Systems Panel" position="left">
           <button
             className="sidebar-toggle sidebar-toggle-right"
             onClick={toggleRightSidebar}
