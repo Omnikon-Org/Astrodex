@@ -31,7 +31,7 @@ export function Header() {
 
   return (
     <header
-      className="glass-panel-flat"
+      className="glass-panel-flat astro-header"
       style={{
         position: "fixed",
         top: 0,
@@ -62,6 +62,7 @@ export function Header() {
             background: "var(--accent-cyan)",
           }}
         />
+        <div>
         <h1
           style={{
             fontSize: 18,
@@ -74,6 +75,8 @@ export function Header() {
         >
           Astro<span style={{ color: "var(--accent-cyan)", fontWeight: 400 }}>Dex</span>
         </h1>
+        <div className="astro-header-subtitle">GSoC SELECTED · OPEN SOURCE</div>
+        </div>
       </div>
 
       {/* Center: Controls */}
@@ -125,7 +128,7 @@ export function Header() {
               letterSpacing: "0.04em",
             }}
           >
-            {simulationRunning ? "LIVE" : "PAUSED"}
+            {simulationRunning ? "SIM" : "PAUSED"}
           </span>
         </div>
 
@@ -140,13 +143,14 @@ export function Header() {
       </div>
 
       {/* Right: Clock */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-          Last updated:
-        </span>
-        <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
-          <LiveClock />
-        </span>
+      <div className="header-meta">
+        <div className="astro-proof" aria-label="Open source project with over 30 contributors and 2,900 commits">
+          <span>30+ CONTRIBUTORS</span><span className="astro-proof-dot">/</span><span>2.9K+ COMMITS</span>
+        </div>
+        <div className="header-clock">
+          <span className="header-clock-label">LOCAL</span>
+          <span className="header-clock-value"><LiveClock /></span>
+        </div>
       </div>
     </header>
   )

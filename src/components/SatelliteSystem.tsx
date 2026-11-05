@@ -81,6 +81,8 @@ export const satellitePositions = {
   hubble: new THREE.Vector3(),
 }
 
+const _satellitePosition = new THREE.Vector3()
+
 export function SatelliteSystem() {
   const {
     simulationRunning,
@@ -94,6 +96,7 @@ export function SatelliteSystem() {
   const issRef = useRef<THREE.Mesh>(null)
   const envisatRef = useRef<THREE.Mesh>(null)
   const hubbleRef = useRef<THREE.Mesh>(null)
+  const decayAccumulator = useRef(0)
 
   // Convert km altitude to 3D scene units (Earth radius is 1.8 units = 6378 km)
   const issRadius = useMemo(() => 1.8 + kmToSceneUnits(satAltitude), [satAltitude])
@@ -112,10 +115,13 @@ export function SatelliteSystem() {
     if (!simulationRunning) return
 
     const time = state.clock.getElapsedTime()
-    const tempPos = new THREE.Vector3()
-
-    // LEO atmospheric drag — slowly drop the ISS altitude in real time
-    decayAltitude(LEO_DECAY_KM_PER_SEC * delta)
+    // Accumulate drag and publish it a few times per second instead of
+    // forcing the whole React tree to render on every animation frame.
+    decayAccumulator.current += delta
+    if (decayAccumulator.current >= 0.25) {
+      decayAltitude(LEO_DECAY_KM_PER_SEC * decayAccumulator.current)
+      decayAccumulator.current = 0
+    }
 
     // Mean motions
     const nIss = meanMotion(issRadius)
@@ -124,50 +130,50 @@ export function SatelliteSystem() {
 
     // 1. Position ISS — solve Kepler for eccentric anomaly
     const Eiss = solveKepler(nIss * time * SCENE_TIME_SCALE, satEccentricity)
-    getEllipticalOrbitPosition(issRadius, satEccentricity, Eiss, satInclination, satRaan, tempPos)
-    if (issRef.current) issRef.current.position.copy(tempPos)
-    satellitePositions.iss.copy(tempPos)
+    getEllipticalOrbitPosition(issRadius, satEccentricity, Eiss, satInclination, satRaan, _satellitePosition)
+    if (issRef.current) issRef.current.position.copy(_satellitePosition)
+    satellitePositions.iss.copy(_satellitePosition)
 
     // 2. Position Envisat
     const Eenv = solveKepler(nEnv * time * SCENE_TIME_SCALE + Math.PI, 0.0006)
-    getEllipticalOrbitPosition(envisatRadius, 0.0006, Eenv, 98.54, 120, tempPos)
-    if (envisatRef.current) envisatRef.current.position.copy(tempPos)
-    satellitePositions.envisat.copy(tempPos)
+    getEllipticalOrbitPosition(envisatRadius, 0.0006, Eenv, 98.54, 120, _satellitePosition)
+    if (envisatRef.current) envisatRef.current.position.copy(_satellitePosition)
+    satellitePositions.envisat.copy(_satellitePosition)
 
     // 3. Position Hubble
     const Ehub = solveKepler(nHub * time * SCENE_TIME_SCALE + Math.PI / 2, 0.0003)
-    getEllipticalOrbitPosition(hubbleRadius, 0.0003, Ehub, 28.5, 45, tempPos)
-    if (hubbleRef.current) hubbleRef.current.position.copy(tempPos)
-    satellitePositions.hubble.copy(tempPos)
+    getEllipticalOrbitPosition(hubbleRadius, 0.0003, Ehub, 28.5, 45, _satellitePosition)
+    if (hubbleRef.current) hubbleRef.current.position.copy(_satellitePosition)
+    satellitePositions.hubble.copy(_satellitePosition)
   })
 
   return (
     <group>
       {/* ─── ISS Orbit ─── */}
       <lineLoop geometry={issOrbitGeo}>
-        <lineBasicMaterial color="#38bdf8" opacity={0.35} transparent linewidth={1} />
+        <lineBasicMaterial color="#d6a85e" opacity={0.38} transparent linewidth={1} />
       </lineLoop>
       <mesh ref={issRef}>
         <sphereGeometry args={[0.04, 16, 16]} />
-        <meshBasicMaterial color="#38bdf8" />
+        <meshBasicMaterial color="#efd7ad" />
       </mesh>
 
       {/* ─── Envisat Orbit ─── */}
       <lineLoop geometry={envisatOrbitGeo}>
-        <lineBasicMaterial color="#fbbf24" opacity={0.25} transparent linewidth={1} />
+        <lineBasicMaterial color="#b7b2a6" opacity={0.24} transparent linewidth={1} />
       </lineLoop>
       <mesh ref={envisatRef}>
         <sphereGeometry args={[0.035, 16, 16]} />
-        <meshBasicMaterial color="#fbbf24" />
+        <meshBasicMaterial color="#e1d8c5" />
       </mesh>
 
       {/* ─── Hubble Orbit ─── */}
       <lineLoop geometry={hubbleOrbitGeo}>
-        <lineBasicMaterial color="#34d399" opacity={0.25} transparent linewidth={1} />
+        <lineBasicMaterial color="#8b9995" opacity={0.24} transparent linewidth={1} />
       </lineLoop>
       <mesh ref={hubbleRef}>
         <sphereGeometry args={[0.03, 16, 16]} />
-        <meshBasicMaterial color="#34d399" />
+        <meshBasicMaterial color="#ced6d0" />
       </mesh>
     </group>
   )

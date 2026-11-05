@@ -22,7 +22,6 @@ export function RightSidebar() {
 
   const [maxDv, setMaxDv] = useState("0.35")
   const [maxBurns, setMaxBurns] = useState("1")
-  const [maneuverAxis, setManeuverAxis] = useState("24")
   const [altitude, setAltitude] = useState(() => String(satAltitude))
   const [inclination, setInclination] = useState(() => String(satInclination))
   const [raan, setRaan] = useState(() => String(satRaan))
@@ -32,6 +31,11 @@ export function RightSidebar() {
   const [boostStatus, setBoostStatus] = useState("")
 
   const handleApply = () => {
+    if (!selectedAsteroid) {
+      setStatusText("Select an object in the globe to estimate a transfer.")
+      return
+    }
+
     const maxDvVal = parseFloat(maxDv) || 0.35
     const maxBurnsVal = parseInt(maxBurns, 10) || 1
 
@@ -39,13 +43,9 @@ export function RightSidebar() {
     const r1Km = R_EARTH_KM + satAltitude
 
     let dVTotal = 0
-    let targetName = "no target"
-
-    if (selectedAsteroid) {
-      targetName = selectedAsteroid.name
-      const r2Km = selectedAsteroid.orbitRadius * KM_PER_UNIT_CONST
-      dVTotal = hohmannDeltaVKmPerSec(r1Km, r2Km)
-    }
+    const targetName = selectedAsteroid.name
+    const r2Km = selectedAsteroid.orbitRadius * KM_PER_UNIT_CONST
+    dVTotal = hohmannDeltaVKmPerSec(r1Km, r2Km)
 
     const dVms = dVTotal * 1000
     const exceeds = dVms > maxDvVal
@@ -109,11 +109,11 @@ export function RightSidebar() {
     <>
       {/* Toggle button when collapsed */}
       {!rightSidebarOpen && (
-        <Tooltip label="Show Constraints Panel" placement="left">
+        <Tooltip label="Show Satellite Systems Panel" placement="left">
           <button
             className="sidebar-toggle sidebar-toggle-right"
             onClick={toggleRightSidebar}
-            aria-label="Show Constraints Panel"
+            aria-label="Show Satellite Systems Panel"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 18l-6-6 6-6" />
@@ -142,7 +142,7 @@ export function RightSidebar() {
                 </svg>
               </button>
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", color: "var(--text-primary)" }}>
-                Constraints
+                Satellite Systems
               </span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
@@ -161,14 +161,14 @@ export function RightSidebar() {
               gap: 12,
             }}
           >
-            {/* Planner Constraints */}
+            {/* Maneuver budget */}
             <div className="panel-section">
-              <div className="panel-section-title">Planner Constraints</div>
+              <div className="panel-section-title">Transfer Estimate</div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div>
                   <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
-                    Max total Δv (m/s)
+                    Δv ceiling (m/s)
                   </label>
                   <input className="mc-input" type="text" value={maxDv} onChange={(e) => setMaxDv(e.target.value)} />
                 </div>
@@ -180,15 +180,8 @@ export function RightSidebar() {
                   <input className="mc-input" type="text" value={maxBurns} onChange={(e) => setMaxBurns(e.target.value)} />
                 </div>
 
-                <div>
-                  <label style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em", display: "block", marginBottom: 4 }}>
-                    Preferred maneuver axis
-                  </label>
-                  <input className="mc-input" type="text" value={maneuverAxis} onChange={(e) => setManeuverAxis(e.target.value)} />
-                </div>
-
                 <button className="btn-primary" onClick={handleApply} style={{ width: "100%", marginTop: 2 }}>
-                  Apply
+                  Estimate Transfer
                 </button>
 
                 <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center" }}>
@@ -201,8 +194,8 @@ export function RightSidebar() {
             <div
               className="panel-section"
               style={{
-                border: "1px solid rgba(56, 189, 248, 0.15)",
-                background: "rgba(56, 189, 248, 0.03)",
+                border: "1px solid rgba(226, 170, 91, 0.18)",
+                background: "rgba(226, 170, 91, 0.025)",
               }}
             >
               <div className="panel-section-title" style={{ color: "var(--accent-cyan)" }}>

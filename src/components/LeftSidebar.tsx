@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback, useEffect } from "react"
+import { useState, useMemo, useCallback } from "react"
 import { useAppState } from "@/lib/store"
 import { Tooltip } from "@/components/Tooltip"
 
@@ -13,7 +13,6 @@ export function LeftSidebar() {
     filterType,
     setFilterType,
     conjunctions,
-    addConjunctionAlert,
   } = useAppState()
   const [searchId, setSearchId] = useState("")
   const [riskFilter, setRiskFilter] = useState<"ALL" | "HIGH" | "MEDIUM" | "LOW">("ALL") 
@@ -22,30 +21,6 @@ export function LeftSidebar() {
   if (riskFilter === "ALL") return conjunctions
   return conjunctions.filter((c) => c.risk === riskFilter)
   }, [conjunctions, riskFilter])
-
-  // Pre-seed some conjunctions at start if empty
-  useEffect(() => {
-    if (conjunctions.length === 0) {
-      addConjunctionAlert({
-        tca: "now",
-        missKm: "43.2",
-        risk: "LOW",
-        secondaryId: 215,
-        secondaryName: "AST-0215",
-        type: "asteroid",
-        satelliteName: "ISS (ZARYA)",
-      })
-      addConjunctionAlert({
-        tca: "in 12m",
-        missKm: "128.5",
-        risk: "LOW",
-        secondaryId: 452,
-        secondaryName: "DEB-1994-082A",
-        type: "debris",
-        satelliteName: "Envisat",
-      })
-    }
-  }, [conjunctions.length, addConjunctionAlert])
 
   const handleSearch = useCallback(() => {
     const id = parseInt(searchId, 10)
@@ -111,7 +86,7 @@ export function LeftSidebar() {
                 <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
               </svg>
               <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.06em", color: "var(--text-primary)" }}>
-                Target + Live Feed
+                Object Catalog
               </span>
             </div>
             <button className="btn-ghost" onClick={toggleLeftSidebar} style={{ padding: 4, border: "none" }}>
@@ -135,7 +110,7 @@ export function LeftSidebar() {
             {/* Object Type Tab Filters */}
             <div>
               <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
-                Filter Catalog
+                Object Class
               </label>
               <div style={{ display: "flex", background: "var(--bg-input)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-sm)", padding: 2 }}>
                 {(["ALL", "ASTEROIDS", "DEBRIS"] as const).map((tab) => (
@@ -149,8 +124,8 @@ export function LeftSidebar() {
                       fontWeight: 700,
                       letterSpacing: "0.04em",
                       borderRadius: 4,
-                      background: filterType === tab ? "rgba(56, 189, 248, 0.15)" : "transparent",
-                      border: filterType === tab ? "1px solid rgba(56, 189, 248, 0.25)" : "1px solid transparent",
+                      background: filterType === tab ? "rgba(226, 170, 91, 0.14)" : "transparent",
+                      border: filterType === tab ? "1px solid rgba(226, 170, 91, 0.28)" : "1px solid transparent",
                       color: filterType === tab ? "var(--accent-cyan)" : "var(--text-secondary)",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
@@ -165,7 +140,7 @@ export function LeftSidebar() {
             {/* Search */}
             <div>
               <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", marginBottom: 6, display: "block" }}>
-                Select Catalog Item By ID
+                Track by Catalog ID
               </label>
               <div style={{ display: "flex", gap: 6 }}>
                 <input
@@ -182,14 +157,14 @@ export function LeftSidebar() {
                     <circle cx="11" cy="11" r="8" />
                     <path d="M21 21l-4.35-4.35" />
                   </svg>
-                  LOAD
+                  TRACK
                 </button>
               </div>
             </div>
 
             {/* Live Target Details */}
             <div className="panel-section">
-              <div className="panel-section-title">Live Target Details</div>
+              <div className="panel-section-title">Selected Object</div>
               {selectedAsteroid ? (
                 <div>
                   <div className="kv-row">
@@ -215,13 +190,13 @@ export function LeftSidebar() {
                     <span className="kv-value">{(selectedAsteroid.inclination * (180 / Math.PI)).toFixed(2)}°</span>
                   </div>
                   <div className="kv-row">
-                    <span className="kv-label">Last Updated</span>
+                    <span className="kv-label">Session Opened</span>
                     <span className="kv-value" style={{ fontSize: 10 }}>{sessionLoadTime}</span>
                   </div>
                 </div>
               ) : (
                 <p style={{ fontSize: 11, color: "var(--text-muted)", fontStyle: "italic" }}>
-                  No target selected. Search by ID or click an asteroid/debris particle.
+                  No object locked. Search the catalog or select a marker in the scene.
                 </p>
               )}
             </div>
@@ -229,12 +204,12 @@ export function LeftSidebar() {
             {/* Conjunction Feed */}
             <div className="panel-section" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <div className="panel-section-title" style={{ marginBottom: 0 }}>Conjunction Alerter</div>
+                <div className="panel-section-title" style={{ marginBottom: 0 }}>Close Approaches</div>
                   <div
                     style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}
                     title={riskFilter !== "ALL" ? `${filteredConjunctions.length} of ${conjunctions.length} total` : undefined}
                   >
-                   {filteredConjunctions.length} Active alerts
+                   {filteredConjunctions.length} ACTIVE
                  </div>
             </div>
 
@@ -251,8 +226,8 @@ export function LeftSidebar() {
                     fontWeight: 700,
                     letterSpacing: "0.04em",
                     borderRadius: 4,
-                    background: riskFilter === level ? "rgba(56, 189, 248, 0.15)" : "transparent",
-                    border: riskFilter === level ? "1px solid rgba(56, 189, 248, 0.25)" : "1px solid transparent",
+                    background: riskFilter === level ? "rgba(226, 170, 91, 0.14)" : "transparent",
+                    border: riskFilter === level ? "1px solid rgba(226, 170, 91, 0.28)" : "1px solid transparent",
                     color: riskFilter === level ? "var(--accent-cyan)" : "var(--text-secondary)",
                     cursor: "pointer",
                     transition: "all 0.2s ease",
@@ -273,6 +248,13 @@ export function LeftSidebar() {
                     </tr>
                   </thead>
                   <tbody>
+                    {filteredConjunctions.length === 0 && (
+                      <tr>
+                        <td colSpan={3} style={{ padding: "18px 8px", color: "var(--text-muted)", fontFamily: "var(--font-sans), sans-serif", lineHeight: 1.55 }}>
+                          No active close approaches. Keep propagation running to monitor the field.
+                        </td>
+                      </tr>
+                    )}
                     {filteredConjunctions.map((c) => (
                       <tr key={c.id}>
                         <td>

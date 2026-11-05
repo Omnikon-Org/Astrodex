@@ -4,14 +4,12 @@ import { useRef, useEffect } from "react"
 import * as THREE from "three"
 
 const vertexShader = `
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
 
 void main() {
-  vNormal = normalize(normalMatrix * normal);
-  vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
-  vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
+  vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+  vWorldNormal = normalize(mat3(modelMatrix) * normal);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `
@@ -19,24 +17,25 @@ void main() {
 const fragmentShader = `
 uniform vec3 sunDirection;
 
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
 
 void main() {
-  vec3 normal = normalize(vNormal);
-  vec3 viewDir = normalize(-vPosition);
+  vec3 normal = normalize(vWorldNormal);
+  vec3 viewDir = normalize(cameraPosition - vWorldPosition);
 
   float fresnel = 1.0 - max(dot(viewDir, normal), 0.0);
-  fresnel = pow(fresnel, 3.0);
+  fresnel = pow(fresnel, 2.25);
 
   vec3 sunDir = normalize(sunDirection);
   float sunFace = dot(normalize(vWorldNormal), sunDir);
   float daySide = clamp(sunFace * 0.5 + 0.5, 0.0, 1.0);
 
-  vec3 atmosphereColor = vec3(0.3, 0.6, 1.0);
+  vec3 blue = vec3(0.10, 0.42, 1.0);
+  float twilightBand = 1.0 - smoothstep(0.008, 0.10, abs(sunFace));
+  vec3 atmosphereColor = mix(blue, vec3(0.48, 0.72, 1.0), twilightBand * 0.28);
 
-  float alpha = fresnel * daySide * 0.5;
+  float alpha = fresnel * (0.045 + daySide * 0.22 + twilightBand * 0.04);
 
   gl_FragColor = vec4(atmosphereColor, alpha);
 }
@@ -58,7 +57,7 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[2.0, 64, 64]} />
+      <sphereGeometry args={[1.94, 64, 64]} />
       <shaderMaterial
         uniforms={uniformsRef.current}
         vertexShader={vertexShader}

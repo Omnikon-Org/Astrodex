@@ -219,10 +219,10 @@ export function createProceduralNightTexture(): HTMLCanvasElement {
       ctx.fill()
     }
 
-    // Sodium-vapor city glow (warm amber-orange)
+    // Keep city halos compact so they read as lights, not a golden wash.
     const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 2.8)
-    grad.addColorStop(0, `rgba(255, ${160 + Math.floor(Math.random() * 30)}, ${40 + Math.floor(Math.random() * 30)}, 0.20)`)
-    grad.addColorStop(0.4, `rgba(255, 140, 40, 0.08)`)
+    grad.addColorStop(0, `rgba(255, ${160 + Math.floor(Math.random() * 30)}, ${40 + Math.floor(Math.random() * 30)}, 0.10)`)
+    grad.addColorStop(0.4, `rgba(255, 140, 40, 0.035)`)
     grad.addColorStop(1, `rgba(255, 80, 20, 0)`)
     ctx.fillStyle = grad
     ctx.beginPath()

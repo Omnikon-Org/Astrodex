@@ -2,8 +2,9 @@
 
 import { useRef, useCallback, useEffect, useMemo } from "react"
 import { Canvas } from "@react-three/fiber"
-import { Stars } from "@react-three/drei"
+import { OrbitControls, Stars } from "@react-three/drei"
 import * as THREE from "three"
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 
 import { Earth } from "./earth/Earth"
 import { CloudLayer } from "./earth/CloudLayer"
@@ -18,6 +19,7 @@ import type { AsteroidData } from "@/lib/types"
 function SceneContent() {
   const sunDirection = useMemo(() => new THREE.Vector3(5, 3, 5).normalize(), [])
   const { selectedAsteroid, selectAsteroid } = useAppState()
+  const controlsRef = useRef<OrbitControlsImpl>(null)
   const selectedIndexRef = useRef<number | null>(null)
 
   const handleAsteroidClick = useCallback(
@@ -51,7 +53,22 @@ function SceneContent() {
         onAsteroidClick={handleAsteroidClick}
         getSelectedIndex={getSelectedIndex}
       />
-      <CameraController />
+      <CameraController controlsRef={controlsRef} />
+      <OrbitControls
+        ref={controlsRef}
+        makeDefault
+        enablePan
+        enableZoom
+        enableRotate
+        enableDamping
+        dampingFactor={0.06}
+        minDistance={2.12}
+        maxDistance={24}
+        screenSpacePanning
+        rotateSpeed={0.72}
+        zoomSpeed={0.82}
+        panSpeed={0.72}
+      />
       <Effects />
     </>
   )
@@ -61,11 +78,14 @@ export function Scene() {
   return (
     <div className="fixed inset-0 z-0">
       <Canvas
-        camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
+        camera={{ position: [0, 0, 13], fov: 45, near: 0.1, far: 1000 }}
         gl={{ antialias: true, alpha: false }}
       >
         <SceneContent />
       </Canvas>
+      <div className="globe-gesture-hint" aria-hidden="true">
+        <span>DRAG</span> ROTATE <i /> <span>PINCH / WHEEL</span> ZOOM <i /> <span>RIGHT DRAG</span> PAN
+      </div>
     </div>
   )
 }

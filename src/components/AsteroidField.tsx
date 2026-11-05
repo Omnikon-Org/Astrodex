@@ -19,8 +19,8 @@ const ASTEROID_COUNT = 400
 const DEBRIS_COUNT = 200
 const TOTAL_COUNT = ASTEROID_COUNT + DEBRIS_COUNT
 
-const ASTEROID_COLORS = ["#8B8B8B", "#A0522D", "#6B6B6B", "#B8860B", "#696969"]
-const DEBRIS_COLORS = ["#ff5500", "#ffaa00", "#00d5ff", "#e100ff", "#ffffff"]
+const ASTEROID_COLORS = ["#8B8982", "#9C7958", "#656762", "#A7895D", "#706D65"]
+const DEBRIS_COLORS = ["#C5B28E", "#D6A85E", "#D7D5CC", "#B98261", "#EFECE3"]
 
 function generateOrbitalObjectData(index: number): AsteroidData {
   const isDebris = index >= ASTEROID_COUNT
@@ -256,6 +256,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       if (i === selectedIdx) {
         trackedPosition.current.copy(_objPos)
       }
+
     }
 
     asteroidMesh.instanceMatrix.needsUpdate = true
@@ -267,7 +268,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const handleAsteroidClick = useCallback(
     (e: ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
-      onAsteroidClick(dataRef.current[e.instanceId])
+      const target = dataRef.current[e.instanceId]
+      onAsteroidClick(target)
     },
     [onAsteroidClick]
   )
@@ -275,7 +277,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const handleDebrisClick = useCallback(
     (e: ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
-      onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
+      const target = dataRef.current[ASTEROID_COUNT + e.instanceId]
+      onAsteroidClick(target)
     },
     [onAsteroidClick]
   )

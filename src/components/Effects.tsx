@@ -7,14 +7,14 @@ export function Effects() {
   return (
     <EffectComposer>
       <Bloom
-        intensity={1.5}
-        luminanceThreshold={0.6}
-        luminanceSmoothing={0.02}
+        intensity={0.82}
+        luminanceThreshold={0.68}
+        luminanceSmoothing={0.14}
         mipmapBlur
       />
       <Vignette
-        offset={0.3}
-        darkness={0.7}
+        offset={0.28}
+        darkness={0.46}
         blendFunction={BlendFunction.NORMAL}
       />
     </EffectComposer>

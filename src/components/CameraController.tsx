@@ -3,49 +3,72 @@
 import { useRef, useEffect } from "react"
 import { useThree, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 import { useAppState } from "@/lib/store"
 import { trackedPosition } from "./AsteroidField"
 
-const EARTH_POSITION = new THREE.Vector3(0, 0, 6)
+const EARTH_POSITION = new THREE.Vector3(0, 0, 13)
 const EARTH_TARGET = new THREE.Vector3(0, 0, 0)
-const _offset = new THREE.Vector3()
-const _lookTarget = new THREE.Vector3()
+const _previousTrackedPosition = new THREE.Vector3()
+const _trackedDelta = new THREE.Vector3()
+const _initialOffset = new THREE.Vector3()
 
-export function CameraController() {
+interface CameraControllerProps {
+  controlsRef: React.RefObject<OrbitControlsImpl | null>
+}
+
+export function CameraController({ controlsRef }: CameraControllerProps) {
   const { camera } = useThree()
   const { selectedAsteroid, resetCamera, clearReset } = useAppState()
-  const targetPos = useRef(EARTH_POSITION.clone())
-  const targetLook = useRef(EARTH_TARGET.clone())
   const hasSelection = useRef(false)
+  const isAcquiring = useRef(false)
 
   useEffect(() => {
     if (resetCamera) {
       hasSelection.current = false
-      targetPos.current.copy(EARTH_POSITION)
-      targetLook.current.copy(EARTH_TARGET)
+      isAcquiring.current = false
+      camera.position.copy(EARTH_POSITION)
+      controlsRef.current?.target.copy(EARTH_TARGET)
+      controlsRef.current?.update()
       clearReset()
     }
-  }, [resetCamera, clearReset])
+  }, [resetCamera, clearReset, camera, controlsRef])
 
   useEffect(() => {
     if (selectedAsteroid) {
-      hasSelection.current = true
+      hasSelection.current = false
+      isAcquiring.current = true
     }
   }, [selectedAsteroid])
 
-  useFrame((_, delta) => {
-    if (hasSelection.current) {
+  useFrame(() => {
+    const controls = controlsRef.current
+    if (!controls) return
+
+    if (isAcquiring.current && selectedAsteroid) {
       const pos = trackedPosition.current
       if (pos.lengthSq() > 0) {
-        targetLook.current.copy(pos)
-        _offset.copy(pos).normalize().multiplyScalar(1.5)
-        targetPos.current.copy(pos).add(_offset)
+        controls.target.copy(pos)
+        _initialOffset.copy(camera.position).sub(pos)
+        if (_initialOffset.length() > 2.8) _initialOffset.setLength(2.8)
+        camera.position.copy(pos).add(_initialOffset)
+        controls.update()
+        _previousTrackedPosition.copy(pos)
+        hasSelection.current = true
+        isAcquiring.current = false
       }
+      return
     }
 
-    camera.position.lerp(targetPos.current, 3 * delta)
-    _lookTarget.copy(targetLook.current)
-    camera.lookAt(_lookTarget)
+    if (hasSelection.current && selectedAsteroid) {
+      const pos = trackedPosition.current
+      _trackedDelta.subVectors(pos, _previousTrackedPosition)
+      if (_trackedDelta.lengthSq() > 0) {
+        controls.target.add(_trackedDelta)
+        camera.position.add(_trackedDelta)
+        _previousTrackedPosition.copy(pos)
+      }
+    }
   })
 
   return null

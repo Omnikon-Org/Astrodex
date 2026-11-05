@@ -284,4 +284,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-Made with ❤️ by the [AstroDex contributors](https://github.com/Omnikon-Org/Astrodex/graphs/contributors)
+Made with ❤️ by [SourabhX16](https://github.com/SourabhX16), with thanks to the [AstroDex contributors](https://github.com/Omnikon-Org/Astrodex/graphs/contributors).
