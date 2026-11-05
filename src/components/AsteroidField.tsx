@@ -18,8 +18,8 @@ import {
 } from "@/lib/kepler"
 import { ASTEROID_COUNT, DEBRIS_COUNT, TOTAL_COUNT, generateOrbitalObjectData } from "@/lib/dataPipeline"
 
-const ASTEROID_COLORS = ["#8B8B8B", "#A0522D", "#6B6B6B", "#B8860B", "#696969"]
-const DEBRIS_COLORS = ["#ff5500", "#ffaa00", "#00d5ff", "#e100ff", "#ffffff"]
+const ASTEROID_COLORS = ["#8B8982", "#9C7958", "#656762", "#A7895D", "#706D65"]
+const DEBRIS_COLORS = ["#C5B28E", "#D6A85E", "#D7D5CC", "#B98261", "#EFECE3"]
 
 const dummy = new THREE.Object3D()
 const colorObj = new THREE.Color()
@@ -200,6 +200,7 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
       if (i === selectedIdx) {
         trackedPosition.current.copy(_objPos)
       }
+
     }
 
     asteroidMesh.instanceMatrix.needsUpdate = true
@@ -213,7 +214,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const handleAsteroidClick = useCallback(
     (e: import("@react-three/fiber").ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
-      onAsteroidClick(dataRef.current[e.instanceId])
+      const target = dataRef.current[e.instanceId]
+      onAsteroidClick(target)
     },
     [onAsteroidClick]
   )
@@ -221,7 +223,8 @@ export function AsteroidField({ onAsteroidClick, getSelectedIndex }: AsteroidFie
   const handleDebrisClick = useCallback(
     (e: import("@react-three/fiber").ThreeEvent<MouseEvent>) => {
       if (e.instanceId === undefined) return
-      onAsteroidClick(dataRef.current[ASTEROID_COUNT + e.instanceId])
+      const target = dataRef.current[ASTEROID_COUNT + e.instanceId]
+      onAsteroidClick(target)
     },
     [onAsteroidClick]
   )

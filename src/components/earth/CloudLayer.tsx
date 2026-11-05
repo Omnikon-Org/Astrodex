@@ -8,19 +8,20 @@ import { createProceduralCloudTexture } from "./textures"
 const vertexShader = `
 uniform sampler2D cloudTexture;
 varying vec2 vUv;
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 vWorldNormal;
+varying vec3 vWorldPosition;
 varying float vCloudDensity;
 
 void main() {
   vUv = uv;
-  vNormal = normalize(normalMatrix * normal);
+  vWorldNormal = normalize(mat3(modelMatrix) * normal);
   float cloudDensity = texture2D(cloudTexture, uv).r;
   vCloudDensity = cloudDensity;
   float displacement = cloudDensity * 0.018;
   vec3 newPosition = position + normal * displacement;
-  vPosition = (modelViewMatrix * vec4(newPosition, 1.0)).xyz;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+  vec4 worldPosition = modelMatrix * vec4(newPosition, 1.0);
+  vWorldPosition = worldPosition.xyz;
+  gl_Position = projectionMatrix * viewMatrix * worldPosition;
 }
 `
 
@@ -29,20 +30,22 @@ uniform sampler2D cloudTexture;
 uniform vec3 sunDirection;
 
 varying vec2 vUv;
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 vWorldNormal;
+varying vec3 vWorldPosition;
 varying float vCloudDensity;
 
 void main() {
   vec4 cloudColor = texture2D(cloudTexture, vUv);
-  float alpha = cloudColor.r * 0.65;
+  float alpha = smoothstep(0.18, 0.78, cloudColor.r) * 0.30;
 
-  vec3 normal = normalize(vNormal);
+  vec3 normal = normalize(vWorldNormal);
   vec3 sunDir = normalize(sunDirection);
   float NdotL = dot(normal, sunDir);
-  float lighting = clamp(NdotL * 0.5 + 0.5, 0.0, 1.0);
+  float lighting = smoothstep(-0.25, 0.72, NdotL);
+  float rim = pow(1.0 - max(dot(normal, normalize(cameraPosition - vWorldPosition)), 0.0), 2.0);
 
-  vec3 color = vec3(1.0) * lighting * 0.9;
+  vec3 color = mix(vec3(0.48, 0.70, 0.92), vec3(1.0), lighting) * (0.68 + rim * 0.28);
+  alpha *= 0.45 + lighting * 0.55;
 
   gl_FragColor = vec4(color, alpha);
 }

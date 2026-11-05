@@ -34,7 +34,7 @@ export function AsteroidCard() {
 
   return (
     <div
-      className="glass-panel animate-fade-in-left"
+      className="asteroid-card glass-panel animate-fade-in-left"
       style={{
         position: "fixed",
         top: "calc(var(--header-height) + 16px)",
@@ -42,8 +42,8 @@ export function AsteroidCard() {
         width: "300px",
         zIndex: 42,
         boxShadow: "0 10px 40px rgba(0, 0, 0, 0.6)",
-        border: "1px solid rgba(56, 189, 248, 0.2)",
-        background: "rgba(10, 16, 28, 0.9)",
+        border: "1px solid rgba(226, 170, 91, 0.22)",
+        background: "rgba(8, 9, 9, 0.94)",
         transition: "left 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
       }}
     >
@@ -78,7 +78,7 @@ export function AsteroidCard() {
               color: "var(--text-primary)",
             }}
           >
-            Inspector: {selectedAsteroid.name}
+            Object Inspector · {selectedAsteroid.name}
           </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -223,8 +223,8 @@ export function AsteroidCard() {
               width: "100%",
               padding: "10px",
               borderRadius: "var(--radius-md)",
-              backgroundColor: isClaimed ? "rgba(248, 113, 113, 0.12)" : "rgba(56, 189, 248, 0.12)",
-              borderColor: isClaimed ? "rgba(248, 113, 113, 0.4)" : "rgba(56, 189, 248, 0.4)",
+              backgroundColor: isClaimed ? "rgba(222, 121, 113, 0.12)" : "rgba(226, 170, 91, 0.12)",
+              borderColor: isClaimed ? "rgba(222, 121, 113, 0.4)" : "rgba(226, 170, 91, 0.38)",
               color: isClaimed ? "var(--accent-red)" : "var(--accent-cyan)",
               fontSize: "12px",
               fontWeight: 700,
@@ -232,7 +232,7 @@ export function AsteroidCard() {
               textTransform: "uppercase",
             }}
           >
-            {isClaimed ? "Release Mining Claim" : "File Mining Claim"}
+            {isClaimed ? "Release Claim" : "Claim Object"}
           </button>
         {/* Mining Claim Operations */}
         <div style={{ marginTop: 12 }}>

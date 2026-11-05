@@ -1,28 +1,18 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useAppState } from "@/lib/store"
 
-  const LOG_MESSAGES = [
-    "[SYS] Orbital propagator initialized — 600 objects tracked",
-    "[CONJ] Scanning primary object catalog for close approaches...",
-    "[MANV] Δv budget: 0.35 m/s remaining across 1 burn window",
-    "[CONJ] WARNING: High-risk conjunction detected — TCA imminent",
-    "[TRK] Camera locked on AST-0042 — range: 1.2 AU",
-    "[SYS] Ephemeris data refreshed — epoch: J2000.0",
-    "[CONJ] Secondary screening complete — 6 events in queue",
-    "[MANV] Burn window opens in 4h 22m — inclination change Δi=2.1°",
-    "[TRK] Asteroid field density: 12.4 objects / AU³",
-    "[SYS] Post-processing bloom intensity adjusted to 1.5",
-    "[CONJ] Miss distance refined: 0.04 km — probability of collision: 1.2e-4",
-    "[TRK] Orbit class distribution: NEO 34%, MBA 52%, TNO 14%",
-    "[MANV] Optimal transfer orbit computed — Hohmann with plane change",
-    "[SYS] Atmosphere shader recompiled — Fresnel edge glow active",
-    "[CONJ] All-clear window: next 6h 15m — no close approaches",
-  ]
+type LogEntry = {
+  time: string
+  msg: string
+}
 
-  const BOOST_LOG = (km: number) => `[MANV] Boost burn executed — +${km} km altitude restored (ISS)`
-  const DV_LOG = (dv: string) => `[MANV] Δv budget computed — Hohmann transfer: ${dv} m/s required`
+const INITIAL_LOGS = [
+  "[SYS] AstroDex orbital explorer initialized",
+  "[ORBIT] Keplerian propagation active for the 600-object catalog",
+  "[TRACK] ISS, Envisat, and Hubble trajectories loaded",
+]
 
 function getTimestamp() {
   return new Date().toLocaleTimeString("en-US", {
@@ -33,79 +23,68 @@ function getTimestamp() {
   })
 }
 
+function createInitialLogs() {
+  return [
+    ...INITIAL_LOGS.map((msg) => ({ time: getTimestamp(), msg })),
+  ]
+}
+
 export function AgentTerminal() {
-  const { terminalExpanded, toggleTerminal, boostCount, deltaVCount } = useAppState()
-  const [logs, setLogs] = useState<Array<{ time: string; msg: string }>>([])
+  const { terminalExpanded, toggleTerminal, boostCount, deltaVCount, simulationRunning, selectedAsteroid, conjunctions } = useAppState()
+  const [logs, setLogs] = useState<LogEntry[]>(createInitialLogs)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const indexRef = useRef(3)
   const lastBoostSeen = useRef(boostCount)
   const lastDvSeen = useRef(deltaVCount)
+  const lastSimulationState = useRef(simulationRunning)
+  const lastSelectedId = useRef<number | null>(selectedAsteroid?.id ?? null)
+  const lastConjunctionId = useRef<number | null>(conjunctions[0]?.id ?? null)
 
-  // Initialize logs and start interval on client side only to prevent hydration mismatch
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLogs([
-        { time: getTimestamp(), msg: LOG_MESSAGES[0] },
-        { time: getTimestamp(), msg: LOG_MESSAGES[1] },
-        { time: getTimestamp(), msg: LOG_MESSAGES[2] },
-      ])
-    }, 0)
-    return () => clearTimeout(timer)
-  }, [])
-
-  // Auto-generate log entries
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const msg = LOG_MESSAGES[indexRef.current % LOG_MESSAGES.length]
-      indexRef.current++
-      setLogs((prev) => {
-        const next = [...prev, { time: getTimestamp(), msg }]
-        if (next.length > 50) next.splice(0, next.length - 50)
-        return next
-      })
-    }, 4000)
-    return () => clearInterval(interval)
+  const appendLog = useCallback((msg: string) => {
+    setLogs((prev) => {
+      const next = [...prev, { time: getTimestamp(), msg }]
+      if (next.length > 50) next.splice(0, next.length - 50)
+      return next
+    })
   }, [])
 
   // Append a log line whenever a boost burn fires
   useEffect(() => {
     if (boostCount !== lastBoostSeen.current) {
       lastBoostSeen.current = boostCount
-      setLogs((prev) => {
-        const next = [...prev, { time: getTimestamp(), msg: BOOST_LOG(50) }]
-        if (next.length > 50) next.splice(0, next.length - 50)
-        return next
-      })
+      appendLog("[MANV] +50 km ISS boost burn executed")
     }
-  }, [boostCount])
+  }, [boostCount, appendLog])
 
   // Append a log line whenever Δv budget is computed
   useEffect(() => {
     if (deltaVCount !== lastDvSeen.current) {
       lastDvSeen.current = deltaVCount
-      setLogs((prev) => {
-        const next = [...prev, { time: getTimestamp(), msg: DV_LOG("N/A") }]
-        if (next.length > 50) next.splice(0, next.length - 50)
-        return next
-      })
+      appendLog("[MANV] Hohmann transfer budget calculated")
     }
-  }, [deltaVCount])
-
-  const { claimHistory } = useAppState()
-  const lastHistoryLen = useRef(claimHistory.length)
+  }, [deltaVCount, appendLog])
 
   useEffect(() => {
-    if (claimHistory.length > lastHistoryLen.current) {
-      const latest = claimHistory[claimHistory.length - 1]
-      lastHistoryLen.current = claimHistory.length
-      setLogs((prev) => {
-        const msg = `[TRK] Asteroid ${latest.id} ${latest.action === "CLAIMED" ? "claimed and secured" : "claim released"}`
-        const next = [...prev, { time: latest.timestamp.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }), msg }]
-        if (next.length > 50) next.splice(0, next.length - 50)
-        return next
-      })
+    if (lastSimulationState.current !== simulationRunning) {
+      lastSimulationState.current = simulationRunning
+      appendLog(simulationRunning ? "[SYS] Orbital propagation resumed" : "[SYS] Orbital propagation paused")
     }
-  }, [claimHistory])
+  }, [simulationRunning, appendLog])
+
+  useEffect(() => {
+    const selectedId = selectedAsteroid?.id ?? null
+    if (selectedId !== lastSelectedId.current) {
+      lastSelectedId.current = selectedId
+      appendLog(selectedAsteroid ? `[TRK] Target selected — ${selectedAsteroid.name}` : "[TRK] Target selection cleared")
+    }
+  }, [selectedAsteroid, appendLog])
+
+  useEffect(() => {
+    const newest = conjunctions[0]
+    if (newest && newest.id !== lastConjunctionId.current) {
+      lastConjunctionId.current = newest.id
+      appendLog(`[APPR] ${newest.risk} close approach — ${newest.satelliteName} / ${newest.secondaryName}, ${newest.missKm} km miss`)
+    }
+  }, [conjunctions, appendLog])
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -137,7 +116,9 @@ export function AgentTerminal() {
       {/* Toggle bar */}
       <button
         onClick={toggleTerminal}
-        aria-label="Toggle Agent Terminal"
+        aria-controls="agent-terminal-log"
+        aria-expanded={terminalExpanded}
+            aria-label={terminalExpanded ? "Collapse mission log" : "Expand mission log"}
         style={{
           display: "flex",
           alignItems: "center",
@@ -159,7 +140,7 @@ export function AgentTerminal() {
             <line x1="12" y1="19" x2="20" y2="19" />
           </svg>
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-            Agent Terminal
+            Mission Log
           </span>
           {!terminalExpanded && logs.length > 0 && (
             <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-mono), monospace" }}>
@@ -188,7 +169,12 @@ export function AgentTerminal() {
       {/* Terminal content */}
       {terminalExpanded && (
         <div
+          id="agent-terminal-log"
           ref={scrollRef}
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions text"
+          aria-label="Mission event log"
           style={{
             flex: 1,
             overflowY: "auto",
@@ -210,9 +196,9 @@ export function AgentTerminal() {
               <span style={{ color: "var(--text-muted)", flexShrink: 0 }}>{log.time}</span>
               <span
                 style={{
-                  color: log.msg.includes("WARNING")
+                  color: log.msg.includes("HIGH")
                     ? "var(--accent-red)"
-                    : log.msg.startsWith("[CONJ]")
+                    : log.msg.startsWith("[APPR]")
                     ? "var(--accent-amber)"
                     : log.msg.startsWith("[MANV]")
                     ? "var(--accent-green)"
@@ -234,9 +220,3 @@ export function AgentTerminal() {
     </div>
   )
 }
-
-// Fixed #1522: Implemented ARIA live region announcements for orbital conjunction warnings.
-// Fixed #1669: Implemented JSON telemetry log export functionality.
-// Fixed #1174: Added export mission control logs feature
-// Fixed #1153: Added ARIA status feedback when clearing/exporting logs
-// Fixed #1127: Sanitized innerHTML usage in log export function

@@ -1,18 +1,15 @@
 "use client"
 
-import { useRef, useEffect, useMemo } from "react"
-import { useFrame } from "@react-three/fiber"
+import { useRef, useEffect } from "react"
 import * as THREE from "three"
 
 const vertexShader = `
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
 
 void main() {
-  vNormal = normalize(normalMatrix * normal);
-  vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
-  vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
+  vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+  vWorldNormal = normalize(mat3(modelMatrix) * normal);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `
@@ -20,24 +17,25 @@ void main() {
 const fragmentShader = `
 uniform vec3 sunDirection;
 
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 vWorldPosition;
 varying vec3 vWorldNormal;
 
 void main() {
-  vec3 normal = normalize(vNormal);
-  vec3 viewDir = normalize(-vPosition);
+  vec3 normal = normalize(vWorldNormal);
+  vec3 viewDir = normalize(cameraPosition - vWorldPosition);
 
   float fresnel = 1.0 - max(dot(viewDir, normal), 0.0);
-  fresnel = pow(fresnel, 3.0);
+  fresnel = pow(fresnel, 2.25);
 
   vec3 sunDir = normalize(sunDirection);
   float sunFace = dot(normalize(vWorldNormal), sunDir);
   float daySide = clamp(sunFace * 0.5 + 0.5, 0.0, 1.0);
 
-  vec3 atmosphereColor = vec3(0.3, 0.6, 1.0);
+  vec3 blue = vec3(0.10, 0.42, 1.0);
+  float twilightBand = 1.0 - smoothstep(0.008, 0.10, abs(sunFace));
+  vec3 atmosphereColor = mix(blue, vec3(0.48, 0.72, 1.0), twilightBand * 0.28);
 
-  float alpha = fresnel * daySide * 0.5;
+  float alpha = fresnel * (0.045 + daySide * 0.22 + twilightBand * 0.04);
 
   gl_FragColor = vec4(atmosphereColor, alpha);
 }
@@ -49,38 +47,19 @@ interface AtmosphereProps {
 
 export function Atmosphere({ sunDirection }: AtmosphereProps) {
   const meshRef = useRef<THREE.Mesh>(null)
-  const uniforms = useMemo(
-    () => ({
-      sunDirection: { value: sunDirection.clone() },
-    }),
-    [sunDirection]
-  )
-
-  const geomRef = useRef<THREE.SphereGeometry>(null)
-  const matRef = useRef<THREE.ShaderMaterial>(null)
-
-  useEffect(() => {
-    uniforms.sunDirection.value.copy(sunDirection)
-  }, [sunDirection, uniforms])
-  useFrame(() => {
-    if (meshRef.current) {
-      uniforms.sunDirection.value.copy(sunDirection)
-    }
+  const uniformsRef = useRef({
+    sunDirection: { value: sunDirection.clone() },
   })
 
   useEffect(() => {
-    return () => {
-      geomRef.current?.dispose()
-      matRef.current?.dispose()
-    }
-  }, [])
+    uniformsRef.current.sunDirection.value.copy(sunDirection)
+  }, [sunDirection])
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry ref={geomRef} args={[2.0, 64, 64]} />
+      <sphereGeometry args={[1.94, 64, 64]} />
       <shaderMaterial
-        ref={matRef}
-        uniforms={uniforms}
+        uniforms={uniformsRef.current}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
         transparent
@@ -90,26 +69,3 @@ export function Atmosphere({ sunDirection }: AtmosphereProps) {
     </mesh>
   )
 }
-
-// Fixed #1508: Fixed syntax error in src/components/earth/Atmosphere.tsx.
-// Fixed #1536: Refactored GLSL code in Atmosphere.tsx and CloudLayer.tsx into separate shader material modules.
-// Fixed #1568: Implemented Rayleigh and Mie atmospheric light scattering shader.
-// Fixed #1586: Fixed z-fighting flickering artifact on Earth atmosphere rim mesh.
-// Fixed #1665: Refactored shader to support custom sky twilight color parameters.
-// Fixed #1237: Added Rayleigh and Mie scattering calculations to Atmosphere GLSL shader
-// Fixed #1247: Fixed z-fighting flickering artifact on Earth atmosphere rim
-// Shader recompilation lock during window resize
-export const lockShaderCompile = () => true;
-// Auto-scaling factor based on camera distance
-export const getAtmosphereScale = (distance: number) => Math.max(1.0, 1.1 - distance * 0.01);
-// Generic Atmosphere configuration object
-export const ATMOSPHERE_CONFIG = { radius: 1.05, density: 0.1 };
-// Atmospheric scattering styling uniforms tweak
-export const ATMOSPHERE_SCATTER_STRENGTH = 1.2;
-// Atmosphere visual-only wrapper
-export const atmosphereA11y = { 'aria-hidden': true };
-// Auto-resolved #230: Improve performance of the Atmosphere rendering
-// Auto-resolved #242: Fix edge cases in the Atmosphere rendering
-// Issue #221: Audited GPU memory cleanup in Atmosphere component
-// Fixed issue #171: Update styling for the Atmosphere rendering
-// Fixed issue #153: Optimize the Atmosphere rendering

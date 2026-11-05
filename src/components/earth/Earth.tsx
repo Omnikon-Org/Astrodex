@@ -1,10 +1,10 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useMemo } from "react"
 import { useFrame } from "@react-three/fiber"
+import { useTexture } from "@react-three/drei"
 import * as THREE from "three"
 import {
-  createProceduralEarthTexture,
   createProceduralNightTexture,
   createProceduralSpecularTexture,
   createProceduralCloudTexture,
@@ -12,13 +12,13 @@ import {
 
 const vertexShader = `
 varying vec2 vUv;
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 vWorldNormal;
+varying vec3 vWorldPosition;
 
 void main() {
   vUv = uv;
-  vNormal = normalize(normalMatrix * normal);
-  vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+  vWorldNormal = normalize(mat3(modelMatrix) * normal);
+  vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `
@@ -31,11 +31,11 @@ uniform sampler2D cloudShadowTexture;
 uniform vec3 sunDirection;
 
 varying vec2 vUv;
-varying vec3 vNormal;
-varying vec3 vPosition;
+varying vec3 vWorldNormal;
+varying vec3 vWorldPosition;
 
 void main() {
-  vec3 normal = normalize(vNormal);
+  vec3 normal = normalize(vWorldNormal);
   vec3 sunDir = normalize(sunDirection);
 
   float NdotL = dot(normal, sunDir);
@@ -48,22 +48,26 @@ void main() {
   // Offset UV slightly in the sun direction to simulate shadow projection
   vec2 shadowOffset = vec2(sunDir.x, sunDir.y) * 0.012;
   float cloudShadow = texture2D(cloudShadowTexture, vUv + shadowOffset).r;
-  float shadowFactor = 1.0 - cloudShadow * 0.35 * step(0.0, NdotL);
+  float shadowFactor = 1.0 - cloudShadow * 0.28 * step(0.0, NdotL);
+  dayColor *= shadowFactor;
 
-  float dayMix = clamp(NdotL * 1.5 + 0.1, 0.0, 1.0);
+  // Keep terrain readable on the unlit hemisphere. City lights should only
+  // appear on the true night side, rather than bleeding across the terminator.
+  float nightMix = 1.0 - smoothstep(-0.12, -0.025, NdotL);
+  float dayLight = 0.22 + max(NdotL, 0.0) * 0.82;
+  vec3 litDay = dayColor * dayLight;
+  vec3 nightSide = dayColor * 0.30 + nightColor * vec3(0.92, 0.78, 0.56) * 0.24;
+  vec3 color = mix(litDay, nightSide, nightMix);
 
-  float twilight = 1.0 - abs(NdotL);
-  twilight = smoothstep(0.0, 0.7, twilight);
-  vec3 twilightColor = vec3(1.0, 0.5, 0.2) * twilight * 0.7;
+  // A narrow, restrained blue twilight keeps the day/night boundary defined
+  // without washing whole regions in amber.
+  float twilight = exp(-pow(NdotL / 0.055, 2.0));
+  color += vec3(0.18, 0.34, 0.58) * twilight * 0.055;
 
-  vec3 warmNight = nightColor * vec3(1.7, 1.2, 0.6) * 0.25;
-  vec3 color = mix(warmNight, dayColor, dayMix);
-  color += twilightColor;
-
-  vec3 viewDir = normalize(-vPosition);
+  vec3 viewDir = normalize(cameraPosition - vWorldPosition);
   vec3 halfVec = normalize(sunDir + viewDir);
   float spec = pow(max(dot(normal, halfVec), 0.0), 64.0);
-  float oceanSpec = spec * specularMap * 0.8;
+  float oceanSpec = spec * specularMap * 0.62;
 
   color += vec3(1.0, 0.95, 0.8) * oceanSpec;
 
@@ -75,33 +79,19 @@ interface EarthProps {
   sunDirection: THREE.Vector3
 }
 
-function makeDefaultTexture() {
-  const canvas = document.createElement("canvas")
-  canvas.width = 2
-  canvas.height = 2
-  const ctx = canvas.getContext("2d")!
-  ctx.fillStyle = "#4488cc"
-  ctx.fillRect(0, 0, 2, 2)
-  return new THREE.CanvasTexture(canvas)
-}
-
 export function Earth({ sunDirection }: EarthProps) {
   const meshRef = useRef<THREE.Mesh>(null)
+  const dayTexture = useTexture("/earth-blue-marble.jpg")
+  dayTexture.colorSpace = THREE.SRGBColorSpace
+  dayTexture.anisotropy = 8
 
-  const [uniforms] = useState(() => {
-    const day = new THREE.CanvasTexture(createProceduralEarthTexture())
-    const night = new THREE.CanvasTexture(createProceduralNightTexture())
-    const spec = new THREE.CanvasTexture(createProceduralSpecularTexture())
-    const cloud = new THREE.CanvasTexture(createProceduralCloudTexture())
-    
-    return {
-      dayTexture: { value: day },
-      nightTexture: { value: night },
-      specularTexture: { value: spec },
-      cloudShadowTexture: { value: cloud },
-      sunDirection: { value: sunDirection.clone() },
-    }
-  })
+  const uniforms = useMemo(() => ({
+    dayTexture: { value: dayTexture as THREE.Texture },
+    nightTexture: { value: new THREE.CanvasTexture(createProceduralNightTexture()) },
+    specularTexture: { value: new THREE.CanvasTexture(createProceduralSpecularTexture()) },
+    cloudShadowTexture: { value: new THREE.CanvasTexture(createProceduralCloudTexture()) },
+    sunDirection: { value: sunDirection.clone() },
+  }), [dayTexture, sunDirection])
 
   useEffect(() => {
     uniforms.sunDirection.value.copy(sunDirection)
@@ -124,20 +114,3 @@ export function Earth({ sunDirection }: EarthProps) {
     </mesh>
   )
 }
-
-// Fixed #1534: Refactored Earth shader code in src/components/earth/Earth.tsx into standalone material constants.
-// Fixed #1563: Implemented Day/Night twilight city lights blending shader.
-// Fixed #1567: Implemented ocean specular reflection mask in Earth fragment shader.
-// Fixed #1239: Added specular ocean reflection mask map to Earth fragment shader
-// Fixed #1241: Added volumetric cloud shadow casting onto Earth surface in Earth fragment shader
-// Fixed #1243: Added procedural bump mapping for Earth terrain in Earth.tsx vertex shader
-// Fixed #1245: Added dynamic twilight city light intensity control based on sun angle in Earth shader
-// Fixed #1246: Fixed memory leak from un-disposed WebGL materials on component unmount
-// Fixed #1095: Refactored GLSL Earth shaders
-// Safe geometry initialization wrapper
-export const initGeometrySafe = () => { let init = true; return init; };
-// EarthMesh Review Memoization wrapper
-export const MemoizedEarth = (Earth: any) => Earth;
-// Auto-resolved #224: Write inline documentation for the EarthMesh component
-// Fixed issue #174: Update styling for the EarthMesh component
-// Fixed issue #161: Fix edge cases in the EarthMesh component

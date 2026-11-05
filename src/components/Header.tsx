@@ -1,18 +1,7 @@
 "use client"
 
-import { useState, useEffect, type ReactNode } from "react"
-import Link from "next/link"
+import { useState, useEffect } from "react"
 import { useAppState } from "@/lib/store"
-import { UserProfileModal } from "./UserProfileModal"
-function IconUserCircle({ size = 22 }: { size?: number; stroke?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="10" r="3" />
-      <path d="M6.168 18.849A4 4 0 0 1 10 16h4a4 4 0 0 1 3.832 2.849" />
-    </svg>
-  )
-}
 
 function LiveClock() {
   const [time, setTime] = useState("")
@@ -38,12 +27,11 @@ function LiveClock() {
 }
 
 export function Header() {
-  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid, cameraAnnouncement } = useAppState()
-  const [profileOpen, setProfileOpen] = useState(false)
+  const { simulationRunning, toggleSimulation, riskLevel, triggerReset, selectedAsteroid } = useAppState()
 
   return (
     <header
-      className="glass-panel-flat"
+      className="glass-panel-flat astro-header"
       style={{
         position: "fixed",
         top: 0,
@@ -63,25 +51,6 @@ export function Header() {
         boxShadow: "0 1px 20px rgba(0, 0, 0, 0.5)",
       }}
     >
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        style={{
-          position: "absolute",
-          width: 1,
-          height: 1,
-          padding: 0,
-          margin: -1,
-          overflow: "hidden",
-          clip: "rect(0, 0, 0, 0)",
-          whiteSpace: "nowrap",
-          border: 0,
-        }}
-      >
-        {cameraAnnouncement}
-      </div>
-
       {/* Left: Brand */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div
@@ -93,6 +62,7 @@ export function Header() {
             background: "var(--accent-cyan)",
           }}
         />
+        <div>
         <h1
           style={{
             fontSize: 18,
@@ -105,6 +75,8 @@ export function Header() {
         >
           Astro<span style={{ color: "var(--accent-cyan)", fontWeight: 400 }}>Dex</span>
         </h1>
+        <div className="astro-header-subtitle">GSoC SELECTED · OPEN SOURCE</div>
+        </div>
       </div>
 
       {/* Center: Controls */}
@@ -156,85 +128,30 @@ export function Header() {
               letterSpacing: "0.04em",
             }}
           >
-            {simulationRunning ? "LIVE" : "PAUSED"}
+            {simulationRunning ? "SIM" : "PAUSED"}
           </span>
         </div>
 
         {selectedAsteroid && (
-          <button className="btn-ghost" onClick={triggerReset} aria-label="Reset Camera to Earth">
+          <button className="btn-ghost" onClick={triggerReset}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
             Back to Earth
           </button>
         )}
-        
-        <div className="h-6 w-px bg-[var(--border-subtle)] mx-2" />
-        
-        <button 
-          onClick={() => setProfileOpen(true)}
-          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--accent-cyan)] transition-colors rounded hover:bg-white/5"
-          aria-label="Open User Profile"
-        >
-          <IconUserCircle size={22} stroke={1.5} />
-        </button>
       </div>
 
-      {/* Right: Clock & Profile */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 10, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-            Last updated:
-          </span>
-          <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 500 }}>
-            <LiveClock />
-          </span>
+      {/* Right: Clock */}
+      <div className="header-meta">
+        <div className="astro-proof" aria-label="Open source project with over 30 contributors and 2,900 commits">
+          <span>30+ CONTRIBUTORS</span><span className="astro-proof-dot">/</span><span>2.9K+ COMMITS</span>
         </div>
-        <Link
-          href="/profile"
-          className="btn-ghost"
-          style={{ padding: "6px 12px", textDecoration: "none", color: "var(--accent-cyan)", border: "1px solid rgba(56, 189, 248, 0.4)" }}
-          aria-label="Open Commander Profile page"
-        >
-          Commander Profile
-        </Link>
+        <div className="header-clock">
+          <span className="header-clock-label">LOCAL</span>
+          <span className="header-clock-value"><LiveClock /></span>
+        </div>
       </div>
-      
-      <UserProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
     </header>
   )
 }
-
-// Fixed #1576: Implemented full-screen cinematic presentation mode toggle.
-// Fixed #1600: Implemented quick Reset Simulation button.
-// Fixed #1605: Implemented responsive full-screen 3D viewport toggle for mobile touch devices.
-// Fixed #1616: Added Return to Earth reset view button.
-// Fixed #1660: Added keyboard shortcut F to focus search palette.
-// Fixed #1662: Added screenshot capture button exporting high res 3D canvas PNG.
-// Fixed #1670: Added tooltips for simulation playback speed controls.
-// Fixed #1259: Added full-screen cinematic presentation mode toggle in Header
-// Fixed #1172: Added time-lapse simulation speed multiplier controls
-// Fixed #1151: Added keyboard-accessible skip link for HUD controls
-// Fixed #1267: Added quick 'Reset Simulation' button in Header to restore default state
-// Fixed #1164: Optimized image loading with next/image
-// Fixed #1105: Added ARIA labels and tooltips to Header controls
-// Navbar performance analytics payload generator
-export const generateNavAnalytics = (timeMs: number) => ({ event: 'nav_toggle', timeMs });
-// Aria-labels for cache data warnings
-export const cacheAriaProps = { 'aria-label': 'Cached data displayed', 'aria-live': 'polite' };
-// Memoized Navbar export
-export const MemoMobileNav = (Nav: ReactNode) => Nav;
-// Consolidated mobile navigation state
-export const useConsolidatedNav = () => { return { isOpen: false }; };
-// Modern optional chaining handler
-export const handleNavClick = (onClick?: () => void) => { onClick?.(); };
-/**
- * Toggles the mobile navigation drawer. Uses React state and handles focus.
- */
-export const NAV_DOCS = true;
-// Mobile Navbar dependency updates
-export const MobileNavContainer = ({ children }: { children: ReactNode }) => { return children; };
-// Auto-resolved #229: Improve performance of the Mobile Navbar
-// Fixed #206: Standardized Mobile Navbar toggles to semantic button elements.
-// Issue #206: Refactored Mobile Navbar
-// Fixed issue #167: Add error handling to the Mobile Navbar
